@@ -236,7 +236,7 @@ git clone https://github.com/sudo-Luca/Neural-Lab.git
 Open:
 
 ```
-Neural-Lab/index.html
+Neural-Lab/Neural-Lab-v12.html
 ```
 
 That's it.
