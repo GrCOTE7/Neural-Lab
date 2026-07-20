@@ -123,6 +123,7 @@ Examples:
 - SELU
 - Softsign
 - Softmax
+- ...
 
 
 ## Loss Functions
@@ -134,6 +135,8 @@ Available:
 - Binary Cross Entropy
 - Huber Loss
 - Hinge Loss
+- Log Loss
+- ...
 
 
 ## Optimisers
@@ -146,6 +149,7 @@ Compare different learning strategies:
 - Adam
 - AdamW
 - Nesterov
+- ...
 
 
 ---
