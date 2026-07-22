@@ -64,7 +64,7 @@ Features:
 ✅ Live neuron activation display  
 ✅ Weight visualisation  
 ✅ Bias inspection  
-✅ Interactive neuron and connection editing 
+✅ Interactive neuron and connection editing
 ✅ CNN lab
 
 
