@@ -24,6 +24,7 @@ Neural Lab v12 is an interactive browser-based tool for visualising, training, a
 14. [UI Utility Functions](#ui-utility-functions)
 15. [Keyboard Shortcuts](#keyboard-shortcuts)
 16. [Mobile Support](#mobile-support)
+17. [Local Dev](#local-dev)
 
 ---
 
@@ -665,6 +666,16 @@ Activates the named panel (`'left'`, `'center'`, or `'right'`) by toggling the `
 
 #### `syncMobStats() → void`
 Called every 400 ms via `setInterval`. Copies the epoch and loss text content from the left panel stats display to the top bar pill elements.
+
+---
+
+### Local Dev
+
+Tip to have **hotreload** (*nodejs* must be installed)
+
+```bash
+npx live-serveer .
+```
 
 ---
 

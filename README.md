@@ -64,7 +64,7 @@ Features:
 ✅ Live neuron activation display  
 ✅ Weight visualisation  
 ✅ Bias inspection  
-✅ Interactive neuron and connection editing
+✅ Interactive neuron and connection editing  
 ✅ CNN lab
 
 
@@ -380,7 +380,7 @@ See:
 
 ---
 
-# 🎯 Project Goals
+# .🎯 Project Goals
 
 Neural Lab was created with one idea:
 
