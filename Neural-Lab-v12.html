@@ -11386,7 +11386,7 @@
                 <span style="font-size: 9px; color: var(--dim)">Taille</span>
                 <select
                   id="cnnSize"
-                  style="flex: 1; font-size: 9px"
+                  style="flex: 1; font-size: 9px;" data-no-translate
                   onchange="cnnSetGridSize(parseInt(this.value))"
                 >
                   <option value="6">6×6</option>
@@ -12698,7 +12698,7 @@
         const n = CNN.size,
           cell = n <= 8 ? 22 : n <= 10 ? 17 : 14;
         let html = `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
-        <div><div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700">FEATURE MAP (${out.length}×${out[0].length})</div>${cnnRenderMatrix(feature, cell)}</div>`;
+        <div><div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700" data-no-translate>FEATURE MAP (${out.length}×${out[0].length})</div>${cnnRenderMatrix(feature, cell)}</div>`;
         if (pooled)
           html += `<div><div style="font-size:8px;color:var(--org);margin-bottom:4px;font-weight:700">APRÈS MAX-POOLING (${pooled.length}×${pooled[0].length})</div>${cnnRenderMatrix(pooled, 24)}</div>`;
         html += "</div>";
