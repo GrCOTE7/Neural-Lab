@@ -2636,7 +2636,7 @@
         background: var(--p1);
         border: 1px solid var(--a1);
         border-radius: 8px;
-        max-width: 780px;
+        max-width: 900px;
         width: 96%;
         max-height: 92vh;
         overflow-y: auto;
@@ -2698,6 +2698,79 @@
         font-size: 9px;
         text-align: center;
         padding: 2px;
+      }
+      #cnn-body .tabs {
+        margin: 0 0 12px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .cnn-gallery-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .cnn-gallery-item {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 6px;
+        text-align: center;
+      }
+      .cnn-pipe-layer {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 8px 10px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .cnn-pipe-layer .lbl {
+        font-size: 8px;
+        color: var(--a1);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        min-width: 54px;
+      }
+      .cnn-pipe-layer select {
+        width: auto;
+        min-width: 150px;
+        flex: 1;
+      }
+      .cnn-pipe-stage {
+        text-align: center;
+      }
+      .cnn-pipe-stage .stg-lbl {
+        font-size: 8px;
+        color: var(--dim);
+        margin-bottom: 4px;
+        max-width: 110px;
+      }
+      .cnn-pipe-arrow {
+        align-self: center;
+        color: var(--a2);
+        font-size: 16px;
+      }
+      .cnn-train-col {
+        flex: 1;
+        min-width: 200px;
+      }
+      .cnn-train-col h3 {
+        font-size: 8px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 5px;
+        font-weight: 700;
+      }
+      .cnn-loss-box {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 8px 10px;
       }
       .racer {
         background: #030408;
@@ -4411,14 +4484,14 @@
                   font-weight: 700;
                 "
               >
-                🧩 Expérimentation CNN (Convolution)
+                🧩 Labo CNN (Convolution)
               </div>
               <div
                 style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
               >
-                Dessinez une image, appliquez un noyau de convolution (Sobel,
-                flou, netteté…) et observez la feature map — la brique de base
-                des réseaux convolutifs
+                Convolution pas-à-pas, galerie comparant tous les filtres,
+                pipeline multi-couches avec champ réceptif, et entraînement
+                d'un noyau par descente de gradient
               </div>
               <button class="btn ok" onclick="openCNNLab()" style="width: 100%">
                 🧠 Ouvrir le labo CNN
@@ -11364,7 +11437,7 @@
     <div id="cnn-modal-bg">
       <div id="cnn-modal">
         <div id="cnn-header">
-          <h2>🧩 Labo CNN — Convolution</h2>
+          <h2>🧩 Labo CNN</h2>
           <button class="btn" onclick="closeCNNLab()">✕</button>
         </div>
         <div id="cnn-body">
@@ -11374,6 +11447,38 @@
             la brique de base des CNN (réseaux de neurones convolutifs).
           </div>
 
+          <div class="tabs">
+            <div
+              class="tab active"
+              id="cnntab-btn-conv"
+              onclick="cnnShowTab('conv')"
+            >
+              Convolution
+            </div>
+            <div
+              class="tab"
+              id="cnntab-btn-gallery"
+              onclick="cnnShowTab('gallery')"
+            >
+              Galerie de filtres
+            </div>
+            <div
+              class="tab"
+              id="cnntab-btn-pipe"
+              onclick="cnnShowTab('pipe')"
+            >
+              Pipeline multi-couches
+            </div>
+            <div
+              class="tab"
+              id="cnntab-btn-train"
+              onclick="cnnShowTab('train')"
+            >
+              Entraîner un noyau
+            </div>
+          </div>
+
+          <div class="tc show" id="cnntab-conv">
           <div
             style="
               display: flex;
@@ -11513,16 +11618,14 @@
               "
               ><input type="checkbox" id="cnnRelu" /> ReLU</label
             >
-            <label
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                color: var(--dim);
-              "
-              ><input type="checkbox" id="cnnPool" /> Max Pooling 2×2</label
-            >
+            <div style="display: flex; align-items: center; gap: 5px">
+              <span style="font-size: 9px; color: var(--dim)">Pooling</span>
+              <select id="cnnPoolMode" style="font-size: 9px; width: 100px">
+                <option value="none">Aucun</option>
+                <option value="max">Max 2×2</option>
+                <option value="avg">Moyenne 2×2</option>
+              </select>
+            </div>
           </div>
 
           <div class="btn-row" style="margin-bottom: 10px">
@@ -11536,6 +11639,136 @@
 
           <div id="cnnResults" style="font-size: 9px; color: var(--dim)">
             Dessinez une image et cliquez sur « Calculer ».
+          </div>
+          </div>
+
+          <div class="tc" id="cnntab-gallery">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Applique les 7 noyaux prédéfinis à l'image d'entrée en même
+              temps, pour comparer d'un coup d'œil ce que détecte chaque
+              filtre (contours, flou, relief…). Dessinez l'image dans
+              l'onglet « Convolution », puis revenez ici.
+            </div>
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 9px;
+                color: var(--dim);
+                margin-bottom: 10px;
+              "
+              ><input
+                type="checkbox"
+                id="cnnGalleryRelu"
+                onchange="cnnGalleryRender()"
+              />
+              Appliquer ReLU sur chaque filtre</label
+            >
+            <div class="btn-row" style="margin-bottom: 10px">
+              <button class="btn ok" onclick="cnnGalleryRender()">
+                🔄 Régénérer la galerie
+              </button>
+            </div>
+            <div id="cnnGalleryGrid" class="cnn-gallery-grid"></div>
+          </div>
+
+          <div class="tc" id="cnntab-pipe">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Empilez plusieurs couches convolution → ReLU → pooling, comme
+              dans un vrai CNN. Chaque couche s'applique à la sortie de la
+              précédente : observez la carte de features rétrécir et le
+              champ réceptif grandir à mesure que le réseau s'approfondit.
+            </div>
+            <div id="cnnPipeLayers"></div>
+            <div class="btn-row" style="margin: 8px 0 12px">
+              <button class="btn" onclick="cnnPipeAddLayer()">
+                + Ajouter une couche
+              </button>
+              <button class="btn ok" onclick="cnnPipeCompute()" style="flex: 1">
+                ⬡ Calculer le pipeline
+              </button>
+            </div>
+            <div
+              id="cnnPipeResults"
+              style="font-size: 9px; color: var(--dim)"
+            >
+              Configurez vos couches puis cliquez sur « Calculer le
+              pipeline ».
+            </div>
+          </div>
+
+          <div class="tc" id="cnntab-train">
+            <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+              Un CNN n'utilise pas des noyaux écrits à la main : il les
+              <em>apprend</em> par descente de gradient. Ci-dessous, un
+              noyau cible (l'un des filtres classiques) produit une carte de
+              features de référence ; un second noyau, initialisé au
+              hasard, essaie de la reproduire en ajustant ses 9 poids pas à
+              pas — exactement comme les couches convolutives d'un vrai
+              réseau pendant l'entraînement.
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-bottom: 10px;
+                background: #030408;
+                border: 1px solid var(--brd);
+                border-radius: 4px;
+                padding: 8px 10px;
+              "
+            >
+              <div style="display: flex; align-items: center; gap: 5px">
+                <span style="font-size: 9px; color: var(--dim)"
+                  >Noyau cible</span
+                >
+                <select
+                  id="cnnTrainTarget"
+                  style="font-size: 9px; width: 150px"
+                  onchange="cnnTrainSetup()"
+                >
+                  <option value="sobelx" selected>
+                    Sobel X (contours verticaux)
+                  </option>
+                  <option value="sobely">Sobel Y (contours horizontaux)</option>
+                  <option value="laplacian">Laplacien (contours)</option>
+                  <option value="sharpen">Netteté</option>
+                  <option value="blur">Flou (box blur)</option>
+                  <option value="emboss">Emboss (relief)</option>
+                  <option value="identity">Identité</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: center; gap: 5px">
+                <span style="font-size: 9px; color: var(--dim)"
+                  >Taux d'apprentissage</span
+                >
+                <select
+                  id="cnnTrainLr"
+                  style="font-size: 9px; width: 65px"
+                  onchange="CNN_TRAIN.lr = parseFloat(this.value)"
+                >
+                  <option value="0.02">0.02</option>
+                  <option value="0.05" selected>0.05</option>
+                  <option value="0.1">0.1</option>
+                  <option value="0.2">0.2</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 10px">
+              <button class="btn ok" id="cnnTrainBtn" onclick="cnnTrainToggle()">
+                ▶ Entraîner
+              </button>
+              <button class="btn" onclick="cnnTrainStep(); cnnTrainRender()">
+                ⏭ Un pas
+              </button>
+              <button class="btn warn" onclick="cnnTrainReset()">
+                ↺ Réinitialiser
+              </button>
+            </div>
+            <div id="cnnTrainBody"></div>
           </div>
         </div>
         <div id="cnn-footer">
@@ -12519,13 +12752,48 @@
         },
       };
 
+      const CNN_KERNEL_LABELS = {
+        identity: "Identité",
+        blur: "Flou (box blur)",
+        sharpen: "Netteté",
+        sobelx: "Sobel X",
+        sobely: "Sobel Y",
+        laplacian: "Laplacien",
+        emboss: "Emboss",
+        custom: "Personnalisé",
+      };
+
+      // ── Onglets du labo (Convolution / Galerie / Pipeline / Entraînement) ──
+      let cnnActiveTab = "conv";
+      function cnnShowTab(name) {
+        cnnStopAnim();
+        cnnActiveTab = name;
+        ["conv", "gallery", "pipe", "train"].forEach((t) => {
+          document
+            .getElementById("cnntab-" + t)
+            ?.classList.toggle("show", t === name);
+          document
+            .getElementById("cnntab-btn-" + t)
+            ?.classList.toggle("active", t === name);
+        });
+        if (name === "gallery") cnnGalleryRender();
+        else if (name === "pipe") {
+          if (!CNN_PIPE.layers.length) cnnPipeInitDefault();
+          cnnPipeRender();
+        } else if (name === "train") {
+          if (!CNN_TRAIN.kernel) cnnTrainSetup();
+        }
+      }
+
       function openCNNLab() {
         document.getElementById("cnn-modal-bg").classList.add("show");
         if (!CNN.grid.length) cnnSetGridSize(8);
         cnnKernelPresetChange();
+        cnnShowTab("conv");
       }
       function closeCNNLab() {
         cnnStopAnim();
+        cnnTrainStop();
         document.getElementById("cnn-modal-bg").classList.remove("show");
       }
       {
@@ -12542,6 +12810,7 @@
         cnnRenderInputGrid();
         const r = document.getElementById("cnnResults");
         if (r) r.innerHTML = "Dessinez une image et cliquez sur « Calculer ».";
+        if (cnnActiveTab === "gallery") cnnGalleryRender();
       }
       function cnnRenderInputGrid() {
         const el = document.getElementById("cnnInputGrid");
@@ -12561,6 +12830,7 @@
       function cnnToggleCell(y, x) {
         CNN.grid[y][x] = CNN.grid[y][x] > 0 ? 0 : 1;
         cnnRenderInputGrid();
+        if (cnnActiveTab === "gallery") cnnGalleryRender();
       }
       function cnnPreset(name) {
         const n = CNN.size;
@@ -12585,6 +12855,7 @@
         }
         CNN.grid = g;
         cnnRenderInputGrid();
+        if (cnnActiveTab === "gallery") cnnGalleryRender();
       }
 
       function cnnKernelPresetChange() {
@@ -12622,26 +12893,30 @@
         CNN.kernel[y][x] = parseFloat(val) || 0;
       }
 
-      function cnnConv2d(input, kernel, stride, pad) {
+      // Ajoute le padding "same" (zéro-padding centré) ou renvoie l'entrée
+      // telle quelle en padding "valide". Séparé de la convolution elle-même
+      // pour être réutilisable par l'entraînement de noyau (qui a besoin de
+      // garder la matrice paddée pour calculer le gradient).
+      function cnnPadInput(input, kH, kW, pad) {
         const H = input.length,
-          W = input[0].length,
-          kH = kernel.length,
-          kW = kernel[0].length;
-        let padded = input,
-          padY = 0,
-          padX = 0;
-        if (pad === "same") {
-          padY = Math.floor((kH - 1) / 2);
+          W = input[0].length;
+        if (pad !== "same") return { padded: input, padY: 0, padX: 0 };
+        const padY = Math.floor((kH - 1) / 2),
           padX = Math.floor((kW - 1) / 2);
-          padded = Array.from({ length: H + 2 * padY }, (_, y) =>
-            Array.from({ length: W + 2 * padX }, (_, x) => {
-              const yy = y - padY,
-                xx = x - padX;
-              return yy >= 0 && yy < H && xx >= 0 && xx < W ? input[yy][xx] : 0;
-            }),
-          );
-        }
-        const PH = padded.length,
+        const padded = Array.from({ length: H + 2 * padY }, (_, y) =>
+          Array.from({ length: W + 2 * padX }, (_, x) => {
+            const yy = y - padY,
+              xx = x - padX;
+            return yy >= 0 && yy < H && xx >= 0 && xx < W ? input[yy][xx] : 0;
+          }),
+        );
+        return { padded, padY, padX };
+      }
+      // Convolution brute (pas de padding) sur une matrice déjà paddée.
+      function cnnConvRaw(padded, kernel, stride) {
+        const kH = kernel.length,
+          kW = kernel[0].length,
+          PH = padded.length,
           PW = padded[0].length;
         const outH = Math.floor((PH - kH) / stride) + 1,
           outW = Math.floor((PW - kW) / stride) + 1;
@@ -12657,6 +12932,16 @@
                   padded[oy * stride + ky][ox * stride + kx] * kernel[ky][kx];
             out[oy][ox] = s;
           }
+        return out;
+      }
+      function cnnConv2d(input, kernel, stride, pad) {
+        const { padded, padY, padX } = cnnPadInput(
+          input,
+          kernel.length,
+          kernel[0].length,
+          pad,
+        );
+        const out = cnnConvRaw(padded, kernel, stride);
         return { out, padY, padX };
       }
       function cnnRelu(m) {
@@ -12676,6 +12961,22 @@
               m[2 * y + 1][2 * x],
               m[2 * y + 1][2 * x + 1],
             );
+        return out;
+      }
+      function cnnAvgPool2(m) {
+        const H = m.length,
+          W = m[0]?.length || 0,
+          oh = Math.floor(H / 2),
+          ow = Math.floor(W / 2);
+        const out = Array.from({ length: oh }, () => Array(ow).fill(0));
+        for (let y = 0; y < oh; y++)
+          for (let x = 0; x < ow; x++)
+            out[y][x] =
+              (m[2 * y][2 * x] +
+                m[2 * y][2 * x + 1] +
+                m[2 * y + 1][2 * x] +
+                m[2 * y + 1][2 * x + 1]) /
+              4;
         return out;
       }
       function cnnRenderMatrix(m, cell) {
@@ -12701,7 +13002,7 @@
         const stride = parseInt(document.getElementById("cnnStride").value);
         const pad = document.getElementById("cnnPadding").value;
         const useRelu = document.getElementById("cnnRelu").checked;
-        const usePool = document.getElementById("cnnPool").checked;
+        const poolMode = document.getElementById("cnnPoolMode").value;
         const { out } = cnnConv2d(CNN.grid, CNN.kernel, stride, pad);
         const resEl = document.getElementById("cnnResults");
         if (!out.length || !out[0]?.length) {
@@ -12710,19 +13011,21 @@
           return;
         }
         let feature = useRelu ? cnnRelu(out) : out;
-        let pooled =
-          usePool && feature.length >= 2 && feature[0].length >= 2
-            ? cnnMaxPool2(feature)
-            : null;
+        const canPool = feature.length >= 2 && feature[0].length >= 2;
+        let pooled = null;
+        if (poolMode === "max" && canPool) pooled = cnnMaxPool2(feature);
+        else if (poolMode === "avg" && canPool) pooled = cnnAvgPool2(feature);
 
         const n = CNN.size,
           cell = n <= 8 ? 22 : n <= 10 ? 17 : 14;
         let html = `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
         <div><div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700" data-no-translate>FEATURE MAP (${out.length}×${out[0].length})</div>${cnnRenderMatrix(feature, cell)}</div>`;
-        if (pooled)
-          html += `<div><div style="font-size:8px;color:var(--org);margin-bottom:4px;font-weight:700">APRÈS MAX-POOLING (${pooled.length}×${pooled[0].length})</div>${cnnRenderMatrix(pooled, 24)}</div>`;
+        if (pooled) {
+          const poolLbl = poolMode === "avg" ? "MOYENNE" : "MAX";
+          html += `<div><div style="font-size:8px;color:var(--org);margin-bottom:4px;font-weight:700">APRÈS ${poolLbl}-POOLING (${pooled.length}×${pooled[0].length})</div>${cnnRenderMatrix(pooled, 24)}</div>`;
+        }
         html += "</div>";
-        html += `<div style="margin-top:8px;font-size:8px;color:var(--dim)">Entrée ${n}×${n} · Noyau 3×3 · Stride ${stride} · Padding ${pad === "same" ? "same" : "valide"} → sortie ${out.length}×${out[0].length}${useRelu ? " · ReLU appliqué" : ""}${pooled ? " · Max-pool 2×2" : ""}</div>`;
+        html += `<div style="margin-top:8px;font-size:8px;color:var(--dim)">Entrée ${n}×${n} · Noyau 3×3 · Stride ${stride} · Padding ${pad === "same" ? "same" : "valide"} → sortie ${out.length}×${out[0].length}${useRelu ? " · ReLU appliqué" : ""}${pooled ? ` · ${poolMode === "avg" ? "Avg" : "Max"}-pool 2×2` : ""}</div>`;
         resEl.innerHTML = html;
       }
 
@@ -12777,6 +13080,314 @@
         if (b) b.textContent = "▶ Animer pas-à-pas";
       }
 
+      // ════════════ 10ter. GALERIE DE FILTRES ════════════
+      // Applique les 7 noyaux prédéfinis en une seule fois sur l'image
+      // d'entrée actuelle, pour comparer immédiatement ce que détecte
+      // chaque filtre — sans avoir à changer le sélecteur 7 fois.
+      function cnnGalleryRender() {
+        const el = document.getElementById("cnnGalleryGrid");
+        if (!el) return;
+        if (!CNN.grid.length) {
+          el.innerHTML =
+            '<span style="font-size:9px;color:var(--dim)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+          return;
+        }
+        const useRelu = document.getElementById("cnnGalleryRelu")?.checked;
+        const names = Object.keys(CNN_KERNELS).filter((k) => k !== "custom");
+        const n = CNN.size,
+          cell = n <= 8 ? 14 : n <= 10 ? 11 : 9;
+        let html = "";
+        names.forEach((name) => {
+          const { out } = cnnConv2d(CNN.grid, CNN_KERNELS[name].k, 1, "valid");
+          if (!out.length || !out[0]?.length) return;
+          const feat = useRelu ? cnnRelu(out) : out;
+          html += `<div class="cnn-gallery-item">
+            <div style="font-size:8px;color:var(--a1);margin-bottom:4px;font-weight:700;text-transform:uppercase">${CNN_KERNEL_LABELS[name]}</div>
+            ${cnnRenderMatrix(feat, cell)}
+          </div>`;
+        });
+        el.innerHTML = html;
+      }
+
+      // ════════════ 10quater. PIPELINE MULTI-COUCHES ════════════
+      // Empile jusqu'à 4 couches convolution → ReLU → pooling, chacune
+      // appliquée à la sortie de la précédente, comme dans un vrai CNN.
+      // Padding "valide" fixe (stride 1) pour bien voir la carte de
+      // features rétrécir couche après couche.
+      const CNN_PIPE = { layers: [] };
+      const CNN_PIPE_MAX = 4;
+      function cnnPipeInitDefault() {
+        CNN_PIPE.layers = [
+          { preset: "sobelx", relu: true, pool: false },
+          { preset: "blur", relu: false, pool: true },
+        ];
+      }
+      function cnnPipeAddLayer() {
+        if (CNN_PIPE.layers.length >= CNN_PIPE_MAX) return;
+        CNN_PIPE.layers.push({ preset: "sharpen", relu: true, pool: false });
+        cnnPipeRender();
+      }
+      function cnnPipeRemoveLayer(i) {
+        if (CNN_PIPE.layers.length <= 1) return;
+        CNN_PIPE.layers.splice(i, 1);
+        cnnPipeRender();
+      }
+      function cnnPipeUpdateLayer(i, field, val) {
+        CNN_PIPE.layers[i][field] = val;
+      }
+      function cnnPipeRender() {
+        const el = document.getElementById("cnnPipeLayers");
+        if (!el) return;
+        const opts = Object.keys(CNN_KERNELS)
+          .filter((k) => k !== "custom")
+          .map((k) => `<option value="${k}">${CNN_KERNEL_LABELS[k]}</option>`)
+          .join("");
+        let html = "";
+        CNN_PIPE.layers.forEach((layer, i) => {
+          html += `<div class="cnn-pipe-layer">
+            <span class="lbl">Couche ${i + 1}</span>
+            <select onchange="cnnPipeUpdateLayer(${i},'preset',this.value)">
+              ${opts.replace(
+                `value="${layer.preset}"`,
+                `value="${layer.preset}" selected`,
+              )}
+            </select>
+            <label style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--dim)"><input type="checkbox" ${layer.relu ? "checked" : ""} onchange="cnnPipeUpdateLayer(${i},'relu',this.checked)"/> ReLU</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--dim)"><input type="checkbox" ${layer.pool ? "checked" : ""} onchange="cnnPipeUpdateLayer(${i},'pool',this.checked)"/> Pool 2×2</label>
+            ${CNN_PIPE.layers.length > 1 ? `<button class="btn danger" onclick="cnnPipeRemoveLayer(${i})" style="padding:3px 6px">✕</button>` : ""}
+          </div>`;
+        });
+        el.innerHTML = html;
+      }
+      function cnnPipeCompute() {
+        const resEl = document.getElementById("cnnPipeResults");
+        if (!resEl) return;
+        if (!CNN.grid.length) {
+          resEl.innerHTML =
+            '<span style="color:var(--red)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+          return;
+        }
+        const H = CNN.size,
+          W = CNN.size;
+        let cur = CNN.grid;
+        let rf = 1,
+          jump = 1; // champ réceptif effectif (formule standard RF/jump)
+        const stages = [
+          { matrix: cur, label: `Entrée ${H}×${W}` },
+        ];
+        let blocked = false;
+        for (let i = 0; i < CNN_PIPE.layers.length; i++) {
+          const layer = CNN_PIPE.layers[i];
+          if (cur.length < 3 || cur[0].length < 3) {
+            blocked = true;
+            break;
+          }
+          const { out } = cnnConv2d(cur, CNN_KERNELS[layer.preset].k, 1, "valid");
+          rf += 2 * jump; // (kernel 3 - 1) * jump
+          let feat = layer.relu ? cnnRelu(out) : out;
+          stages.push({
+            matrix: feat,
+            label: `C${i + 1}: ${CNN_KERNEL_LABELS[layer.preset]}${layer.relu ? " +ReLU" : ""} (${feat.length}×${feat[0]?.length || 0})`,
+          });
+          cur = feat;
+          if (layer.pool && cur.length >= 2 && cur[0].length >= 2) {
+            const pooled = cnnMaxPool2(cur);
+            rf += 1 * jump; // (pool 2 - 1) * jump
+            jump *= 2; // stride du pooling
+            stages.push({
+              matrix: pooled,
+              label: `↳ Max-pool 2×2 (${pooled.length}×${pooled[0].length})`,
+            });
+            cur = pooled;
+          }
+        }
+        const cell = 12;
+        let html = `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">`;
+        stages.forEach((s, i) => {
+          if (i > 0) html += `<div class="cnn-pipe-arrow">→</div>`;
+          html += `<div class="cnn-pipe-stage"><div class="stg-lbl">${s.label}</div>${cnnRenderMatrix(s.matrix, cell)}</div>`;
+        });
+        html += "</div>";
+        if (blocked) {
+          html += `<div style="margin-top:10px;color:var(--red);font-size:9px">❌ Carte de features trop petite pour ajouter une couche supplémentaire — augmentez la taille de l'image d'entrée ou retirez une couche.</div>`;
+        }
+        html += `<div style="margin-top:10px;font-size:9px;color:var(--dim)">Champ réceptif effectif après ${stages.length - 1} étape${stages.length - 1 > 1 ? "s" : ""} : chaque pixel de la dernière carte "voit" un patch de <b style="color:var(--a1)">${rf}×${rf}</b> pixels de l'image d'origine (${H}×${W}). C'est ainsi que la profondeur d'un CNN lui permet de capter des motifs de plus en plus larges.</div>`;
+        resEl.innerHTML = html;
+      }
+
+      // ════════════ 10quinquies. ENTRAÎNER UN NOYAU (descente de gradient) ════════════
+      // Un noyau cible (l'un des filtres classiques) sert de "vérité terrain" :
+      // il produit une carte de features de référence sur l'image d'entrée.
+      // Un second noyau, initialisé aléatoirement, apprend à reproduire cette
+      // carte par descente de gradient sur l'erreur quadratique moyenne (MSE) —
+      // exactement le mécanisme par lequel un vrai CNN apprend ses filtres.
+      const CNN_TRAIN = {
+        kernel: null,
+        target: null,
+        padded: null,
+        lr: 0.05,
+        iter: 0,
+        lossHist: [],
+        timer: null,
+      };
+      function cnnMSE(pred, target) {
+        let s = 0,
+          n = 0;
+        for (let y = 0; y < pred.length; y++)
+          for (let x = 0; x < pred[0].length; x++) {
+            const d = pred[y][x] - target[y][x];
+            s += d * d;
+            n++;
+          }
+        return n ? s / n : 0;
+      }
+      function cnnTrainGrad(padded, pred, target) {
+        const outH = pred.length,
+          outW = pred[0].length,
+          N = outH * outW;
+        const grad = [
+          [0, 0, 0],
+          [0, 0, 0],
+          [0, 0, 0],
+        ];
+        for (let oy = 0; oy < outH; oy++)
+          for (let ox = 0; ox < outW; ox++) {
+            const diff = pred[oy][ox] - target[oy][ox];
+            for (let ky = 0; ky < 3; ky++)
+              for (let kx = 0; kx < 3; kx++)
+                grad[ky][kx] += diff * padded[oy + ky][ox + kx];
+          }
+        const scale = N ? 2 / N : 0;
+        for (let ky = 0; ky < 3; ky++)
+          for (let kx = 0; kx < 3; kx++) grad[ky][kx] *= scale;
+        return grad;
+      }
+      function cnnLossSparkline(hist, w, h) {
+        if (hist.length < 2)
+          return `<svg width="${w}" height="${h}"></svg>`;
+        const mx = Math.max(...hist, 1e-6);
+        const pts = hist
+          .map((v, i) => {
+            const x = (i / (hist.length - 1)) * w;
+            const y = h - (v / mx) * (h - 4) - 2;
+            return x.toFixed(1) + "," + y.toFixed(1);
+          })
+          .join(" ");
+        return `<svg width="${w}" height="${h}"><polyline points="${pts}" style="fill:none;stroke:var(--a1);stroke-width:1.5"/></svg>`;
+      }
+      function cnnTrainSetup() {
+        cnnTrainStop();
+        if (!CNN.grid.length) {
+          CNN_TRAIN.kernel = null;
+          const b = document.getElementById("cnnTrainBody");
+          if (b)
+            b.innerHTML =
+              '<span style="font-size:9px;color:var(--red)">Dessinez d\'abord une image dans l\'onglet « Convolution ».</span>';
+          return;
+        }
+        const { padded } = cnnPadInput(CNN.grid, 3, 3, "same");
+        CNN_TRAIN.padded = padded;
+        const sel = document.getElementById("cnnTrainTarget");
+        const targetPreset = sel ? sel.value : "sobelx";
+        CNN_TRAIN.target = cnnConvRaw(padded, CNN_KERNELS[targetPreset].k, 1);
+        CNN_TRAIN.kernel = Array.from({ length: 3 }, () =>
+          Array.from({ length: 3 }, () => (Math.random() * 2 - 1) * 0.3),
+        );
+        const lrSel = document.getElementById("cnnTrainLr");
+        if (lrSel) CNN_TRAIN.lr = parseFloat(lrSel.value);
+        CNN_TRAIN.iter = 0;
+        CNN_TRAIN.lossHist = [];
+        cnnTrainRender();
+      }
+      function cnnTrainStep() {
+        if (!CNN_TRAIN.kernel) return 0;
+        const pred = cnnConvRaw(CNN_TRAIN.padded, CNN_TRAIN.kernel, 1);
+        const loss = cnnMSE(pred, CNN_TRAIN.target);
+        const grad = cnnTrainGrad(CNN_TRAIN.padded, pred, CNN_TRAIN.target);
+        for (let y = 0; y < 3; y++)
+          for (let x = 0; x < 3; x++)
+            CNN_TRAIN.kernel[y][x] -= CNN_TRAIN.lr * grad[y][x];
+        CNN_TRAIN.iter++;
+        CNN_TRAIN.lossHist.push(loss);
+        if (CNN_TRAIN.lossHist.length > 250) CNN_TRAIN.lossHist.shift();
+        return loss;
+      }
+      function cnnTrainRender() {
+        const el = document.getElementById("cnnTrainBody");
+        if (!el || !CNN_TRAIN.kernel) return;
+        const pred = cnnConvRaw(CNN_TRAIN.padded, CNN_TRAIN.kernel, 1);
+        const loss = CNN_TRAIN.lossHist.length
+          ? CNN_TRAIN.lossHist[CNN_TRAIN.lossHist.length - 1]
+          : cnnMSE(pred, CNN_TRAIN.target);
+        const cell = CNN.size <= 8 ? 20 : CNN.size <= 10 ? 16 : 13;
+        const kernelHtml = (k) => {
+          const mx = Math.max(0.001, ...k.flat().map(Math.abs));
+          let h = `<div class="cnn-grid" style="grid-template-columns:repeat(3,32px)">`;
+          for (let y = 0; y < 3; y++)
+            for (let x = 0; x < 3; x++) {
+              const v = k[y][x],
+                nv = v / mx;
+              const bg =
+                nv >= 0
+                  ? `rgb(0,${Math.floor(nv * 200)},${Math.floor(nv * 100)})`
+                  : `rgb(${Math.floor(-nv * 255)},0,${Math.floor(-nv * 80)})`;
+              h += `<div class="cnn-cell static" style="width:32px;height:20px;font-size:7px;background:${bg}">${v.toFixed(2)}</div>`;
+            }
+          h += "</div>";
+          return h;
+        };
+        let html = `<div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div class="cnn-train-col">
+            <h3>Noyau appris (itération ${CNN_TRAIN.iter})</h3>
+            ${kernelHtml(CNN_TRAIN.kernel)}
+            <h3 style="margin-top:8px">Carte produite</h3>
+            ${cnnRenderMatrix(pred, cell)}
+          </div>
+          <div class="cnn-train-col">
+            <h3>Noyau cible</h3>
+            ${kernelHtml(
+              CNN_KERNELS[document.getElementById("cnnTrainTarget")?.value || "sobelx"].k,
+            )}
+            <h3 style="margin-top:8px">Carte cible</h3>
+            ${cnnRenderMatrix(CNN_TRAIN.target, cell)}
+          </div>
+          <div class="cnn-train-col">
+            <h3>Perte (MSE)</h3>
+            <div class="cnn-loss-box">
+              ${cnnLossSparkline(CNN_TRAIN.lossHist, 200, 54)}
+              <div style="font-size:10px;color:var(--a1);margin-top:4px" data-no-translate>${loss.toFixed(5)}</div>
+            </div>
+          </div>
+        </div>`;
+        el.innerHTML = html;
+      }
+      function cnnTrainToggle() {
+        if (CNN_TRAIN.timer) {
+          cnnTrainStop();
+          return;
+        }
+        if (!CNN_TRAIN.kernel) cnnTrainSetup();
+        if (!CNN_TRAIN.kernel) return;
+        const btn = document.getElementById("cnnTrainBtn");
+        if (btn) btn.textContent = "⏹ Arrêter";
+        CNN_TRAIN.timer = setInterval(() => {
+          cnnTrainStep();
+          cnnTrainRender();
+          if (CNN_TRAIN.iter >= 300) cnnTrainStop();
+        }, 60);
+      }
+      function cnnTrainStop() {
+        if (CNN_TRAIN.timer) {
+          clearInterval(CNN_TRAIN.timer);
+          CNN_TRAIN.timer = null;
+        }
+        const btn = document.getElementById("cnnTrainBtn");
+        if (btn) btn.textContent = "▶ Entraîner";
+      }
+      function cnnTrainReset() {
+        cnnTrainSetup();
+      }
+
       // ════════════ 11. KEYBOARD SHORTCUTS ════════════
       document.addEventListener("keydown", (e) => {
         if (
@@ -12816,6 +13427,7 @@
           stopBoundaryLive();
           stopRace();
           cnnStopAnim();
+          cnnTrainStop();
         }
       });
 
