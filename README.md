@@ -380,7 +380,7 @@ See:
 
 ---
 
-# 🎯 Project Goals
+# .🎯 Project Goals
 
 Neural Lab was created with one idea:
 

@@ -25,6 +25,7 @@
         --a1: #00e5ff;
         --a2: #bf5fff;
         --grn: #00ff9d;
+        --flashy: #9DFF00;
         --ylw: #ffd600;
         --red: #ff3d5a;
         --org: #ff8c2a;
@@ -3124,6 +3125,20 @@
           display: none;
         } /* replaced by mobile-topbar */
       }
+
+      .version {
+        font-size: 9px;
+        color: var(--flashy);
+      }
+      .version a {
+        color: inherit;       /* le lien prend la couleur de .version */
+        text-decoration: none; /* optionnel */
+      }
+      .version a:hover {
+        text-decoration: underline; /* optionnel */
+      }
+
+
     </style>
   </head>
   <body>
@@ -3131,9 +3146,7 @@
     <div id="mobile-topbar">
       <h1>
         ⬡ NEURAL LAB
-        <span style="font-size: 9px; color: var(--dim)" data-no-translate
-          >v12
-        </span>
+        <span class="version" />
       </h1>
       <div class="epoch-pill">
         Epoch <span id="mob-epoch">0</span> · Loss <span id="mob-loss">—</span>
@@ -3153,7 +3166,7 @@
     <!-- ══════════════ LEFT ══════════════ -->
     <div id="left" class="mob-active">
       <div class="ph">
-        <h1>⬡ NEURAL LAB <span style="font-size:9px;color:var(--dim)" data-no-translate><a href="https://github.com/sudo-Luca/Neural-Lab" target="_blank" title="Dépôt GitHub">v12</a>
+        <h1>⬡ NEURAL LAB <span class="version" /></h1>
         <p>Simulateur pédagogique deep learning</p>
       </div>
       <div id="lscroll">
@@ -4890,7 +4903,7 @@
                   font-weight: 700;
                 "
               >
-                🎯 Objectif de loss
+                .🎯 Objectif de loss
               </div>
               <div style="display: flex; gap: 6px; align-items: center">
                 <input
@@ -5765,6 +5778,13 @@
     <div id="tip"></div>
 
     <script>
+
+      const VERSION = "v12";
+      const REPO = "https://github.com/sudo-Luca/Neural-Lab";
+      document.querySelectorAll('.version').forEach(el => {
+        el.innerHTML = `<a href="${REPO}" target="_blank" title="Dépôt GitHub" data-no-translate>${VERSION}</a>`;
+      });
+
       let NET = null,
         POS = [],
         LINES = [];
