@@ -2895,6 +2895,144 @@
         font-size: 10px;
         letter-spacing: 0.04em;
       }
+      /* ── diagramme de cellule ── */
+      .rnn-diagram-wrap {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+      }
+      .rnn-dbox {
+        fill: #0a0d1a;
+        stroke: var(--brd);
+        stroke-width: 1;
+      }
+      .rnn-dbox.x {
+        stroke: var(--a1);
+      }
+      .rnn-dbox.h {
+        stroke: var(--a2);
+      }
+      .rnn-dbox.cell {
+        fill: #12081f;
+        stroke: var(--ylw);
+        stroke-width: 1.4;
+      }
+      .rnn-dtext {
+        fill: var(--text);
+        font-size: 9px;
+        font-family: "JetBrains Mono", monospace;
+        text-anchor: middle;
+      }
+      .rnn-dtext.lbl {
+        fill: var(--dim);
+        font-size: 7px;
+        letter-spacing: 0.05em;
+      }
+      .rnn-flow-line {
+        fill: none;
+        stroke: var(--brd);
+        stroke-width: 1.6;
+        marker-end: url(#rnnArrow);
+        transition: stroke 0.2s;
+      }
+      .rnn-flow-line.active {
+        stroke: var(--ylw);
+        stroke-dasharray: 5 4;
+        animation: rnnFlowDash 0.6s linear infinite;
+      }
+      @keyframes rnnFlowDash {
+        to {
+          stroke-dashoffset: -18;
+        }
+      }
+      .rnn-loop-line {
+        fill: none;
+        stroke: var(--a2);
+        stroke-width: 1.2;
+        stroke-dasharray: 3 3;
+        marker-end: url(#rnnArrowDim);
+        opacity: 0.7;
+      }
+      /* ── swatch (mini heatmap d'un vecteur) ── */
+      .rnn-vecswatch {
+        display: inline-flex;
+        gap: 1px;
+        vertical-align: middle;
+      }
+      .rnn-vecswatch span {
+        width: 12px;
+        height: 12px;
+        border-radius: 1px;
+        display: inline-block;
+      }
+      /* ── heatmap temporelle (unités × pas de temps) ── */
+      .rnn-heatmap {
+        display: inline-block;
+        border-collapse: collapse;
+      }
+      .rnn-heatmap-row {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 2px;
+      }
+      .rnn-heatmap-cell {
+        width: 30px;
+        height: 18px;
+        border-radius: 2px;
+        font-size: 7px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .rnn-heatmap-lbl {
+        width: 30px;
+        font-size: 7px;
+        color: var(--dim);
+        text-align: center;
+        flex-shrink: 0;
+      }
+      /* ── chaîne de gradient (mémoire & gradients) ── */
+      .rnn-chain-wrap {
+        display: flex;
+        align-items: center;
+        overflow-x: auto;
+        padding: 10px 4px;
+      }
+      .rnn-chain-node {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 7px;
+        color: #fff;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .rnn-chain-arrow {
+        height: 2px;
+        flex-shrink: 0;
+        min-width: 14px;
+        border-radius: 1px;
+      }
+      /* ── heatmaps de poids (onglet Entraîner) ── */
+      .rnn-wmap {
+        display: inline-block;
+        line-height: 0;
+      }
+      .rnn-wmap-row {
+        display: flex;
+      }
+      .rnn-wmap-cell {
+        display: block;
+      }
       .racer {
         background: #030408;
         border: 1px solid var(--brd);
@@ -12164,6 +12302,32 @@
           <button class="btn" onclick="closeRNNLab()">✕</button>
         </div>
         <div id="rnn-body">
+          <svg width="0" height="0" style="position: absolute">
+            <defs>
+              <marker
+                id="rnnArrow"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0L10,5L0,10z" fill="var(--ylw)" />
+              </marker>
+              <marker
+                id="rnnArrowDim"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="5"
+                markerHeight="5"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0L10,5L0,10z" fill="var(--a2)" />
+              </marker>
+            </defs>
+          </svg>
           <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
             Expérimentez avec les réseaux de neurones récurrents : une
             cellule qui réutilise ses propres poids à chaque pas de temps,
@@ -12284,6 +12448,8 @@
               </div>
             </div>
 
+            <div id="rnnCellDiagram" class="rnn-diagram-wrap"></div>
+
             <div id="rnnCellGrid" style="margin-bottom: 10px"></div>
 
             <div class="btn-row" style="margin-bottom: 10px">
@@ -12351,6 +12517,7 @@
                 </button>
               </div>
             </div>
+            <div id="rnnSeqHeatmap" style="margin-bottom: 4px"></div>
             <div id="rnnSeqStrip" class="rnn-strip"></div>
             <div
               id="rnnSeqChart"
@@ -12403,6 +12570,7 @@
                 </div>
               </div>
             </div>
+            <div id="rnnGradChain"></div>
             <div id="rnnGradResult"></div>
             <div class="rnn-gate-box" style="margin-top: 10px">
               <b>Comment le LSTM/GRU limitent le problème :</b> au lieu d'un
@@ -14133,6 +14301,62 @@
           .join(" ");
         return `<svg width="${w}" height="${h}"><polyline points="${pts}" style="fill:none;stroke:${color};stroke-width:1.5"/></svg>`;
       }
+      function rnnVecSwatchHTML(vec, mx) {
+        return (
+          `<span class="rnn-vecswatch">` +
+          vec
+            .map(
+              (v) =>
+                `<span data-no-translate title="${v.toFixed(3)}" style="background:${rnnValColor(v, mx)}"></span>`,
+            )
+            .join("") +
+          `</span>`
+        );
+      }
+      // Diagramme SVG de la cellule : x(t) et h(t-1) qui entrent, h(t) qui sort,
+      // avec une boucle pointillée montrant la récurrence (poids partagés).
+      function rnnCellDiagramSVG() {
+        const { H, x, hPrev, h } = RNN_CELL;
+        const active = !!h;
+        const mxPrev = Math.max(0.001, ...hPrev.map(Math.abs));
+        const mxH = h ? Math.max(0.001, ...h.map(Math.abs)) : 1;
+        const sw = Math.min(12, Math.floor(56 / H));
+        function swatchRects(vec, mx, boxX, boxY) {
+          let s = "";
+          vec.forEach((v, i) => {
+            const sx = boxX + 4 + i * (sw + 2);
+            s += `<rect x="${sx}" y="${boxY + 16}" width="${sw}" height="10" rx="1" fill="${rnnValColor(v, mx)}"><title>${v.toFixed(3)}</title></rect>`;
+          });
+          return s;
+        }
+        const xColor = rnnValColor(x, 2);
+        let svg = `<svg viewBox="0 0 320 142" width="320" height="142">`;
+        svg += `<rect class="rnn-dbox h" x="8" y="50" width="72" height="34" rx="4"/>`;
+        svg += `<text class="rnn-dtext lbl" x="44" y="46">h(t−1)</text>`;
+        svg += swatchRects(hPrev, mxPrev, 8, 50);
+        svg += `<rect class="rnn-dbox x" x="8" y="98" width="72" height="28" rx="4"/>`;
+        svg += `<text class="rnn-dtext lbl" x="44" y="94">x(t)</text>`;
+        svg += `<text class="rnn-dtext" data-no-translate x="44" y="116" fill="${xColor}" font-size="10">${x.toFixed(2)}</text>`;
+        svg += `<rect class="rnn-dbox cell" x="128" y="55" width="84" height="52" rx="10"/>`;
+        svg += `<text class="rnn-dtext" x="170" y="78" fill="var(--ylw)" font-size="9">tanh(…)</text>`;
+        svg += `<text class="rnn-dtext lbl" x="170" y="92">Wx·x+Wh·h+b</text>`;
+        svg += `<rect class="rnn-dbox h" x="248" y="50" width="64" height="34" rx="4"/>`;
+        svg += `<text class="rnn-dtext lbl" x="280" y="46">h(t)</text>`;
+        if (h) svg += swatchRects(h, mxH, 248, 50);
+        else
+          svg += `<text class="rnn-dtext" x="280" y="72" fill="var(--dim)" font-size="9">?</text>`;
+        svg += `<path class="rnn-flow-line${active ? " active" : ""}" d="M80,67 L127,72"/>`;
+        svg += `<path class="rnn-flow-line${active ? " active" : ""}" d="M80,112 L127,90"/>`;
+        svg += `<path class="rnn-flow-line${active ? " active" : ""}" d="M212,78 L247,68"/>`;
+        svg += `<path class="rnn-loop-line" d="M280,84 C280,128 44,128 44,84"/>`;
+        svg += `<text class="rnn-dtext lbl" x="162" y="138">↺ pas suivant t → t+1 · mêmes poids (Wx, Wh, b) réutilisés</text>`;
+        svg += `</svg>`;
+        return svg;
+      }
+      function rnnCellUpdateDiagram() {
+        const el = document.getElementById("rnnCellDiagram");
+        if (el) el.innerHTML = rnnCellDiagramSVG();
+      }
 
       // ── ONGLETS ──
       let rnnActiveTab = "cell";
@@ -14201,6 +14425,7 @@
         RNN_CELL.x = parseFloat(v);
         const lbl = document.getElementById("rnnXVal");
         if (lbl) lbl.textContent = "x = " + RNN_CELL.x.toFixed(2);
+        rnnCellUpdateDiagram();
       }
       function rnnCellEditWx(i, v) {
         RNN_CELL.Wx[i] = parseFloat(v) || 0;
@@ -14271,6 +14496,7 @@
       function rnnCellRenderResults() {
         const el = document.getElementById("rnnCellResults");
         if (!el) return;
+        rnnCellUpdateDiagram();
         if (!RNN_CELL.h) {
           el.innerHTML =
             'Réglez les poids et cliquez sur « Calculer h(t) ».';
@@ -14358,8 +14584,44 @@
       function rnnSeqRunAndRender() {
         rnnSeqPopulateNeuronSelect();
         rnnSeqRun();
+        rnnSeqRenderHeatmap(-1);
         rnnSeqRenderStrip(-1);
         rnnSeqRenderChart();
+      }
+      // Heatmap classique RNN : une ligne par unité cachée, une colonne par pas de temps.
+      // C'est LA visualisation qui montre le mieux la mémoire qui persiste ou s'efface.
+      function rnnSeqRenderHeatmap(activeIdx) {
+        const el = document.getElementById("rnnSeqHeatmap");
+        if (!el) return;
+        const hist = RNN_SEQ.hist;
+        if (!hist.length) {
+          el.innerHTML = "";
+          return;
+        }
+        const H = RNN_CELL.H;
+        let allVals = [];
+        hist.forEach((s) => (allVals = allVals.concat(s.h.map(Math.abs))));
+        const mx = Math.max(0.001, ...allVals);
+        let html = `<div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Mémoire dans le temps (ligne = unité cachée, colonne = pas de temps)</div>`;
+        html += `<div class="rnn-heatmap">`;
+        // en-tête des pas de temps
+        html += `<div class="rnn-heatmap-row" style="margin-left:20px">`;
+        hist.forEach((s, idx) => {
+          html += `<div class="rnn-heatmap-lbl" style="${idx === activeIdx ? "color:var(--ylw);font-weight:700" : ""}" data-no-translate>t${s.t}</div>`;
+        });
+        html += `</div>`;
+        for (let i = 0; i < H; i++) {
+          html += `<div class="rnn-heatmap-row"><div class="rnn-heatmap-lbl" style="width:20px;text-align:left;color:var(--a2)" data-no-translate>h${i + 1}</div>`;
+          hist.forEach((s, idx) => {
+            const v = s.h[i] ?? 0;
+            const border =
+              idx === activeIdx ? "outline:1px solid var(--ylw)" : "";
+            html += `<div class="rnn-heatmap-cell" data-no-translate style="background:${rnnValColor(v, mx)};${border}" title="t=${s.t}, h${i + 1}=${v.toFixed(3)}">${v.toFixed(2)}</div>`;
+          });
+          html += `</div>`;
+        }
+        html += `</div>`;
+        el.innerHTML = html;
       }
       function rnnSeqRenderStrip(activeIdx) {
         const el = document.getElementById("rnnSeqStrip");
@@ -14401,6 +14663,7 @@
         const btn = document.getElementById("rnnSeqAnimBtn");
         if (btn) btn.textContent = "⏹ Arrêter";
         RNN_SEQ.timer = setInterval(() => {
+          rnnSeqRenderHeatmap(i);
           rnnSeqRenderStrip(i);
           rnnSeqRenderChart();
           i++;
@@ -14463,6 +14726,33 @@
           const hpx = Math.max(2, ((lg - minLog) / spanLog) * 70);
           bars += `<div style="display:inline-flex;flex-direction:column;justify-content:flex-end;align-items:center;width:${300 / vals.length - 1}px;height:70px;margin-right:1px" title="t=${i} : ${x.toExponential(2)}"><div style="width:100%;height:${hpx}px;background:${color};opacity:.8;border-radius:1px 1px 0 0"></div></div>`;
         });
+        // chaîne visuelle : le gradient qui remonte de h(T) vers le passé
+        const chainEl = document.getElementById("rnnGradChain");
+        if (chainEl) {
+          const N = Math.min(12, vals.length);
+          const logValsC = vals
+            .slice(0, N)
+            .map((x) => Math.log10(Math.max(x, 1e-12)));
+          const maxLogC = Math.max(...logValsC, 0.001);
+          const minLogC = Math.min(...logValsC, -0.001);
+          const spanC = maxLogC - minLogC || 1;
+          let chain = `<div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Le gradient remonte le temps : h(T) → h(T−${N - 1})</div>`;
+          chain += `<div class="rnn-chain-wrap">`;
+          for (let i = 0; i < N; i++) {
+            const norm = (logValsC[i] - minLogC) / spanC;
+            const op = (0.15 + norm * 0.85).toFixed(2);
+            chain += `<div class="rnn-chain-node" data-no-translate style="background:${color};opacity:${op}" title="t=T−${i} : ${vals[i].toExponential(2)}">${i === 0 ? "T" : "−" + i}</div>`;
+            if (i < N - 1) {
+              const nextNorm = (logValsC[i + 1] - minLogC) / spanC;
+              const avgNorm = (norm + nextNorm) / 2;
+              const width = (14 + avgNorm * 26).toFixed(0);
+              const aop = (0.2 + avgNorm * 0.8).toFixed(2);
+              chain += `<div class="rnn-chain-arrow" style="width:${width}px;background:${color};opacity:${aop}"></div>`;
+            }
+          }
+          chain += `</div>`;
+          chainEl.innerHTML = chain;
+        }
         resEl.innerHTML = `
           <div style="font-size:9px;color:var(--dim);margin-bottom:4px">|∂h(T)/∂h(1)| ≈ (w·s)^T — échelle logarithmique, T de 0 à ${T}</div>
           <div style="display:flex;align-items:flex-end;height:70px;margin-bottom:8px">${bars}</div>
@@ -14647,12 +14937,13 @@
       }
       function rnnTrainSample(seedChar, length, temp) {
         const T = RNN_TRAIN;
-        if (!T.Wxh) return "";
+        if (!T.Wxh) return { text: "", confs: [] };
         const { vocab, stoi, itos, H } = T;
         const V = vocab.length;
         let h = Array(H).fill(0);
         let idx = stoi[seedChar] != null ? stoi[seedChar] : 0;
         let out = itos[idx];
+        const confs = [1];
         for (let t = 0; t < length; t++) {
           const x = Array(V).fill(0);
           x[idx] = 1;
@@ -14686,20 +14977,54 @@
           }
           idx = chosen;
           out += itos[idx];
+          confs.push(p[chosen]);
         }
-        return out;
+        return { text: out, confs };
       }
       function rnnTrainGenerate() {
         const T = RNN_TRAIN;
         if (!T.Wxh) return;
-        T.generated = rnnTrainSample(T.text[0], 40, 0.6);
+        const res = rnnTrainSample(T.text[0], 40, 0.6);
+        T.generated = res.text;
+        T.generatedConfs = res.confs;
         rnnTrainRender();
+      }
+      // Heatmap compacte pour visualiser une matrice de poids (mise à jour en direct pendant l'entraînement)
+      function rnnWeightHeatmapHTML(mat, cellPx) {
+        cellPx = Math.max(3, cellPx || 6);
+        let mx = 0.001;
+        mat.forEach((row) =>
+          row.forEach((v) => {
+            if (Math.abs(v) > mx) mx = Math.abs(v);
+          }),
+        );
+        let html = `<div class="rnn-wmap">`;
+        mat.forEach((row) => {
+          html += `<div class="rnn-wmap-row">`;
+          row.forEach((v) => {
+            html += `<span class="rnn-wmap-cell" title="${v.toFixed(3)}" style="width:${cellPx}px;height:${cellPx}px;background:${rnnValColor(v, mx)}"></span>`;
+          });
+          html += `</div>`;
+        });
+        html += `</div>`;
+        return html;
       }
       function rnnTrainRender() {
         const el = document.getElementById("rnnTrainBody");
         if (!el || !RNN_TRAIN.Wxh) return;
         const T = RNN_TRAIN;
         const loss = T.smoothLoss == null ? 0 : T.smoothLoss;
+        let genHTML = "—";
+        if (T.generated) {
+          genHTML = T.generated
+            .split("")
+            .map((c, i) => {
+              const conf = (T.generatedConfs && T.generatedConfs[i]) ?? 1;
+              const col = `hsl(${Math.round(conf * 120)},75%,55%)`;
+              return `<span data-no-translate title="confiance ${(conf * 100).toFixed(0)}%" style="color:${col}">${c === " " ? "␣" : c}</span>`;
+            })
+            .join("");
+        }
         let html = `<div style="display:flex;gap:16px;flex-wrap:wrap">
           <div class="cnn-train-col">
             <h3>Vocabulaire (${T.vocab.length} caractères)</h3>
@@ -14717,9 +15042,16 @@
           <div class="cnn-train-col">
             <h3>Génération (échantillonnage depuis « ${T.text[0]} »)</h3>
             <div class="cnn-loss-box" style="min-height:54px">
-              <div style="font-size:11px;color:var(--grn);word-break:break-all" data-no-translate>${T.generated || "—"}</div>
+              <div style="font-size:11px;word-break:break-all;line-height:1.6">${genHTML}</div>
             </div>
+            <div style="font-size:7px;color:var(--dim);margin-top:3px">🟢 confiance haute · 🔴 confiance basse</div>
             <button class="btn" style="margin-top:6px;width:100%" onclick="rnnTrainGenerate()">✎ Générer un échantillon</button>
+          </div>
+          <div class="cnn-train-col">
+            <h3>Poids Whh (récurrent, ${T.H}×${T.H})</h3>
+            <div class="cnn-loss-box" style="max-height:100px;overflow:auto">${rnnWeightHeatmapHTML(T.Whh, Math.floor(90 / T.H))}</div>
+            <h3 style="margin-top:6px">Poids Wxh (entrée, ${T.H}×${T.vocab.length})</h3>
+            <div class="cnn-loss-box" style="max-height:100px;overflow:auto">${rnnWeightHeatmapHTML(T.Wxh, Math.floor(120 / T.vocab.length))}</div>
           </div>
         </div>`;
         el.innerHTML = html;
