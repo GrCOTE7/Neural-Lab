@@ -20,23 +20,32 @@ Neural Lab v12 is an interactive browser-based tool for visualising, training, a
 10. [Visualisation & Canvas Rendering](#visualisation--canvas-rendering)
 11. [Dataset Management](#dataset-management)
 12. [Right-Panel Tabs & Inspection Tools](#right-panel-tabs--inspection-tools)
-13. [v12 Extension Features](#v12-extension-features)
-14. [UI Utility Functions](#ui-utility-functions)
-15. [Keyboard Shortcuts](#keyboard-shortcuts)
-16. [Mobile Support](#mobile-support)
-17. [Local Dev](#local-dev)
+13. [Manual Calculation Mode (« Manuel »)](#manual-calculation-mode--manuel-)
+14. [v12 Extension Features](#v12-extension-features)
+15. [CNN Lab (Convolutional Networks)](#cnn-lab-convolutional-networks)
+16. [RNN Lab (Recurrent Networks)](#rnn-lab-recurrent-networks)
+17. [Code & Data Export](#code--data-export)
+18. [Automatic FR → EN Translation Layer](#automatic-fr--en-translation-layer)
+19. [UI Utility Functions](#ui-utility-functions)
+20. [Keyboard Shortcuts](#keyboard-shortcuts)
+21. [Mobile Support](#mobile-support)
+22. [Local Dev](#local-dev)
 
 ---
 
 ## Overview
 
-Neural Lab v12 is structured as a **single HTML document** (~6000 lines) combining:
+Neural Lab v12 is structured as a **single HTML document** (~18,060 lines) combining:
 
-- **HTML** — three resizable panels (left config, centre canvas, right details) plus several modal dialogs.
-- **CSS** — a custom dark-mode design system using CSS variables for a consistent colour palette.
-- **Vanilla JavaScript** — all neural network logic, rendering, and interactivity, split across two `<script>` blocks: the main core (lines ~1764–5123) and the v12 extension block (lines ~5239–6016).
+- **HTML** — three resizable panels (left config, centre canvas, right details) plus several modal dialogs (CNN Lab, RNN Lab, Save/Load slots, node/line detail popovers).
+- **CSS** — a custom dark-mode design system using CSS variables for a consistent colour palette, with several selectable colour themes.
+- **Vanilla JavaScript** — all neural network logic, rendering, and interactivity, split across **four inline `<script>` blocks**:
+  1. **Main core** (≈ lines 6338–12055) — architecture, activations, losses, optimisers, training loop, canvas rendering, dataset tools, formula library, manual-calculation mode, code export.
+  2. **Mobile helpers** (≈ lines 12056–13503) — mobile navigation and stat-bar sync.
+  3. **v12 extension block** (≈ lines 13504–17628) — decision boundary, optimiser race, mutation, save/load, LR scheduler, gradient/layer/benchmark tools, effects (Matrix rain, sound, confetti, data flow, heatmap), **CNN Lab**, and **RNN Lab**.
+  4. **Translation layer** (≈ lines 17630–18060) — automatic FR ↔ EN interface translation.
 
-There are no external JavaScript dependencies except the **KaTeX** library (loaded via CDN) for rendering mathematical notation in the formula library.
+There are no bundled external JavaScript dependencies except the **KaTeX** library (loaded via CDN) for rendering mathematical notation in the formula library. The automatic translation layer additionally calls a public translation API (Google Translate's unofficial endpoint, with a MyMemory fallback) over the network at runtime — it is not a bundled dependency and only activates when the user enables translation.
 
 ### Key capabilities
 
@@ -49,9 +58,15 @@ There are no external JavaScript dependencies except the **KaTeX** library (load
 | Weight init | Xavier/Glorot, He/Kaiming, Uniform, Normal, Small |
 | LR schedulers | Cosine annealing, Step decay, Exponential decay, Warmup-Cosine |
 | Training modes | Single step, single epoch, N epochs, auto-run, train-to-target |
-| Inspection | Step-by-step log, gradient analysis, layer inspector, weight heatmap, zoomed loss chart |
-| Export | PNG canvas, clipboard copy, LaTeX log, Markdown log, JSON model |
-| v12 extras | Decision boundary visualiser, optimiser race, network mutation, confetti, Matrix rain, data flow animation, sound feedback, save/load slots |
+| Regularisation | L2 weight decay, global gradient-norm clipping, dropout (config), per-100-epoch LR decay |
+| Interactivity | Ctrl+click a neuron to pin its activation, Shift+click a neuron/weight to freeze it, Alt+click to force a pattern (0 / 1 / sine / random) |
+| Inspection | Step-by-step log, gradient analysis, layer inspector, weight heatmap, zoomed loss chart, node/connection detail popovers |
+| Export | PNG canvas, clipboard copy, LaTeX log, Markdown log, JSON model, save/load slots, **Python / JavaScript code generation**, dataset JSON import/export |
+| v12 extras | Decision boundary visualiser, optimiser race, network mutation, confetti, Matrix rain, data flow animation, sound feedback, save/load slots, colour themes |
+| Manual mode | Step-by-step "do the math yourself" quiz (forward pass, loss, deltas, weight updates) checked against the real engine |
+| CNN Lab | Standalone convolution playground, kernel gallery, multi-layer pipeline visualiser, kernel training, and an image-classifier modal |
+| RNN Lab | Standalone recurrent-cell step-through, sequence unrolling, vanishing/exploding-gradient (BPTT) demo, and a trainable character-level RNN |
+| Localisation | One-click automatic FR → EN interface translation (external API, DOM-based) |
 
 ---
 
@@ -64,14 +79,19 @@ The UI is divided into three resizable panels separated by drag handles (`.rsz-c
 │  LEFT PANEL  │     CENTER — Canvas        │   RIGHT PANEL     │
 │  (260 px)    │   Neural network diagram   │   (370 px)        │
 │              │                            │                   │
-│  Architecture│                            │  Test / Log       │
-│  Training    │                            │  Tabs:            │
+│  Architecture│                            │  Tabs (8):        │
+│  Training    │                            │  - Détails        │
 │  Display     │                            │  - Test           │
-│              ├────────────────────────────┤  - Formula lib    │
-│              │   LOG PANEL (190 px)       │  - Tools          │
-│              │   Structured backprop log  │  - Settings       │
+│              ├────────────────────────────┤  - Dataset        │
+│              │   LOG PANEL (190 px)       │  - Formules       │
+│              │   Structured backprop log  │  - Options        │
+│              │                            │  - Guide           │
+│              │                            │  - Manuel          │
+│              │                            │  - Outils          │
 └──────────────┴────────────────────────────┴───────────────────┘
 ```
+
+Two modal overlays sit above this layout and can be opened from the **Outils** tab: the **CNN Lab** and the **RNN Lab**, each a self-contained multi-tab workspace (see their respective sections below).
 
 On viewports ≤ 900 px the layout switches to a **mobile mode**: a fixed top bar, a bottom navigation bar, and each panel occupies the full screen as a switchable tab.
 
@@ -269,18 +289,25 @@ Runs a complete **forward + backward + weight update** cycle for a single traini
 
 **Returns:** the loss for this sample.
 
-**Optimiser update rules (applied per weight `w`):**
+**Optimiser update rules (implemented in `updateParam`, applied per weight `w`):**
 
 | Optimiser | Update rule |
 |---|---|
 | `sgd` | `w ← w − lr · g` |
-| `momentum` | `v ← 0.9·v + lr·g`, then `w ← w − v` |
-| `nag` | Nesterov: look-ahead step before gradient computation |
-| `rmsprop` | `E ← 0.9·E + 0.1·g²`, then `w ← w − lr·g / √(E+ε)` |
-| `adam` | `m ← β₁·m + (1−β₁)·g`, `v ← β₂·v + (1−β₂)·g²`, bias-corrected update |
-| `adamw` | Adam + L2 weight decay: `w ← w·(1−lr·λ)` before update |
+| `momentum` | `w ← w − (mom·v + lr·g)` |
+| `nag` | same rule as momentum (look-ahead handled via the stored velocity) |
+| `rmsprop` | `vₙ ← β₂·v + (1−β₂)·g²`, then `w ← w − lr·g / (√vₙ+ε)` |
+| `adam` | bias-corrected `m`/`v` (`β₁`, `β₂`), `w ← w − lr·m̂/(√v̂+ε)` |
+| `adamw` | Adam update **plus** a decoupled weight-decay term `w ← w − lr·0.01·w` |
 
-If `verbose` mode is active (the "Complet" log tab is shown), this function also generates the detailed step-by-step HTML log covering all four phases: Forward Pass, Loss, Backpropagation, and Weight Update.
+**Regularisation applied inside `applyGrad()` before the update loop:**
+
+- **L2 weight decay** — if the "L2" hyper-parameter (`cL2`) is > 0, it is added directly to each weight's gradient: `g = dj·activation + l2·w`.
+- **Global gradient-norm clipping** — if the "Grad Clip" hyper-parameter (`cGC`) is > 0, the L2 norm of all delta values is computed and, if it exceeds the threshold, every delta is rescaled by `threshold / norm` before weights are updated.
+- **Learning-rate decay** — the effective learning rate is `lr · lrDecay^⌊epoch/100⌋`, i.e. the configured "LR Decay" factor (`cLRD`) is applied automatically every 100 epochs.
+- **Weight / node freezing** — before updating a weight `NET.W[l][j][k]`, `applyGrad` checks `NET.frozenWeights["l-j-k"]`; before updating a bias, it checks `NET.frozenNodes["(l+1)-j"]`. Frozen parameters are skipped entirely (no gradient applied). Weights and neurons are frozen/unfrozen interactively by **Shift+clicking** them on the canvas (see [UI Utility Functions](#ui-utility-functions)).
+
+If `verbose` mode is active (the "Complet" log tab is shown), `trainSample` also generates the detailed step-by-step HTML log covering all four phases: Forward Pass, Loss, Backpropagation, and Weight Update (`logFull`).
 
 ---
 
@@ -293,11 +320,15 @@ The optimiser state is stored globally:
 - `MV.w[l][j][k]` / `MV.b[l][j]` — second moment (Adam/RMSProp/AdamW)
 - `ADAM_T` — global step counter for Adam bias correction
 
-Hyperparameters are hard-coded as conventional defaults:
-- Momentum β = 0.9
-- RMSProp β = 0.9
-- Adam β₁ = 0.9, β₂ = 0.999, ε = 1e-8
-- AdamW λ (weight decay) = 0.01
+Hyperparameters default to conventional values but are all user-editable in the **Options** tab's "Algorithme avancé" section:
+- Momentum β = 0.9 (`cMom`)
+- RMSProp β = 0.9 (shares `cMom`)
+- Adam β₁ = 0.9 (`cB1`), β₂ = 0.999 (`cB2`), ε = 10^`cEps` (default exponent −8)
+- AdamW λ (weight decay) = 0.01 (fixed)
+- L2 weight decay coefficient (`cL2`, default 0)
+- Global gradient-clip threshold (`cGC`, default 0 = disabled)
+- Learning-rate decay factor applied every 100 epochs (`cLRD`, default 1 = disabled)
+- Dropout rate and Huber-loss delta are also configurable here (`cDrop`, `cHuber`)
 
 ---
 
@@ -416,7 +447,7 @@ Removes the dataset row at index `i` from both the editor and `DS`.
 
 ## Right-Panel Tabs & Inspection Tools
 
-The right panel uses a tab system (`#tabs`) with four tabs: **Test**, **Formules**, **Outils**, **Settings**.
+The right panel uses a tab system (`#tabs`) with **eight tabs**: **Détails**, **Test**, **Dataset**, **Formules**, **Options**, **Guide**, **Manuel**, **Outils**. The **Détails** tab is the default view and hosts the node/connection detail popovers described under [Canvas interaction](#ui-utility-functions); the **Manuel** tab is a full pedagogical quiz mode covered in its own section below.
 
 ### Test tab
 
@@ -455,14 +486,20 @@ Returns the filtered subset of `FLIB` matching the current tag and text search.
 #### `renderFTree(list) → void`
 Renders the formula tree as nested collapsible categories and subcategories. Each entry is rendered as a card with its equation, description, pros/cons, and a small activation curve graph if applicable.
 
-#### `showFormula(id) → void`
-Expands the detail view for a specific formula from `FLIB`. Renders mathematical notation via `renderMathEq`, shows a symbol legend from `getFormulaSymbols`, and draws an activation curve in a mini canvas via `drawFGraph`.
+#### `showFDetail(id) → void`
+Expands the detail view for a specific formula from `FLIB` (function name is `showFDetail`, not `showFormula`). Renders mathematical notation via `renderEqAuto`, shows a symbol legend from `getFormulaSymbols`, and draws an activation curve in a mini canvas via `drawFGraph`.
+
+#### `renderEqAuto(eq) → string`
+The primary equation renderer. If a KaTeX-compatible LaTeX source is available for the formula (looked up in the `FLIB_TEX` dictionary) **and** the KaTeX library has loaded, it renders true typeset math via `katex.renderToString`. Otherwise it falls back to `renderMathEq(eq)`.
 
 #### `renderMathEq(eq) → string`
-Converts a plain-text mathematical expression into styled HTML using `<span>` elements. Handles:
+Fallback converter from a plain-text mathematical expression into styled HTML using `<span>` elements (used when KaTeX/`FLIB_TEX` isn't available for a given formula). Handles:
 - Fractions `A/B` using `.math-frac` layout.
 - Large sigma `Σ` with `.math-sigma` styling.
 - Colour coding for `lr`, Greek letters, `ŷ`, `←`/`→` symbols.
+
+#### `togFCat(id) / togFSub(id) → void`
+Expand/collapse a top-level category or a subcategory in the formula tree rendered by `renderFTree`.
 
 #### `drawFGraph(domId, fnId) → void`
 Draws the activation curve for function `fnId` into a canvas element at `fgcvs_<domId>`. Plots values over z ∈ [−4, +4] using the `act()` function.
@@ -496,9 +533,46 @@ Renders a zoomed loss chart in `#zoomedLossChart` showing the last `n` epochs (c
 #### `runBenchmark() → void` (v12 §15)
 Measures training throughput by running 500 consecutive forward + backward passes and reporting samples/second, total time, and milliseconds per sample.
 
-### Settings tab
+The Outils tab also hosts the UI entry points for several other features documented in their own sections below: the **📈 LR Scheduler** controls, the **🏁 Competition Mode** (optimiser race) launcher, the **✨ Effects & Sound** toggles (Matrix rain, sound, data flow, confetti), **🧪 Data Perturbation**, **📷 Export image** (PNG / clipboard), **🗓 Weight Heatmap**, and — as full standalone modal workspaces — the **CNN Lab** and **RNN Lab** launch buttons (`openCNNLab()`, `openRNNLab()`; see their dedicated sections below).
 
-The Settings tab contains visual customisation controls (neuron radius, font size, line width, colours, grid mode, curve/arrow toggles) and canvas appearance controls. Changes take effect immediately via `redraw()`.
+### Dataset tab
+
+A dedicated tab (separate from the left-panel dataset preview) for full dataset editing and I/O:
+
+- Rebuilds/refreshes the row-by-row dataset editor via `rebuildDSEditor()`.
+- `applyDS()` — validates and commits the editor's rows back into the live `DS` array, then rebuilds the network's input/output layer sizes if needed.
+- `renderDSPreview()` — renders a compact read-only preview table of the current dataset.
+- `exportDSJSON() → void` — downloads the current dataset as a `.json` file.
+- `importDSJSON(input) → void` — reads a JSON file from a file input and replaces the current dataset.
+
+### Guide tab
+
+A static, in-app reference tab (no computation) with written explanations of the interface, workflow tips, and a summary of keyboard shortcuts — a quick-start help page for new users.
+
+### Options tab (formerly "Settings")
+
+Beyond the visual customisation controls (neuron radius, font size, line width, colours, grid mode, curve/arrow toggles — all applied immediately via `redraw()`), the Options tab is organised into sections:
+
+- **Langue** — the FR → EN auto-translation toggle (see [Automatic FR → EN Translation Layer](#automatic-fr--en-translation-layer)).
+- **Thème & Couleurs** — colour theme presets, applied via `applyTheme(name)` (see [v12 Extension Features](#v12-extension-features)).
+- **Géométrie** — canvas geometry controls (neuron radius, spacing, line width, curve style).
+- **Effets visuels** — toggles for animation/visual effects on the canvas.
+- **Algorithme avancé** — the regularisation/optimiser hyper-parameters described in [Optimiser Engine](#optimiser-engine): weight-init method, momentum, Adam β₁/β₂/ε, L2 coefficient, dropout rate, Huber delta, gradient-clip threshold, and per-100-epoch LR decay factor.
+- **Sauvegarde/Export** — shortcuts into the JSON dataset import/export, network save/load, and code-export features.
+
+---
+
+## Manual Calculation Mode (« Manuel »)
+
+The **Manuel** tab turns the tool into a self-quiz: instead of watching the engine compute a forward/backward pass, the user does the arithmetic by hand and the app checks the answer against the real engine's numbers (tolerance ±0.001).
+
+- `manPopulateSamples() → void` — fills the sample selector with every dataset row (`Exemple i: X=[…] → Y=[…]`), called whenever the Manuel tab is opened or the dataset changes.
+- `manLoadSample() → void` — runs a real `forward()` + `backward()` pass on the selected sample (stored in `MAN_SAMPLE`), displays `X`/`Y`, shows the current loss function's formula, and builds three sets of blank input fields via `manBuildFwdFields()`, `manBuildDeltaFields()`, and `manBuildUpdFields()` — one numeric input per neuron/weight the user must fill in (weighted sum `z`, activation `a`, loss, error term `δ`, and updated weight value). It also writes the fully-worked solution to the main log via `logManualFull()` for later comparison.
+- `manCheckFwd() → void` — compares the user's entered `z`/`a` values for every neuron against the real `forward()` output, marking each with ✓/✗ and a green "Parfait !" banner if everything matches.
+- `manCheckLoss() → void` — compares the user's entered loss value against `computeLoss()`.
+- `manCheckDeltas() → void` — compares the user's entered error terms (`δ`) against the real `backward()` output, layer by layer.
+- `manCheckUpdates() → void` — compares the user's entered post-update weight values against what `applyGrad()`/`updateParam()` would actually produce for the current optimiser.
+- `manRevealAll() → void` — fills every field with the correct reference value, for users who want to see the worked solution instead of self-checking.
 
 ---
 
@@ -519,12 +593,13 @@ Renders a 2-D classification boundary in a modal canvas (`#boundary-cvs`). Sweep
 Randomly perturbs 40% of weights and 30% of biases by ±`str` (from `mutStr` input). If `evalAfter` is true, evaluates the new loss; if the loss has worsened by more than 50%, the mutation is reverted using a backup. Plays a visual animation on the canvas.
 
 ### 4. Save / Load — localStorage-backed model persistence
-Five named slots stored in `localStorage` under key `neurallab_v12_saves`.
+A fixed number of named slots (`NUM_SLOTS`) stored in `localStorage` under a save key. Opened from the Outils tab via `showSaveLoad()`, which shows the **Save/Load modal** and calls `renderSaveSlots()` to list each slot's architecture summary, timestamp, and last loss (or an empty-slot placeholder with a 💾 save button).
 
-- `saveToSlot(slot) → void` — serialises `NET.W`, `NET.B`, `NET.L`, `EPOCH`, last 50 loss values, and `LAYER_ACTS` to JSON and stores them.
-- `loadSlot(slot) → void` — restores a network from a slot and redraws.
+- `saveToSlot(slot) → void` — serialises `NET.W`, `NET.B`, `NET.L`, `EPOCH`, the last 50 loss values, and `LAYER_ACTS` to JSON and stores them in the given slot.
+- `saveNet() → void` — quick-save shortcut that finds the first empty slot (or overwrites slot 0 if all are full) and calls `saveToSlot`.
+- `loadSlot(slot) → void` — restores a network from a slot, redraws, and refreshes the stats bar.
 - `deleteSlot(slot) → void` — clears a specific slot.
-- `exportNetJSON() → void` — downloads the full network as a `.json` file.
+- `exportNetJSON() → void` — downloads the full network (layers, weights, biases, epoch, layer activations, optimiser) as a `.json` file.
 - `importNetJSON(input) → void` — reads a JSON file from a file input and restores the network.
 
 ### 5. LR Scheduler — `applyScheduler() → void`
@@ -584,6 +659,89 @@ A per-layer network configuration modal. Each layer row has independent controls
 
 ---
 
+## CNN Lab (Convolutional Networks)
+
+Opened from the Outils tab via `openCNNLab()`, the **CNN Lab** is a self-contained modal workspace (its own state object `CNN`, independent of the main MLP `NET`) dedicated to convolutional-network concepts. It has 5 sub-tabs, switched with `cnnShowTab(name)`.
+
+### Conv — convolution playground
+An interactive single-kernel convolution demo on a drawable `n×n` grid:
+- `cnnSetGridSize(n)` / `cnnRenderInputGrid()` / `cnnToggleCell(y, x)` — resize and draw a black/white pixel grid by clicking cells.
+- `cnnPreset(name)` — loads a built-in kernel preset from `CNN_KERNELS`: **Identity, Blur, Sharpen, Sobel X, Sobel Y** (each with a short French explanation of what the kernel detects).
+- `cnnKernelPresetChange()` / `cnnRenderKernelGrid()` / `cnnKernelEdit(y, x, val)` — display and hand-edit the 3×3 kernel values.
+- `cnnPadInput(input, kH, kW, pad)` — zero-pads the input matrix.
+- `cnnConvRaw(padded, kernel, stride)` / `cnnConv2d(input, kernel, stride, pad)` — the raw convolution math (sliding-window dot product).
+- `cnnRelu(m)` — applies ReLU element-wise to a matrix.
+- `cnnMaxPool2(m)` / `cnnAvgPool2(m)` — 2×2 max/average pooling.
+- `cnnCompute()` — runs the full pipeline (convolution → optional ReLU → optional pooling) and renders each stage matrix via `cnnRenderMatrix(m, cellSize)` with a colour legend (`cnnColorLegend`).
+- `cnnRenderProgressiveMatrix(m, useRelu, cell)`, `cnnToggleAnim()` / `cnnStopAnim()` — an animated "sliding kernel window" visualisation that steps the convolution across the input one position at a time.
+
+### Gallery — kernel gallery
+`cnnGalleryRender()` renders every preset kernel from `CNN_KERNELS` applied to a sample image side-by-side, so the effect of each classic kernel (blur, sharpen, edge detectors, …) can be compared at a glance.
+
+### Pipe — multi-layer pipeline
+Lets the user chain several conv/pool/ReLU layers and see the shrinking feature-map sizes end-to-end:
+- `cnnPipeInitDefault()`, `cnnPipeAddLayer()`, `cnnPipeRemoveLayer(i)`, `cnnPipeUpdateLayer(i, field, val)` — build/edit an ordered list of pipeline layers (kernel choice, pooling, stride).
+- `cnnPipeRender()` — draws the layer chain.
+- `cnnPipeCompute()` — executes the full pipeline on the current input grid, showing every intermediate feature map.
+
+### Train — kernel training (gradient descent on a single kernel)
+A minimal supervised-learning demo where a 3×3 kernel is learned from scratch:
+- `cnnMSE(pred, target)` — mean-squared error between the conv output and a target feature map.
+- `cnnTrainGrad(padded, pred, target)` — computes the gradient of the MSE loss with respect to every kernel weight (correlation between the input and the output error) and updates the kernel.
+- `cnnLossSparkline(hist, w, h, color)` — draws a small loss-history sparkline.
+- `cnnTrainSetup()`, `cnnTrainStep()`, `cnnTrainRender()`, `cnnTrainToggle()` (auto-run), `cnnTrainStop()`, `cnnTrainReset()` — the training-loop controls, mirroring the main app's step/auto/reset pattern but scoped to a single kernel.
+
+### Model — end-to-end image classifier
+A genuine (small) trainable CNN, independent of the main `NET`/`applyGrad` engine, for classifying hand-drawn grid images into user-defined classes:
+- **Dataset sub-tab**: `cnnModelRenderClasses()`, `cnnModelAddClass()`, `cnnModelRemoveClass(i)` manage class labels with colour swatches (`cnnModelClassColor(i)`); `cnnModelSetSize(n)`/`cnnModelResizeGrid()` control image resolution; `cnnModelRenderDraftGrid()`/`cnnModelToggleDraftCell(y,x)`/`cnnModelDraftPreset(name)` draw a sample by hand (or import the current Conv-tab grid via `cnnModelImportFromConv()`); `cnnModelAugment(grid)` generates augmented variants (flips/shifts/noise) when adding a sample with `cnnModelAddSample(withVariations)`; `cnnModelDeleteSample(idx)`/`cnnModelClearDataset()` manage the sample list; `cnnModelRenderDsStats()`/`cnnModelRenderDatasetGrid()` show dataset statistics and thumbnails; `cnnModelGenerateDemo()` auto-generates a demo dataset; `cnnModelExportJSON()`/`cnnModelImportJSON()` save/load the dataset.
+- **Model sub-tab**: `cnnModelBuild()` constructs the network from configurable conv blocks (`cnnModelShape`, `cnnModelConfigChanged`) — each block is a conv layer + activation + optional max-pool, computed via `cnnModelBlockForward`/`cnnModelMaxPool2WithArgmax` — followed by a flatten and dense classification head; `cnnModelResetWeights()` reinitialises; `cnnModelRenderArch()` draws an architecture diagram.
+- **Forward/backward engine**: `cnnModelForward(grid)` runs the image through every conv block and the dense head to produce class probabilities; `cnnModelBackward(cache, labelIdx)` performs full backpropagation through the dense layer, unpooling (using stored max-pool argmax indices), and every convolution to compute gradients for every kernel/weight; `cnnModelApplyGrad(grads, lr)` applies the SGD update.
+- **Run sub-tab**: `cnnModelEpoch()` / `cnnModelEpochs(n)` run one or several training epochs over the dataset; `cnnModelTrainToggle()` (auto-run) / `cnnModelTrainStop()` control continuous training; `cnnModelRenderTrain()` plots the training loss/accuracy curve.
+- **Test sub-tab**: `cnnModelRenderTestGrid()`/`cnnModelToggleTestCell(y,x)`/`cnnModelTestPreset(name)`/`cnnModelTestImportFromConv()` let the user draw or import a test image; `cnnModelPredict()` runs inference and shows the predicted class with per-class confidence; `cnnModelTestAll()` evaluates the whole dataset and reports overall accuracy.
+
+---
+
+## RNN Lab (Recurrent Networks)
+
+Opened from the Outils tab via `openRNNLab()`, the **RNN Lab** is a second self-contained modal workspace dedicated to recurrent networks, with 4 sub-tabs (function names use the `rnn` prefix).
+
+### Cellule — single recurrent-cell step
+Visualises one RNN cell's computation, `h_t = tanh(W_x·x_t + W_h·h_{t-1} + b)`, for a single time step: input, previous hidden state, weight matrices, and the resulting new hidden state are all shown numerically and graphically, so the user can see exactly how memory (`h_{t-1}`) blends with new input at each step.
+
+### Déroulement — sequence unrolling
+Feeds a full input sequence through the same recurrent cell step-by-step ("unrolling" the recurrence in time), rendering each time step's hidden state side-by-side so the propagation of information across the sequence is visible.
+
+### Mémoire & gradients — vanishing/exploding gradients (BPTT)
+A dedicated demonstrator for the central RNN training challenge: it runs backpropagation-through-time (BPTT) over a configurable sequence length and plots how the gradient magnitude shrinks (vanishes) or grows (explodes) as it is propagated backward through many time steps — with an explanation of how gating mechanisms (LSTM/GRU) mitigate the problem.
+
+### Entraîner — trainable character-level RNN
+A genuine mini character-level recurrent language model, trained end-to-end with BPTT, with its own **Dataset**, **Modèle**, **Run**, and **Test** sub-tabs (mirroring the CNN Lab's Model tab structure): the user supplies or generates a short text corpus, configures the hidden-state size and sequence length, trains the RNN to predict the next character, and can then sample generated text from the trained model or test it on custom prefixes.
+
+---
+
+## Code & Data Export
+
+Beyond PNG/clipboard/LaTeX/Markdown log export and the save-slot JSON export already covered above, two further export paths exist:
+
+### `exportCode(lang) → void`
+Generates a complete, runnable standalone implementation of the **current network** (architecture, weights, biases, activation functions) in either **Python** (NumPy) or **JavaScript**, including a forward-pass function, so the trained model can be used outside the browser. The generated source is shown in a code-preview modal with a copy-to-clipboard button.
+
+### Dataset JSON import/export
+`exportDSJSON()` downloads the current dataset (`DS.inputs`/`DS.outputs`) as a `.json` file; `importDSJSON(input)` reads a JSON file back in and rebuilds the dataset editor (`rebuildDSEditor()`) and preview (`renderDSPreview()`), calling `applyDS()` to commit it as the live dataset.
+
+---
+
+## Automatic FR → EN Translation Layer
+
+A self-contained script block (the 4th `<script>` tag, appended at the very end of the document) adds a one-click interface translator, toggled from the **Options → Langue** section via `toggleTranslation()`.
+
+- It walks the visible DOM text nodes (skipping elements marked `data-no-translate`, `<script>`/`<style>` contents, and form-input values where translation would break functionality) and batches their text for translation.
+- Translation requests are sent to a public, keyless translation endpoint (Google Translate's unofficial `translate_a/single` endpoint), with a fallback to the MyMemory translation API if the primary request fails.
+- Translated strings are cached so repeated toggles or re-renders don't re-request the same text.
+- Because it works by rewriting DOM text after the fact, it is a purely cosmetic UI localisation layer — all underlying variable names, stored data, and exported code/log content remain in French.
+
+---
+
 ## UI Utility Functions
 
 ### Logging
@@ -603,10 +761,38 @@ Toggles visibility of a log block body identified by `id`.
 #### `logEpoch(avg) → void`
 Appends a formatted epoch summary line with loss (colour-coded), trend arrow (% change from previous epoch), accuracy, and optimiser info.
 
+#### `copyLog() → void`
+Copies the log panel's full plain-text content (`innerText`) to the clipboard.
+
+#### `logFull(x, y, activations, zs, deltas, ll) → void`
+Generates the verbose, fully-annotated backprop log entry for one training sample (called from `trainSample`), with the level of detail controlled by the `#logLevel` select (`ll`). It renders true mathematical notation (fractions, subscripts/superscripts, Σ summation bars, per-symbol legends) using a small set of formatting helpers rather than plain text:
+
+- `mFrac(num, den)` — renders a stacked fraction span.
+- `mSub(base, sub)` / `mSup(base, sup)` — renders a subscript/superscript.
+- `mSigma(from, to)` — renders a Σ summation with limits.
+- `actDeriv(fn)` — returns the textual derivative formula for a given activation function (e.g. `σ(z)·(1−σ(z))` for sigmoid), used to annotate the backprop phase.
+- `legendRow(sym, symCls, desc)` — renders one row of a symbol legend (e.g. `δ = error term for this neuron`).
+
 ### Canvas interaction
 
 #### Canvas click handler
-Detects clicks on neurons (within radius `r`) and connections (within 6 px of the line). On neuron click, opens a detail tooltip showing index, layer type, activation, bias, and activation value. On connection click, shows weight details with an inline edit field. `Ctrl+Click` on a neuron forces its activation to a user-specified value.
+Detects clicks on neurons (within radius `r`, via `cpToCanvas()` coordinate mapping) and connections (within a few px of the line, via `lpd()` point-to-segment distance). Plain clicks open a **detail popover**:
+
+- `showNodeDetail(l, j)` — shows a neuron's layer/index, activation function, bias, last pre/post-activation values (`z`, `a`), and gradient (`δ`) when available.
+- `showLineDetail(l, j, k)` — shows a connection's source/target neuron, current weight, last gradient, and the accumulated optimiser state (velocity/moment) for that weight.
+- `copyDetailJSON()` — copies the currently-open node/line detail popover's data to the clipboard as JSON.
+
+**Modifier-key interactions** on neurons/connections:
+
+| Combo | Effect |
+|---|---|
+| `Ctrl+Click` on a neuron | Pins ("forces") its activation to a user-specified value for subsequent forward passes |
+| `Shift+Click` on a neuron | Freezes/unfreezes its **bias** (toggles `NET.frozenNodes["(l)-(j)"]`) — frozen biases are skipped during `applyGrad()` and shown with a ❄ icon |
+| `Shift+Click` on a connection | Freezes/unfreezes that **weight** (toggles `NET.frozenWeights["l-j-k"]`) — frozen weights are skipped during `applyGrad()` |
+| `Alt+Click` on a neuron | Opens a small menu to force the neuron's activation to follow a **pattern** each forward pass: constant `0`, constant `1`, a `sine` wave, `random` noise, or `none` (clears the pattern) |
+
+#### `showTestInputs() → void`
+Populates the **Test** tab's input fields from the currently selected dataset sample, so the user can immediately run a forward pass on a real example.
 
 ### Resize system
 
@@ -698,6 +884,8 @@ All colours are defined as CSS custom properties on `:root`:
 | `--text` | `#b8cce8` | Primary text |
 | `--dim` | `#445577` | Secondary / muted text |
 
+This is the default theme; the Options tab's "Thème & Couleurs" section offers several alternate colour presets (applied via `applyTheme(name)`) which override these CSS variables at runtime.
+
 ---
 
 ## Dependencies
@@ -708,4 +896,4 @@ All colours are defined as CSS custom properties on `:root`:
 | JetBrains Mono | Google Fonts | Monospace UI font |
 | Syne | Google Fonts | Display / heading font |
 
-All other functionality is implemented in vanilla JavaScript with no runtime dependencies.
+All other functionality is implemented in vanilla JavaScript with no bundled runtime dependencies. The only exception is the optional **auto-translation layer**, which makes live network calls to a public translation API when enabled by the user (see [Automatic FR → EN Translation Layer](#automatic-fr--en-translation-layer)) — the app is otherwise fully offline-capable.

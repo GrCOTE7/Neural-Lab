@@ -36,6 +36,8 @@ Every computation happens directly in your browser:
 
 Built with **pure HTML + CSS + Vanilla JavaScript**.
 
+> 🌐 **Language note:** the interface is in French by default, with a built-in FR ⇄ EN translation switch (in the Options tab) if you prefer English.
+
 ---
 
 ## 🎥 See it in action
@@ -65,7 +67,10 @@ Features:
 ✅ Weight visualisation  
 ✅ Bias inspection  
 ✅ Interactive neuron and connection editing  
-✅ CNN lab
+✅ Guided creation wizard  
+✅ Advanced layer-by-layer builder (with ready-made presets: XOR, deep net, autoencoder, 3-class classifier, regression, wide net)  
+✅ CNN lab  
+✅ RNN lab
 
 
 ---
@@ -119,21 +124,19 @@ Examples:
 - GELU
 - SELU
 - Softsign
-- Softmax
-- ...
+- Linear
+- Softmax (output layer)
 
 
 ## Loss Functions
 
 Available:
 
-- Mean Squared Error
+- Mean Squared Error (MSE)
 - MAE
-- Binary Cross Entropy
+- Log Loss / Binary Cross Entropy
 - Huber Loss
 - Hinge Loss
-- Log Loss
-- ...
 
 
 ## Optimisers
@@ -145,8 +148,18 @@ Compare different learning strategies:
 - RMSProp
 - Adam
 - AdamW
-- Nesterov
-- ...
+- Nesterov (NAG)
+
+Fine-grained control is also available: momentum β, Adam β₁/β₂, epsilon, and L2 regularisation.
+
+## Weight Initialisation
+
+- Xavier / Glorot
+- He / Kaiming
+- Uniform
+- Normal
+- Small
+- Zero (debug)
 
 
 ---
@@ -192,6 +205,16 @@ Run several optimisers against each other and watch who learns faster.
 ![Optimizer race](screenshots/race.png)
 
 
+### More tools
+
+- Interactive loss curve (click to zoom / clear)
+- Learning-rate scheduler
+- Layer-by-layer inspection
+- Speed benchmark
+- Data perturbation testing
+- Network diagram export (PNG)
+
+
 ---
 
 # 🎨 Designed for Learning
@@ -203,6 +226,9 @@ Neural Lab includes educational features:
 - Mathematical notation rendering
 - Detailed training logs
 - Interactive inspection
+- **Manual calculation mode**: compute the forward pass, the delta (error gradient) and the weight updates yourself, then check your answers against the simulator
+- Keyboard shortcuts for common actions (step, epoch, auto-train, mutate...)
+- Training log export to LaTeX or Markdown
 
 
 ![Formula library](screenshots/formulas.png)
@@ -221,6 +247,39 @@ How was the prediction computed?
 Why did the gradient change?
 Which weights were updated?
 ```
+
+---
+
+# 🧬 Go Further: CNN, RNN & Evolution
+
+## CNN Lab
+
+Step-by-step convolution, a gallery comparing every filter, a multi-layer pipeline with receptive-field view, kernel training via gradient descent, and a full "complete model" mode to build, train (real backpropagation) and test a multi-layer CNN on an image dataset you create on the spot.
+
+## RNN Lab
+
+A dedicated space to explore recurrent networks.
+
+## Weight Mutation
+
+Randomly mutate a trained network's weights and evaluate the result — a lightweight way to experiment with evolutionary/genetic approaches.
+
+---
+
+# 💾 Save, Export & Code Generation
+
+- Multiple save/load slots for your trained networks
+- Import / export a network as JSON
+- Export a trained network as ready-to-use JavaScript code
+- Export the full training log as LaTeX or Markdown
+
+---
+
+# 🎨 Customisation
+
+- 6 color themes: Dark, Neon, Ocean, Fire, Matrix, Pastel
+- Visual effects & sound (Matrix rain, sound toggle, particle flow, celebration effects)
+- Adjustable diagram geometry (node spacing, glow intensity, connection opacity...)
 
 ---
 
@@ -414,11 +473,17 @@ Built with:
 
 Possible future improvements:
 
+<<<<<<< HEAD
 - [x] More architectures (CNN, RNN)
 - [ ] More datasets
+=======
+- [ ] More architectures (Transformers, GANs...)
+- [ ] More built-in datasets
+>>>>>>> 740bbd8 (update readme and technocal description)
 - [ ] WebGPU acceleration
-- [ ] Model export/import improvements
 - [ ] Collaborative experiments
+
+> ✅ CNN/RNN labs and network export/import are already available — see [Go Further](#-go-further-cnn-rnn--evolution) and [Save, Export & Code Generation](#-save-export--code-generation) above.
 
 
 ---
