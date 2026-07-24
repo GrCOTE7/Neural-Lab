@@ -473,13 +473,10 @@ Built with:
 
 Possible future improvements:
 
-<<<<<<< HEAD
 - [x] More architectures (CNN, RNN)
-- [ ] More datasets
-=======
+- [x] More datasets
 - [ ] More architectures (Transformers, GANs...)
 - [ ] More built-in datasets
->>>>>>> 740bbd8 (update readme and technocal description)
 - [ ] WebGPU acceleration
 - [ ] Collaborative experiments
 
