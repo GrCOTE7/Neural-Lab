@@ -906,6 +906,25 @@
         border-bottom: 1px solid var(--brd);
         background: var(--p2);
         overflow-x: auto;
+        position: relative;
+      }
+      /* Barre indicatrice glissante partagée par tous les groupes d'onglets
+         (panneau Détails, Labo CNN, Labo RNN, sous-onglets...). Un seul
+         mécanisme générique (voir script en fin de page) la positionne. */
+      .tabs-indicator {
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        height: 2px;
+        background: var(--a1);
+        box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+        border-radius: 2px 2px 0 0;
+        transition:
+          transform 0.28s cubic-bezier(0.65, 0, 0.35, 1),
+          width 0.28s cubic-bezier(0.65, 0, 0.35, 1);
+        will-change: transform, width;
+        pointer-events: none;
+        z-index: 1;
       }
       .tab {
         padding: 8px 11px;
@@ -915,16 +934,20 @@
         text-transform: uppercase;
         letter-spacing: 0.08em;
         border-bottom: 2px solid transparent;
-        transition: 0.15s;
+        transition: color 0.15s;
         white-space: nowrap;
         flex-shrink: 0;
+        position: relative;
       }
       .tab:hover {
         color: var(--text);
       }
       .tab.active {
         color: var(--a1);
-        border-bottom-color: var(--a1);
+      }
+      /* Feedback tactile au tap, cohérent avec la nav mobile */
+      .tab:active {
+        color: var(--a1);
       }
       .tc {
         display: none;
@@ -3530,6 +3553,17 @@
         #right.mob-active,
         #center.mob-active {
           display: flex;
+          animation: mobPanelIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes mobPanelIn {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         /* Push panels below topbar */
@@ -3591,6 +3625,37 @@
           height: 56px;
           z-index: 200;
           flex-shrink: 0;
+          overflow: hidden;
+        }
+        /* Barre indicatrice glissante sous l'onglet actif */
+        #mobile-nav .mob-nav-indicator {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 2px;
+          background: var(--a1);
+          box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+          border-radius: 0 0 2px 2px;
+          transition:
+            transform 0.32s cubic-bezier(0.65, 0, 0.35, 1),
+            width 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+          will-change: transform, width;
+          pointer-events: none;
+        }
+        /* Halo doux qui respire derrière l'icône active */
+        #mobile-nav .mob-nav-glow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          background: radial-gradient(
+            ellipse at center,
+            rgba(0, 229, 255, 0.1),
+            transparent 70%
+          );
+          transition: transform 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+          will-change: transform;
+          pointer-events: none;
         }
         .mob-nav-btn {
           flex: 1;
@@ -3607,20 +3672,32 @@
           text-transform: uppercase;
           letter-spacing: 0.06em;
           cursor: pointer;
-          transition: 0.15s;
+          transition:
+            color 0.2s,
+            transform 0.15s;
           padding: 6px 2px;
           border-top: 2px solid transparent;
+          position: relative;
         }
         .mob-nav-btn .mob-icon {
           font-size: 17px;
           line-height: 1;
+          display: inline-block;
+          transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .mob-nav-btn.active {
           color: var(--a1);
-          border-top-color: var(--a1);
+        }
+        .mob-nav-btn.active .mob-icon {
+          transform: translateY(-1px) scale(1.12);
         }
         .mob-nav-btn:hover {
           color: var(--text);
+        }
+        /* Feedback tactile au tap */
+        .mob-nav-btn:active .mob-icon {
+          transform: scale(0.85);
+          transition: transform 0.08s ease-out;
         }
 
         /* ── TOUCH-FRIENDLY SIZING ── */
@@ -3952,6 +4029,273 @@
         from {
           opacity: 0;
           transform: scale(0.92) translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+
+    <!-- ══════════════ PACK SATISFACTION — animations additives ══════════════
+         Bloc 100% additif : rien n'est retiré ni redéfini en profondeur,
+         on ne fait qu'ajouter de nouvelles propriétés / nouvelles classes.
+         Le script correspondant est en fin de <body>. -->
+    <style>
+      /* Ancrage nécessaire pour que les ripples / spotlights se positionnent
+         correctement à l'intérieur des boutons, onglets et stat-boxes. */
+      .btn,
+      .sb,
+      .tab {
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* ── Spotlight magnétique qui suit le curseur ──
+         --mx/--my sont posées en JS au survol (en %). Purement décoratif,
+         n'affecte ni la mise en page ni les autres styles. */
+      .btn::after,
+      .card::after,
+      .sb::after,
+      .tab::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(
+          110px circle at var(--mx, 50%) var(--my, 50%),
+          rgba(0, 229, 255, 0.16),
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+      }
+      .btn:hover::after,
+      .card:hover::after,
+      .sb:hover::after,
+      .tab:hover::after {
+        opacity: 1;
+      }
+      .btn.go::after {
+        background: radial-gradient(
+          110px circle at var(--mx, 50%) var(--my, 50%),
+          rgba(0, 255, 157, 0.2),
+          transparent 70%
+        );
+      }
+      .btn.on::after {
+        background: radial-gradient(
+          110px circle at var(--mx, 50%) var(--my, 50%),
+          rgba(191, 95, 255, 0.22),
+          transparent 70%
+        );
+      }
+
+      /* Un peu plus de peps au survol / au clic des boutons */
+      .btn {
+        transition:
+          border-color 0.15s,
+          color 0.15s,
+          box-shadow 0.15s,
+          transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+          filter 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.12);
+      }
+      .btn:active {
+        transform: scale(0.93) translateY(0);
+        filter: brightness(0.96);
+        transition-duration: 0.06s;
+      }
+
+      /* Onglets : indicateur avec un léger rebond élastique plutôt qu'un
+         simple ease (remplace uniquement la timing-function, tout le reste
+         de la règle .tabs-indicator d'origine reste actif). */
+      .tabs-indicator {
+        transition:
+          transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1),
+          width 0.36s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* ── Ripple au clic (boutons + onglets) ── */
+      .ripple-fx {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.55),
+          rgba(255, 255, 255, 0) 70%
+        );
+        transform: scale(0);
+        opacity: 1;
+        pointer-events: none;
+        animation: rippleFx 0.55s ease-out forwards;
+        z-index: 2;
+      }
+      @keyframes rippleFx {
+        to {
+          transform: scale(1);
+          opacity: 0;
+        }
+      }
+
+      /* ── Éclats de particules sur les actions clés (Step / Époque / Auto) ── */
+      .spark {
+        position: fixed;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        animation: sparkFly 0.5s ease-out forwards;
+      }
+      @keyframes sparkFly {
+        to {
+          transform: translate(var(--dx), var(--dy)) scale(0);
+          opacity: 0;
+        }
+      }
+
+      /* ── Pop tactile quand une checkbox est cochée/décochée ── */
+      input[type="checkbox"].pop {
+        animation: cbPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes cbPop {
+        0% {
+          transform: scale(1);
+        }
+        45% {
+          transform: scale(1.45);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* ── Slider : léger halo pendant le drag ── */
+      input[type="range"]:active {
+        filter: drop-shadow(0 0 5px var(--a1));
+      }
+
+      /* ── Flash plein écran, très subtil, à chaque palier d'accuracy franchi
+           (25 / 50 / 75 / 90 %) — la célébration 100% existante n'est pas
+           touchée, ceci s'ajoute simplement en dessous. ── */
+      body.milestone-flash {
+        animation: milestoneFlash 0.7s ease;
+      }
+      @keyframes milestoneFlash {
+        0% {
+          box-shadow: inset 0 0 0 rgba(0, 255, 157, 0);
+        }
+        25% {
+          box-shadow: inset 0 0 140px rgba(0, 255, 157, 0.22);
+        }
+        100% {
+          box-shadow: inset 0 0 0 rgba(0, 255, 157, 0);
+        }
+      }
+    </style>
+
+    <!-- ══ PACK SATISFACTION — arrivée "wow" des fenêtres/modales ══ -->
+    <style>
+      /* ── Fond : flou qui monte + flash radial au centre au moment de l'ouverture ── */
+      [id$="modal-bg"] {
+        perspective: 1000px;
+      }
+      [id$="modal-bg"]::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at center,
+          rgba(0, 229, 255, 0.28),
+          rgba(191, 95, 255, 0.12) 40%,
+          transparent 70%
+        );
+        opacity: 0;
+        pointer-events: none;
+      }
+      [id$="modal-bg"].show {
+        animation:
+          fi 0.2s ease,
+          bgBlurIn 0.5s ease forwards;
+      }
+      [id$="modal-bg"].show::before {
+        animation: bgFlash 0.6s ease-out;
+      }
+      @keyframes bgBlurIn {
+        from {
+          backdrop-filter: blur(0px);
+        }
+        to {
+          backdrop-filter: blur(5px);
+        }
+      }
+      @keyframes bgFlash {
+        0% {
+          opacity: 0;
+        }
+        18% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* ── Panneau : arrivée en pop 3D élastique avec sursaut de lumière ──
+           Remplace uniquement la propriété "animation" de la règle modalPop
+           d'origine (même sélecteur, déclaré plus tard donc prioritaire). */
+      #modal-bg.show #modal,
+      #abld-modal-bg.show #abld-modal,
+      #boundary-modal-bg.show #boundary-modal,
+      #saveload-modal-bg.show #saveload-modal,
+      #race-modal-bg.show #race-modal,
+      #cnn-modal-bg.show #cnn-modal,
+      #rnn-modal-bg.show #rnn-modal {
+        animation: modalWow 0.55s cubic-bezier(0.2, 1, 0.3, 1);
+        transform-origin: center center;
+      }
+      @keyframes modalWow {
+        0% {
+          opacity: 0;
+          transform: scale(0.72) translateY(28px) rotateX(10deg);
+          box-shadow: 0 0 0 rgba(0, 229, 255, 0);
+          filter: brightness(1.7) saturate(1.3);
+        }
+        45% {
+          opacity: 1;
+          transform: scale(1.045) translateY(-4px) rotateX(0deg);
+          box-shadow:
+            0 0 70px rgba(0, 229, 255, 0.5),
+            0 0 140px rgba(191, 95, 255, 0.25);
+          filter: brightness(1.1) saturate(1.05);
+        }
+        70% {
+          transform: scale(0.985) translateY(1px) rotateX(0deg);
+          box-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0) rotateX(0deg);
+          box-shadow: 0 0 0 rgba(0, 229, 255, 0);
+          filter: brightness(1) saturate(1);
+        }
+      }
+
+      /* ── Contenu du panneau : cascade légère à l'ouverture, section par
+           section (posée en JS via --i sur les enfants directs). ── */
+      .modal-child-in {
+        animation: modalChildIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: calc(var(--i, 0) * 55ms + 90ms);
+      }
+      @keyframes modalChildIn {
+        from {
+          opacity: 0;
+          transform: translateY(14px) scale(0.97);
         }
         to {
           opacity: 1;
@@ -14320,6 +14664,7 @@
 
     <!-- ══════════════ MOBILE BOTTOM NAV ══════════════ -->
     <div id="mobile-nav">
+      <div class="mob-nav-glow" id="mobNavGlow"></div>
       <button
         class="mob-nav-btn active"
         id="mobnav-left"
@@ -14333,10 +14678,29 @@
       <button class="mob-nav-btn" id="mobnav-right" onclick="mobNav('right')">
         <span class="mob-icon">📊</span>Détails
       </button>
+      <div class="mob-nav-indicator" id="mobNavIndicator"></div>
     </div>
 
     <script>
       // ── MOBILE NAVIGATION ──
+      function slideMobNavIndicator(panel) {
+        const btn = document.getElementById("mobnav-" + panel);
+        const bar = document.getElementById("mobile-nav");
+        const indicator = document.getElementById("mobNavIndicator");
+        const glow = document.getElementById("mobNavGlow");
+        if (!btn || !bar || !indicator) return;
+        const barRect = bar.getBoundingClientRect();
+        const btnRect = btn.getBoundingClientRect();
+        const left = btnRect.left - barRect.left;
+        const width = btnRect.width;
+        indicator.style.width = width + "px";
+        indicator.style.transform = "translateX(" + left + "px)";
+        if (glow) {
+          glow.style.width = width + "px";
+          glow.style.transform = "translateX(" + left + "px)";
+        }
+      }
+
       function mobNav(panel) {
         if (window.innerWidth > 900) return;
         ["left", "center", "right"].forEach((p) => {
@@ -14345,12 +14709,31 @@
           const btn = document.getElementById("mobnav-" + p);
           if (btn) btn.classList.toggle("active", p === panel);
         });
+        slideMobNavIndicator(panel);
         if (panel === "center") {
           setTimeout(() => {
             resizeCvs();
             redraw();
           }, 60);
         }
+      }
+
+      // Repositionne la barre glissante au chargement et lors d'un
+      // redimensionnement (rotation d'écran, resize navigateur en dev, etc.)
+      function currentMobPanel() {
+        const active = document.querySelector(".mob-nav-btn.active");
+        if (!active) return "left";
+        return active.id.replace("mobnav-", "");
+      }
+      window.addEventListener("resize", () => {
+        if (window.innerWidth <= 900) slideMobNavIndicator(currentMobPanel());
+      });
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () =>
+          slideMobNavIndicator(currentMobPanel()),
+        );
+      } else {
+        slideMobNavIndicator(currentMobPanel());
       }
 
       // ── SYNC MOBILE EPOCH/LOSS ──
@@ -20617,6 +21000,363 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             currentLang.toUpperCase() +
             ")",
         );
+      })();
+    </script>
+
+    <!-- ══════════════ SLIDING TAB INDICATOR (générique) ══════════════
+         S'applique à tous les groupes ".tabs" du site (panneau Détails,
+         Labo CNN, sous-onglets Modèle complet, Labo RNN, sous-onglets
+         Entraînement) : une barre glissante suit l'onglet ".tab.active",
+         sans dépendre des fonctions showTab/cnnShowTab/rnnShowTab/etc. -->
+    <script>
+      (function () {
+        const groups = []; // { tabs, indicator }
+
+        function positionIndicator(group) {
+          const active = group.tabs.querySelector(".tab.active");
+          const { indicator, tabs } = group;
+          if (!active) {
+            indicator.style.width = "0px";
+            return;
+          }
+          // getBoundingClientRect reste correct même si .tabs défile
+          // horizontalement (scrollLeft), car on mesure les deux rects
+          // dans le même repère écran.
+          const tabsRect = tabs.getBoundingClientRect();
+          const activeRect = active.getBoundingClientRect();
+          const left = activeRect.left - tabsRect.left + tabs.scrollLeft;
+          indicator.style.width = activeRect.width + "px";
+          indicator.style.transform = "translateX(" + left + "px)";
+        }
+
+        function initGroup(tabsEl) {
+          if (tabsEl.dataset.slideInit) return;
+          tabsEl.dataset.slideInit = "1";
+          const indicator = document.createElement("div");
+          indicator.className = "tabs-indicator";
+          tabsEl.appendChild(indicator);
+          const group = { tabs: tabsEl, indicator };
+          groups.push(group);
+
+          // Le changement d'onglet se fait ailleurs (showTab, cnnShowTab,
+          // rnnShowTab, cnnModelShowSubtab, rnnTrainShowSub...) en togglant
+          // la classe "active" sur un enfant .tab : on observe ça plutôt
+          // que de dupliquer la logique de chaque fonction.
+          const mo = new MutationObserver(() => positionIndicator(group));
+          Array.from(tabsEl.children).forEach((child) => {
+            if (child === indicator) return;
+            mo.observe(child, { attributes: true, attributeFilter: ["class"] });
+          });
+
+          // Repositionne aussi si l'utilisateur fait défiler des onglets
+          // qui débordent horizontalement (mobile / panneaux étroits).
+          tabsEl.addEventListener("scroll", () => positionIndicator(group), {
+            passive: true,
+          });
+
+          positionIndicator(group);
+        }
+
+        function scanAndInit() {
+          document.querySelectorAll(".tabs").forEach(initGroup);
+        }
+
+        function repositionAll() {
+          groups.forEach(positionIndicator);
+        }
+
+        // Un léger délai pour laisser le layout se stabiliser (polices,
+        // panneaux redimensionnés, modals qui viennent de s'ouvrir).
+        function repositionAllDeferred() {
+          repositionAll();
+          requestAnimationFrame(repositionAll);
+          setTimeout(repositionAll, 120);
+        }
+
+        window.addEventListener("resize", repositionAllDeferred);
+
+        // Les modals Labo CNN / Labo RNN sont présents dans le DOM dès le
+        // départ (juste masqués), donc scanAndInit() au boot les couvre
+        // déjà. On reste tout de même à l'écoute au cas où de nouveaux
+        // groupes ".tabs" seraient injectés plus tard dans l'app.
+        const domObserver = new MutationObserver((mutations) => {
+          let needsScan = false;
+          for (const m of mutations) {
+            m.addedNodes &&
+              m.addedNodes.forEach((n) => {
+                if (n.nodeType !== 1) return;
+                if (n.classList && n.classList.contains("tabs"))
+                  needsScan = true;
+                else if (n.querySelector && n.querySelector(".tabs"))
+                  needsScan = true;
+              });
+          }
+          if (needsScan) scanAndInit();
+        });
+
+        function boot() {
+          scanAndInit();
+          domObserver.observe(document.body, { childList: true, subtree: true });
+          // Ouverture des modals Labo CNN / Labo RNN : leurs onglets sont
+          // à display:none avant l'ouverture, donc les rects mesurés au
+          // boot peuvent être nuls. On recalcule au clic sur les boutons
+          // d'ouverture, une fois la modal affichée.
+          ["openCNNLab", "openRNNLab"].forEach((fnName) => {
+            const orig = window[fnName];
+            if (typeof orig === "function") {
+              window[fnName] = function (...args) {
+                const r = orig.apply(this, args);
+                repositionAllDeferred();
+                return r;
+              };
+            }
+          });
+          // Le panneau "Détails" (mobile) est display:none avant d'être
+          // sélectionné : ses onglets ont alors une largeur nulle. On
+          // recalcule dès qu'on y bascule.
+          if (typeof window.mobNav === "function") {
+            const origMobNav = window.mobNav;
+            window.mobNav = function (...args) {
+              const r = origMobNav.apply(this, args);
+              repositionAllDeferred();
+              return r;
+            };
+          }
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", boot);
+        } else {
+          boot();
+        }
+      })();
+    </script>
+
+    <!-- ══════════════ PACK SATISFACTION — script additif ══════════════
+         Aucune fonction existante n'est modifiée : ce bloc se contente
+         d'observer le DOM et d'ajouter des micro-interactions par-dessus
+         (ripples, spotlight, compteurs animés, éclats, paliers d'accuracy).
+         Respecte prefers-reduced-motion (déjà géré globalement plus haut). -->
+    <script>
+      (function () {
+        "use strict";
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+          return;
+
+        // ── 1) Ripple au clic/tap sur boutons et onglets ──
+        function spawnRipple(el, x, y) {
+          const rect = el.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height) * 1.6;
+          const r = document.createElement("span");
+          r.className = "ripple-fx";
+          r.style.width = r.style.height = size + "px";
+          r.style.left = x - rect.left - size / 2 + "px";
+          r.style.top = y - rect.top - size / 2 + "px";
+          el.appendChild(r);
+          r.addEventListener("animationend", () => r.remove());
+        }
+        document.addEventListener(
+          "pointerdown",
+          (e) => {
+            const el = e.target.closest(".btn, .tab");
+            if (!el) return;
+            spawnRipple(el, e.clientX, e.clientY);
+          },
+          { passive: true },
+        );
+
+        // ── 2) Spotlight magnétique (suit le curseur via --mx/--my) ──
+        document.addEventListener(
+          "pointermove",
+          (e) => {
+            const el = e.target.closest(".btn, .card, .sb, .tab");
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            el.style.setProperty(
+              "--mx",
+              ((e.clientX - rect.left) / rect.width) * 100 + "%",
+            );
+            el.style.setProperty(
+              "--my",
+              ((e.clientY - rect.top) / rect.height) * 100 + "%",
+            );
+          },
+          { passive: true },
+        );
+
+        // ── 3) Éclats de particules sur les actions d'entraînement ──
+        function spawnSparks(x, y, color) {
+          const n = 8;
+          for (let i = 0; i < n; i++) {
+            const s = document.createElement("span");
+            s.className = "spark";
+            const ang = (Math.PI * 2 * i) / n + Math.random() * 0.4;
+            const dist = 22 + Math.random() * 18;
+            s.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+            s.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+            s.style.left = x + "px";
+            s.style.top = y + "px";
+            s.style.background = color;
+            document.body.appendChild(s);
+            s.addEventListener("animationend", () => s.remove());
+          }
+        }
+        document.addEventListener(
+          "click",
+          (e) => {
+            const el = e.target.closest(".btn.go, .btn.ok");
+            if (!el) return;
+            const color = el.classList.contains("go")
+              ? "#00ff9d"
+              : "#00e5ff";
+            spawnSparks(e.clientX, e.clientY, color);
+          },
+          { passive: true },
+        );
+
+        // ── 4) Pop tactile sur les checkboxes ──
+        document.addEventListener("change", (e) => {
+          if (e.target.matches && e.target.matches('input[type="checkbox"]')) {
+            e.target.classList.remove("pop");
+            void e.target.offsetWidth;
+            e.target.classList.add("pop");
+          }
+        });
+
+        // ── 5) Compteurs animés + paliers d'accuracy ──
+        // On s'appuie sur le mécanisme existant flashStat()/flashEl() qui
+        // toggle la classe "flash" sur la .sb parente à chaque mise à jour :
+        // on observe ce changement de classe pour faire défiler la valeur
+        // au lieu qu'elle saute d'un coup. sLoss est volontairement exclu
+        // (son innerHTML contient déjà une flèche de tendance colorée qu'on
+        // ne veut pas écraser).
+        const tweenState = new WeakMap();
+        const tweening = new WeakSet();
+        function tweenNumber(el) {
+          if (tweening.has(el)) return; // évite de s'auto-observer pendant l'animation
+          const raw = el.textContent.trim();
+          const m = raw.match(/^-?\d+(\.\d+)?/);
+          if (!m) {
+            tweenState.delete(el); // ex: "—" après un reset → prochaine valeur numérique repart sans animation bizarre
+            return;
+          }
+          const target = parseFloat(m[0]);
+          const suffix = raw.slice(m[0].length);
+          const decimals = (m[0].split(".")[1] || "").length;
+          const start = tweenState.has(el) ? tweenState.get(el) : target;
+          if (start === target) {
+            tweenState.set(el, target);
+            return;
+          }
+          const dur = 380,
+            t0 = performance.now();
+          tweening.add(el);
+          (function step(t) {
+            const p = Math.min(1, (t - t0) / dur);
+            const eased = 1 - Math.pow(1 - p, 3);
+            const val = start + (target - start) * eased;
+            el.textContent = val.toFixed(decimals) + suffix;
+            if (p < 1) requestAnimationFrame(step);
+            else {
+              el.textContent = target.toFixed(decimals) + suffix;
+              tweenState.set(el, target);
+              tweening.delete(el);
+            }
+          })(t0);
+        }
+
+        let bestAccSeen = -1;
+        const milestones = [25, 50, 75, 90];
+        const firedMilestones = new Set();
+        function pulseMilestone() {
+          document.body.classList.remove("milestone-flash");
+          void document.body.offsetWidth;
+          document.body.classList.add("milestone-flash");
+          setTimeout(
+            () => document.body.classList.remove("milestone-flash"),
+            720,
+          );
+          const box = document.getElementById("sAcc");
+          const sb = box && box.closest(".sb");
+          if (sb) {
+            const r = sb.getBoundingClientRect();
+            spawnSparks(r.left + r.width / 2, r.top + r.height / 2, "#ffd600");
+          }
+        }
+        function checkAccMilestone(text) {
+          const v = parseFloat(text);
+          if (isNaN(v)) return;
+          if (v < bestAccSeen - 5) firedMilestones.clear(); // reset probable (nouveau dataset / rechargement)
+          bestAccSeen = Math.max(bestAccSeen, v);
+          milestones.forEach((ms) => {
+            if (v >= ms && !firedMilestones.has(ms)) {
+              firedMilestones.add(ms);
+              pulseMilestone();
+            }
+          });
+        }
+
+        ["sEpoch", "sAcc", "sLR"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          tweenState.set(el, parseFloat(el.textContent) || 0);
+          new MutationObserver(() => {
+            tweenNumber(el);
+            if (id === "sAcc") checkAccMilestone(el.textContent);
+          }).observe(el, {
+            childList: true,
+            characterData: true,
+            subtree: true,
+          });
+        });
+
+        // ── 6) Arrivée "wow" des fenêtres/modales : cascade du contenu +
+        // petit éclat au centre du panneau au moment de l'ouverture.
+        // Purement observé sur la classe "show" (peu importe qu'elle soit
+        // posée via classList.add ou via className = "show"), donc rien
+        // à changer côté fonctions showXxx()/closeXxx() existantes.
+        const MODAL_BG_IDS = [
+          "modal-bg",
+          "abld-modal-bg",
+          "boundary-modal-bg",
+          "saveload-modal-bg",
+          "race-modal-bg",
+          "cnn-modal-bg",
+          "rnn-modal-bg",
+        ];
+        function staggerModalIn(panel, bg) {
+          if (!panel) return;
+          Array.from(panel.children)
+            .slice(0, 10)
+            .forEach((child, i) => {
+              child.style.setProperty("--i", i);
+              child.classList.remove("modal-child-in");
+              void child.offsetWidth;
+              child.classList.add("modal-child-in");
+              child.addEventListener(
+                "animationend",
+                () => child.classList.remove("modal-child-in"),
+                { once: true },
+              );
+            });
+          const r = panel.getBoundingClientRect();
+          if (r.width && r.height)
+            spawnSparks(r.left + r.width / 2, r.top + 14, "#00e5ff");
+        }
+        MODAL_BG_IDS.forEach((bgId) => {
+          const bg = document.getElementById(bgId);
+          if (!bg) return;
+          const panel = document.getElementById(bgId.replace(/-bg$/, ""));
+          let wasShown = bg.classList.contains("show");
+          new MutationObserver(() => {
+            const isShown = bg.classList.contains("show");
+            if (isShown && !wasShown)
+              requestAnimationFrame(() => staggerModalIn(panel, bg));
+            wasShown = isShown;
+          }).observe(bg, { attributes: true, attributeFilter: ["class"] });
+        });
+
+        console.log("✓ Neural Lab v12 — pack satisfaction chargé");
       })();
     </script>
   </body>
