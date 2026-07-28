@@ -3809,6 +3809,155 @@
       .version a:hover {
         text-decoration: underline; /* optionnel */
       }
+
+      /* ══════════════ ANIMATIONS UI (ajout) ══════════════ */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+      body {
+        animation: appFadeIn 0.45s ease;
+      }
+      @keyframes appFadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .btn:active {
+        transform: scale(0.93);
+      }
+      .card {
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 229, 255, 0.1);
+      }
+      /* Stat boxes (Epoch / Loss / Acc / LR) pulse when their value changes */
+      .sb {
+        transition:
+          box-shadow 0.3s ease,
+          border-color 0.3s ease;
+      }
+      .sb.flash {
+        animation: statFlash 0.6s ease;
+      }
+      @keyframes statFlash {
+        0% {
+          box-shadow: 0 0 0 rgba(0, 229, 255, 0);
+          border-color: var(--brd);
+        }
+        25% {
+          box-shadow: 0 0 14px rgba(0, 229, 255, 0.45);
+          border-color: var(--a1);
+        }
+        100% {
+          box-shadow: 0 0 0 rgba(0, 229, 255, 0);
+          border-color: var(--brd);
+        }
+      }
+      .sb .v {
+        display: inline-block;
+      }
+      .sb.flash .v {
+        animation: statPop 0.35s ease;
+      }
+      @keyframes statPop {
+        0% {
+          transform: scale(1);
+        }
+        40% {
+          transform: scale(1.18);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      /* New log lines slide in instead of popping in abruptly */
+      #log > div {
+        animation: logSlide 0.25s ease;
+      }
+      @keyframes logSlide {
+        from {
+          opacity: 0;
+          transform: translateX(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      /* Subtle moving shine on the training progress bar */
+      .pb {
+        position: relative;
+        overflow: hidden;
+      }
+      .pb::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: translateX(-100%);
+        animation: pbShine 1.4s ease-in-out infinite;
+      }
+      @keyframes pbShine {
+        to {
+          transform: translateX(100%);
+        }
+      }
+      /* Soft glow pulse over the network canvas each time it trains a step */
+      #canvasWrap.step-flash {
+        animation: canvasPulse 0.4s ease;
+      }
+      @keyframes canvasPulse {
+        0% {
+          box-shadow: inset 0 0 0 rgba(0, 229, 255, 0);
+        }
+        30% {
+          box-shadow: inset 0 0 60px rgba(0, 229, 255, 0.18);
+        }
+        100% {
+          box-shadow: inset 0 0 0 rgba(0, 229, 255, 0);
+        }
+      }
+      /* Modals fade in and their content pops in with a light bounce */
+      [id$="modal-bg"].show {
+        animation: fi 0.2s ease;
+      }
+      #modal-bg.show #modal,
+      #abld-modal-bg.show #abld-modal,
+      #boundary-modal-bg.show #boundary-modal,
+      #saveload-modal-bg.show #saveload-modal,
+      #race-modal-bg.show #race-modal,
+      #cnn-modal-bg.show #cnn-modal,
+      #rnn-modal-bg.show #rnn-modal {
+        animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes modalPop {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -7175,6 +7324,24 @@
         applyGrad(activations, deltas);
         return computeLoss(activations[activations.length - 1], y);
       }
+      // Petites aides d'animation : redémarre une classe CSS pour rejouer l'anim
+      function flashEl(el) {
+        if (!el) return;
+        el.classList.remove("flash");
+        void el.offsetWidth; // force le reflow pour pouvoir rejouer l'animation
+        el.classList.add("flash");
+      }
+      function flashStat(id) {
+        const v = document.getElementById(id);
+        flashEl(v && v.closest(".sb"));
+      }
+      function flashCanvas() {
+        const cw = document.getElementById("canvasWrap");
+        if (!cw) return;
+        cw.classList.remove("step-flash");
+        void cw.offsetWidth;
+        cw.classList.add("step-flash");
+      }
       function doStep() {
         if (!NET || !DS.inputs.length) return;
         const idx =
@@ -7186,6 +7353,7 @@
         LOSS_H.push(loss);
         updateStats(loss);
         redraw();
+        flashCanvas();
       }
       function doEpoch() {
         if (!NET || !DS.inputs.length) return;
@@ -7199,6 +7367,7 @@
         if (ll !== "off") logEpoch(avg);
         updateStats(avg);
         redraw();
+        flashCanvas();
       }
       function doN(n) {
         if (!NET || !DS.inputs.length) return;
@@ -7211,6 +7380,7 @@
         }
         updateStats(LOSS_H[LOSS_H.length - 1]);
         redraw();
+        flashCanvas();
         log(
           `<div class="log-epoch-bar"><span style="color:var(--a2);font-weight:700">×${n} epochs</span> &nbsp;|&nbsp; E:${EPOCH} &nbsp;|&nbsp; Loss:<span style="color:var(--red);font-weight:700">${fmt(LOSS_H[LOSS_H.length - 1])}</span> &nbsp;|&nbsp; Acc:<span style="color:var(--grn);font-weight:700">${acc().toFixed(1)}%</span></div>`,
         );
@@ -7259,6 +7429,10 @@
             `${loss.toFixed(4)} <span style="font-size:9px;color:${tCol}">${trend}</span>`;
         }
         drawLossChart();
+        flashStat("sEpoch");
+        flashStat("sLoss");
+        flashStat("sAcc");
+        flashStat("sLR");
       }
 
       const logEl = () => document.getElementById("log");
