@@ -7440,6 +7440,18 @@
 
       function resetW() {
         if (!NET) return;
+        if (autoRunning) {
+          autoRunning = false;
+          if (RAF_ID) {
+            cancelAnimationFrame(RAF_ID);
+            RAF_ID = null;
+          }
+          const abtn = document.getElementById("btnAuto");
+          if (abtn) {
+            abtn.className = "btn";
+            abtn.textContent = "⚡ Auto";
+          }
+        }
         for (let l = 0; l < NET.W.length; l++) {
           for (let j = 0; j < NET.W[l].length; j++) {
             for (let k = 0; k < NET.W[l][j].length; k++)
@@ -7456,6 +7468,10 @@
         LAST_ACT = [];
         LAST_Z = [];
         LAST_DELTAS = [];
+        document.getElementById("sEpoch").textContent = "0";
+        document.getElementById("sLoss").textContent = "—";
+        document.getElementById("sAcc").textContent = "—";
+        drawLossChart();
         redraw();
         log(`<span class="ls">↺ Poids réinitialisés</span>`);
       }
