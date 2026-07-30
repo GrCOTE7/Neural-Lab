@@ -6955,6 +6955,255 @@
               </div>
             </div>
 
+            <!-- NOUVEAUX ONGLETS SECTION (ajout) -->
+            <div
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(0, 255, 157, 0.05),
+                  rgba(191, 95, 255, 0.05)
+                );
+                border: 1px solid var(--brd);
+                border-radius: 4px;
+                padding: 10px;
+                margin-bottom: 12px;
+              "
+            >
+              <div
+                style="
+                  color: var(--grn);
+                  font-size: 10px;
+                  font-weight: 600;
+                  margin-bottom: 7px;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <span>🗂</span> Autres onglets
+              </div>
+              <div style="font-size: 8px; line-height: 1.9; color: var(--dim)">
+                <div style="margin-bottom: 5px; padding-left: 8px">
+                  <b style="color: var(--a2)">🎯 Éditeur visuel</b> (dans
+                  l'onglet <span style="color: var(--text)">Dataset</span>) —
+                  placez vos points à la souris sur un canvas 2D, en
+                  classification (plusieurs classes, une couleur chacune) ou
+                  en régression (courbe libre), sans rien saisir à la main.
+                </div>
+                <div style="margin-bottom: 5px; padding-left: 8px">
+                  <b style="color: var(--ylw)">✎ Manuel</b> — refaites
+                  vous-même les calculs du réseau (forward, loss, δ, mise à
+                  jour des poids) sur un exemple du dataset, puis vérifiez
+                  chaque étape contre le vrai résultat. Un bouton
+                  « Révéler toutes les réponses » existe si besoin.
+                </div>
+                <div style="margin-bottom: 5px; padding-left: 8px">
+                  <b style="color: var(--grn)">🧠 Quiz</b> — testez vos
+                  connaissances par chapitre (bases, forward, loss &amp;
+                  backprop, optimisation, CNN, RNN), en QCM, vrai/faux ou
+                  questions ouvertes. Un mode aléatoire tire N questions
+                  toutes catégories confondues.
+                </div>
+                <div style="padding-left: 8px">
+                  <b style="color: var(--org)">🛠 Outils</b> — panneau
+                  d'utilitaires avancés, détaillé juste en dessous.
+                </div>
+              </div>
+            </div>
+
+            <!-- DETAIL PANNEAU OUTILS (ajout) -->
+            <div
+              style="
+                background: #030408;
+                border: 1px solid var(--org);
+                border-radius: 4px;
+                padding: 10px;
+                margin-bottom: 12px;
+              "
+            >
+              <div
+                style="
+                  color: var(--org);
+                  font-size: 10px;
+                  font-weight: 600;
+                  margin-bottom: 7px;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <span>🛠</span> Dans l'onglet Outils
+              </div>
+              <div style="font-size: 8px; line-height: 2; color: var(--dim)">
+                <div>
+                  <b style="color: var(--text)">🗺 Frontière de décision</b> —
+                  carte 2D de ce que le réseau a appris à séparer (touche
+                  <kbd
+                    style="
+                      background: #0a0c18;
+                      padding: 1px 3px;
+                      border-radius: 2px;
+                      color: var(--a2);
+                    "
+                    >B</kbd
+                  >, version animée « Live »)
+                </div>
+                <div>
+                  <b style="color: var(--text)">💾 Sauvegarder / Charger</b> —
+                  slots de sauvegarde locaux, export/import du réseau en JSON
+                </div>
+                <div>
+                  <b style="color: var(--text)">📈 LR Scheduler</b> — fait
+                  varier le learning rate pendant l'entraînement (cosine
+                  annealing, step decay, exponentiel, warmup + cosine)
+                </div>
+                <div>
+                  <b style="color: var(--text)">🏁 Mode Compétition</b> — 4
+                  optimiseurs entraînés en parallèle sur le même dataset
+                  (touche
+                  <kbd
+                    style="
+                      background: #0a0c18;
+                      padding: 1px 3px;
+                      border-radius: 2px;
+                      color: var(--red);
+                    "
+                    >R</kbd
+                  >)
+                </div>
+                <div>
+                  <b style="color: var(--text)">✨ Effets &amp; Son</b> —
+                  pluie « Matrix », sons d'entraînement, flux animé sur les
+                  connexions, bouton fête 🎉
+                </div>
+                <div>
+                  <b style="color: var(--text)">📊 Analyse des gradients</b> —
+                  détecte vanishing/exploding gradient couche par couche
+                  (touche
+                  <kbd
+                    style="
+                      background: #0a0c18;
+                      padding: 1px 3px;
+                      border-radius: 2px;
+                      color: var(--a1);
+                    "
+                    >G</kbd
+                  >)
+                </div>
+                <div>
+                  <b style="color: var(--text)"
+                    >📉 Courbe de perte interactive</b
+                  >
+                  — zoom sur les N dernières epochs
+                </div>
+                <div>
+                  <b style="color: var(--text)"
+                    >🔬 Inspection couche par couche</b
+                  >
+                  — stats détaillées (poids, activations) d'une couche
+                  choisie
+                </div>
+                <div>
+                  <b style="color: var(--text)">⚡ Benchmark vitesse</b> —
+                  mesure le débit d'entraînement en samples/s
+                </div>
+                <div>
+                  <b style="color: var(--text)">🎯 Objectif de loss</b> —
+                  entraîne automatiquement jusqu'à atteindre une loss cible
+                </div>
+                <div>
+                  <b style="color: var(--text)">🧪 Perturbation de données</b>
+                  — ajoute du bruit réglable aux entrées pour tester la
+                  robustesse
+                </div>
+                <div>
+                  <b style="color: var(--text)">📷 Export image réseau</b> —
+                  capture le canvas en PNG ou vers le presse-papiers
+                </div>
+                <div>
+                  <b style="color: var(--text)">🗓 Heatmap des poids</b> — vue
+                  matricielle colorée de tous les poids (touche
+                  <kbd
+                    style="
+                      background: #0a0c18;
+                      padding: 1px 3px;
+                      border-radius: 2px;
+                      color: var(--ylw);
+                    "
+                    >H</kbd
+                  >)
+                </div>
+                <div>
+                  <b style="color: var(--text)">🧬 Mutation des poids</b> —
+                  bruit aléatoire appliqué aux poids, avec évaluation
+                  optionnelle (touche
+                  <kbd
+                    style="
+                      background: #0a0c18;
+                      padding: 1px 3px;
+                      border-radius: 2px;
+                      color: var(--org);
+                    "
+                    >M</kbd
+                  >)
+                </div>
+              </div>
+            </div>
+
+            <!-- LABOS CNN / RNN (ajout) -->
+            <div
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(0, 229, 255, 0.05),
+                  rgba(191, 95, 255, 0.05)
+                );
+                border: 1px solid var(--brd);
+                border-radius: 4px;
+                padding: 10px;
+                margin-bottom: 12px;
+              "
+            >
+              <div
+                style="
+                  color: var(--a1);
+                  font-size: 10px;
+                  font-weight: 600;
+                  margin-bottom: 7px;
+                  display: flex;
+                  align-items: center;
+                  gap: 5px;
+                "
+              >
+                <span>🧩🔁</span> Labos spécialisés (dans Outils)
+              </div>
+              <div style="font-size: 8px; line-height: 1.9; color: var(--dim)">
+                <div
+                  style="color: var(--a1); font-weight: 600; margin-bottom: 3px"
+                >
+                  🧩 Labo CNN — 5 onglets
+                </div>
+                <div style="padding-left: 8px; margin-bottom: 6px">
+                  Convolution pas-à-pas · Galerie de filtres · Pipeline
+                  multi-couches (champ réceptif) · Entraîner un noyau ·
+                  <b style="color: var(--grn)">🧠 Modèle complet</b>
+                  (construire, entraîner par vraie rétropropagation et tester
+                  un CNN multi-couches sur des images dessinées sur place)
+                </div>
+                <div
+                  style="color: var(--a2); font-weight: 600; margin-bottom: 3px"
+                >
+                  🔁 Labo RNN — 4 onglets
+                </div>
+                <div style="padding-left: 8px">
+                  Cellule (un pas de temps) · Déroulement (mémoire dans le
+                  temps) · Mémoire &amp; gradients (vanishing/exploding) ·
+                  Entraîner (BPTT) sur un mini-modèle
+                  caractère-par-caractère
+                </div>
+              </div>
+            </div>
+
             <!-- THEORY SECTION -->
             <div
               style="
@@ -7119,7 +7368,17 @@
                 pour visualiser comment le réseau sépare l'espace<br />
                 • <b style="color: var(--text)">Test de généralisation</b> :
                 Créez un dataset, entraînez, puis utilisez l'onglet Test pour
-                prédire de nouvelles valeurs
+                prédire de nouvelles valeurs<br />
+                • <b style="color: var(--text)">Vanishing gradient en RNN</b>
+                : Dans le labo RNN, onglet « Mémoire &amp; gradients »,
+                augmentez la longueur de séquence et observez la mémoire
+                s'effacer<br />
+                • <b style="color: var(--text)">Champ réceptif d'un CNN</b> :
+                Dans le labo CNN, onglet « Pipeline multi-couches », ajoutez
+                des couches et regardez le champ réceptif grandir<br />
+                • <b style="color: var(--text)">Auto-évaluation</b> : Faites
+                le Quiz en mode aléatoire, puis vérifiez vos calculs sur un
+                exemple concret dans l'onglet Manuel
               </div>
             </div>
 
@@ -22925,20 +23184,10 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         const milestones = [25, 50, 75, 90];
         const firedMilestones = new Set();
         function pulseMilestone() {
-          // Le flash plein écran est désactivé en mode Auto : les epochs
-          // s'enchaînent vite et l'accuracy peut osciller autour d'un palier,
-          // ce qui le redéclenchait très souvent et donnait une impression
-          // de "refresh"/écran qui s'assombrit en boucle. On garde les
-          // éclats localisés sur la stat d'accuracy dans tous les cas.
-          if (typeof autoRunning === "undefined" || !autoRunning) {
-            document.body.classList.remove("milestone-flash");
-            void document.body.offsetWidth;
-            document.body.classList.add("milestone-flash");
-            setTimeout(
-              () => document.body.classList.remove("milestone-flash"),
-              720,
-            );
-          }
+          // Flash plein écran désactivé : il donnait une impression de
+          // fondu noir / écran qui s'assombrit à chaque palier d'accuracy
+          // franchi (25/50/75/90 %), y compris via +Epoch, ×100, ×1k, ×10k.
+          // On garde uniquement les éclats localisés sur la stat d'accuracy.
           const box = document.getElementById("sAcc");
           const sb = box && box.closest(".sb");
           if (sb) {
@@ -23020,6 +23269,196 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         });
 
         console.log("✓ Neural Lab v12 — pack satisfaction chargé");
+      })();
+    </script>
+
+    <!-- ══════════════ PACK SATISFACTION 2 — contrôles de formulaire ══════════════
+         Bloc 100% additif, dans le même esprit que le pack ci-dessus : anime
+         les éléments qui n'avaient encore aucune transition (select, sliders,
+         checkbox, color picker, lignes de tableau, scrollbar). Ne redéfinit
+         rien en profondeur, ne retire aucune règle existante. Respecte
+         prefers-reduced-motion (règle globale déjà en place plus haut). -->
+    <style>
+      /* Selects : même feedback que les inputs texte au survol/focus */
+      select {
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      select:hover {
+        border-color: var(--a1);
+      }
+      select:focus {
+        border-color: var(--a1);
+        box-shadow: 0 0 6px rgba(0, 229, 255, 0.15);
+      }
+
+      /* Sliders : curseur custom qui grossit doucement au survol / au drag */
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--a1);
+        cursor: pointer;
+        transition:
+          transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+          box-shadow 0.15s;
+      }
+      input[type="range"]:hover::-webkit-slider-thumb {
+        transform: scale(1.25);
+        box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+      }
+      input[type="range"]:active::-webkit-slider-thumb {
+        transform: scale(1.45);
+        box-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border: none;
+        border-radius: 50%;
+        background: var(--a1);
+        cursor: pointer;
+        transition:
+          transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+          box-shadow 0.15s;
+      }
+      input[type="range"]:hover::-moz-range-thumb {
+        transform: scale(1.25);
+        box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+      }
+      input[type="range"]:active::-moz-range-thumb {
+        transform: scale(1.45);
+        box-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+      }
+
+      /* Bulle de valeur flottante pendant le drag d'un slider */
+      .rng-bubble {
+        position: fixed;
+        transform: translate(-50%, -100%);
+        background: #0a0c18;
+        border: 1px solid var(--a1);
+        color: var(--a1);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        pointer-events: none;
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.35);
+        opacity: 0;
+        transition:
+          opacity 0.12s ease,
+          transform 0.05s linear;
+        z-index: 999;
+        white-space: nowrap;
+      }
+      .rng-bubble.show {
+        opacity: 1;
+      }
+
+      /* Color picker : léger zoom + halo au survol */
+      input[type="color"] {
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s,
+          border-color 0.15s;
+      }
+      input[type="color"]:hover {
+        transform: scale(1.12);
+        border-color: var(--a1);
+        box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
+      }
+
+      /* Checkbox : léger grossissement au survol, avant le "pop" du clic */
+      input[type="checkbox"] {
+        transition: transform 0.12s ease;
+      }
+      input[type="checkbox"]:hover {
+        transform: scale(1.15);
+      }
+
+      /* Lignes de tableau (.wt, dataset preview) : surlignage doux au survol */
+      .wt tr {
+        transition: background-color 0.12s ease;
+      }
+      .wt tr:hover td {
+        background: rgba(0, 229, 255, 0.05);
+      }
+
+      /* Ascenseur : transition de couleur au survol au lieu d'un saut net */
+      ::-webkit-scrollbar-thumb {
+        transition: background-color 0.2s ease;
+      }
+    </style>
+    <script>
+      (function () {
+        "use strict";
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+          return;
+
+        // ── Bulle de valeur flottante au-dessus du curseur pendant le
+        // drag d'un slider (souris, tactile ou clavier). Purement additive :
+        // ne touche à aucun handler existant, se contente d'observer les
+        // événements input/blur au niveau du document. ──
+        let bubble = null;
+        function ensureBubble() {
+          if (!bubble) {
+            bubble = document.createElement("div");
+            bubble.className = "rng-bubble";
+            document.body.appendChild(bubble);
+          }
+          return bubble;
+        }
+        function positionBubble(el) {
+          const b = ensureBubble();
+          const rect = el.getBoundingClientRect();
+          const min = parseFloat(el.min) || 0;
+          const max = parseFloat(el.max) || 100;
+          const val = parseFloat(el.value);
+          const pct = max > min ? (val - min) / (max - min) : 0;
+          const thumbX = rect.left + pct * rect.width;
+          b.style.left = thumbX + "px";
+          b.style.top = rect.top - 6 + "px";
+          b.textContent = el.value;
+          b.classList.add("show");
+        }
+        let hideTimer = null;
+        function scheduleHide() {
+          clearTimeout(hideTimer);
+          hideTimer = setTimeout(() => {
+            if (bubble) bubble.classList.remove("show");
+          }, 700);
+        }
+        document.addEventListener(
+          "input",
+          (e) => {
+            const el = e.target;
+            if (!(el instanceof HTMLInputElement) || el.type !== "range")
+              return;
+            positionBubble(el);
+            scheduleHide();
+          },
+          { passive: true },
+        );
+        document.addEventListener(
+          "blur",
+          (e) => {
+            const el = e.target;
+            if (
+              el instanceof HTMLInputElement &&
+              el.type === "range" &&
+              bubble
+            ) {
+              clearTimeout(hideTimer);
+              bubble.classList.remove("show");
+            }
+          },
+          true,
+        ); // capture : blur ne "bubble" pas
+
+        console.log("✓ Neural Lab v12 — pack satisfaction 2 (contrôles) chargé");
       })();
     </script>
   </body>
