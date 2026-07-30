@@ -2703,6 +2703,140 @@
         font-size: 9px;
         color: var(--dim);
       }
+      /* ══ Éditeur visuel Régression / Classification (lié au réseau central) ══ */
+      #vds-modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 1550;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #vds-modal-bg.show {
+        display: flex;
+      }
+      #vds-modal {
+        background: var(--p1);
+        border: 1px solid var(--a2);
+        border-radius: 8px;
+        max-width: 900px;
+        width: 96%;
+        max-height: 92vh;
+        overflow-y: auto;
+        box-shadow: 0 0 40px rgba(191, 95, 255, 0.18);
+      }
+      #vds-header {
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--brd);
+        background: linear-gradient(135deg, var(--p1), var(--p2));
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+      #vds-header h2 {
+        font-family: "Syne", sans-serif;
+        color: var(--a2);
+        font-size: 14px;
+        flex: 1;
+      }
+      #vds-body {
+        padding: 14px 18px;
+      }
+      #vds-body .tabs {
+        margin: 0 0 12px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .vds-intro {
+        font-size: 9px;
+        color: var(--dim);
+        margin-bottom: 10px;
+        line-height: 1.6;
+      }
+      .vds-layout {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+      .vds-side-col {
+        flex: 1;
+        min-width: 220px;
+      }
+      .vds-cvs-wrap {
+        position: relative;
+        width: 320px;
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
+        border: 1px solid var(--brd);
+        border-radius: 6px;
+        overflow: hidden;
+        background: #020307;
+        cursor: crosshair;
+        flex-shrink: 0;
+      }
+      .vds-cvs-wrap canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .vds-cvs-wrap canvas.vds-bg-cvs {
+        pointer-events: none;
+      }
+      .vds-mode-row {
+        display: flex;
+        gap: 5px;
+        margin: 8px 0;
+      }
+      .vds-mode-row .btn {
+        flex: 1;
+        font-size: 8px;
+        justify-content: center;
+      }
+      .vds-hint {
+        font-size: 8px;
+        color: var(--dim);
+        line-height: 1.6;
+        margin-top: 4px;
+      }
+      .vds-arch-msg {
+        font-size: 8px;
+        margin-top: 8px;
+        line-height: 1.8;
+      }
+      .vds-arch-msg .btn {
+        font-size: 8px;
+        padding: 3px 6px;
+        margin-left: 4px;
+      }
+      .vds-chip {
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .vds-chip:hover {
+        border-color: var(--a2);
+      }
+      .vds-chip.sel {
+        background: rgba(191, 95, 255, 0.12);
+      }
+      .vds-stat {
+        font-size: 9px;
+        color: var(--dim);
+        margin-top: 8px;
+        line-height: 1.6;
+      }
+      .vds-legend {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 8px;
+        color: var(--dim);
+        margin-top: 6px;
+      }
       #saveload-modal-bg {
         position: fixed;
         inset: 0;
@@ -2886,6 +3020,86 @@
         background: #0a0c18;
         border: 1px dashed var(--brd);
         opacity: 0.45;
+      }
+      /* ── ÉDITEUR DE DESSIN (grandes images, >32×32) ── */
+      .cnn-editor {
+        margin: 4px 0;
+      }
+      .cnn-editor-toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 6px;
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 6px 8px;
+      }
+      .cnn-tool-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .cnn-tool-btn {
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #10131f;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        line-height: 1;
+        color: #ddd;
+        transition: 0.1s;
+        padding: 0;
+      }
+      .cnn-tool-btn:hover {
+        border-color: var(--a1);
+      }
+      .cnn-tool-btn.active {
+        background: var(--a1);
+        border-color: var(--a1);
+        color: #000;
+      }
+      .cnn-color-btn {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--brd);
+        cursor: pointer;
+        padding: 0;
+      }
+      .cnn-color-btn.active {
+        border-color: var(--ylw);
+        box-shadow: 0 0 4px rgba(255, 214, 0, 0.7);
+      }
+      .cnn-editor-canvas-wrap {
+        display: flex;
+        justify-content: center;
+        background: #000;
+        border: 1px solid var(--brd);
+        border-radius: 4px;
+        padding: 4px;
+      }
+      .cnn-editor-canvas-wrap canvas {
+        width: 100%;
+        max-width: 380px;
+        aspect-ratio: 1 / 1;
+        image-rendering: pixelated;
+        cursor: crosshair;
+        touch-action: none;
+        background: #000;
+        border-radius: 2px;
+      }
+      .cnn-ds-thumb {
+        image-rendering: pixelated;
+        border-radius: 2px;
+        display: block;
+        background: #000;
       }
       .cnn-legend {
         display: flex;
@@ -3607,7 +3821,8 @@
            la liste. On restaure le défilement horizontal ici pour qu'ils
            restent tous atteignables au doigt. */
         #cnn-body .tabs,
-        #rnn-body .tabs {
+        #rnn-body .tabs,
+        #vds-body .tabs {
           overflow-x: auto;
           overflow-y: hidden;
           -webkit-overflow-scrolling: touch;
@@ -3974,6 +4189,22 @@
           transform: none;
         }
       }
+      /* En mode Auto, les lignes s'enchaînent trop vite pour l'animation
+         complète : on la garde (pas de désactivation) mais on réduit très
+         nettement son amplitude/durée pour que les logs restent lisibles. */
+      body.auto-mode #log > div {
+        animation: logSlideAuto 0.12s ease-out;
+      }
+      @keyframes logSlideAuto {
+        from {
+          opacity: 0.55;
+          transform: translateX(-2px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
       /* Subtle moving shine on the training progress bar */
       .pb {
         position: relative;
@@ -4022,7 +4253,8 @@
       #saveload-modal-bg.show #saveload-modal,
       #race-modal-bg.show #race-modal,
       #cnn-modal-bg.show #cnn-modal,
-      #rnn-modal-bg.show #rnn-modal {
+      #rnn-modal-bg.show #rnn-modal,
+      #vds-modal-bg.show #vds-modal {
         animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
       @keyframes modalPop {
@@ -4255,7 +4487,8 @@
       #saveload-modal-bg.show #saveload-modal,
       #race-modal-bg.show #race-modal,
       #cnn-modal-bg.show #cnn-modal,
-      #rnn-modal-bg.show #rnn-modal {
+      #rnn-modal-bg.show #rnn-modal,
+      #vds-modal-bg.show #vds-modal {
         animation: modalWow 0.55s cubic-bezier(0.2, 1, 0.3, 1);
         transform-origin: center center;
       }
@@ -4695,6 +4928,26 @@
         <div id="tc-data" class="tc">
           <div id="dsedit-wrap">
             <div class="sh">Dataset</div>
+            <button
+              class="btn on"
+              onclick="openVDS()"
+              style="width: 100%; margin-bottom: 10px; justify-content: center; padding: 8px"
+            >
+              🎯 Éditeur visuel — Régression / Classification
+            </button>
+            <div
+              style="
+                font-size: 8px;
+                color: var(--dim);
+                margin: -6px 0 10px;
+                line-height: 1.6;
+              "
+            >
+              Construisez un dataset 2D à la souris (points de classes ou
+              nuage de points à régresser) et entraînez le réseau du canevas
+              central dessus, avec la frontière de décision / la courbe
+              apprise visibles en direct.
+            </div>
             <lbl>Préréglage</lbl>
             <select id="dsPreset" onchange="loadPreset()">
               <option value="xor">XOR (2→1)</option>
@@ -5287,6 +5540,92 @@
                     value="1"
                     oninput="this.nextElementSibling.textContent = this.value"
                   /><span class="cval">1.0</span>
+                </div>
+              </div>
+            </div>
+            <div class="csec">
+              <div class="csech" onclick="togC(this)">
+                <span>🧪</span><span class="csect">Techniques d'entraînement</span
+                ><span class="cseca">▶</span>
+              </div>
+              <div class="csecb">
+                <div class="crow">
+                  <label title="Normalise la pré-activation de chaque neurone caché avec des statistiques glissantes (moyenne/variance), puis applique un gain γ et un biais β appris.">Batch Normalization</label
+                  ><input
+                    type="checkbox"
+                    id="cBN"
+                    onchange="log(this.checked ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Batch Norm activée&lt;/span&gt; — normalisation des couches cachées (γ,β appris + stats glissantes)' : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Batch Norm désactivée&lt;/span&gt;')"
+                  /><span style="color: var(--text); font-size: 9px"
+                    >Activer</span
+                  >
+                </div>
+                <div class="crow">
+                  <label title="Vitesse de mise à jour des statistiques glissantes (moyenne/variance) de la Batch Norm.">BN momentum</label
+                  ><input
+                    type="range"
+                    id="cBNMom"
+                    min="0.5"
+                    max="0.999"
+                    step="0.001"
+                    value="0.9"
+                    oninput="this.nextElementSibling.textContent = this.value"
+                  /><span class="cval">0.90</span>
+                </div>
+                <div class="crow">
+                  <label title="Ajoute un bruit gaussien aléatoire aux entrées à chaque exemple d'entraînement (les entrées affichées/testées restent inchangées).">Data augmentation</label
+                  ><input
+                    type="checkbox"
+                    id="cAug"
+                    onchange="log(this.checked ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Augmentation activée&lt;/span&gt; — bruit gaussien ajouté aux entrées d\'entraînement' : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Augmentation désactivée&lt;/span&gt;')"
+                  /><span style="color: var(--text); font-size: 9px"
+                    >Activer</span
+                  >
+                </div>
+                <div class="crow">
+                  <label title="Écart-type du bruit gaussien ajouté à chaque valeur d'entrée pendant l'entraînement.">Bruit (σ)</label
+                  ><input
+                    type="range"
+                    id="cAugNoise"
+                    min="0"
+                    max="0.3"
+                    step="0.01"
+                    value="0.05"
+                    oninput="this.nextElementSibling.textContent = this.value"
+                  /><span class="cval">0.05</span>
+                </div>
+                <div class="crow">
+                  <label title="Arrête automatiquement l'entraînement (Auto / ×N époques) quand la loss cesse de s'améliorer.">Early stopping</label
+                  ><input
+                    type="checkbox"
+                    id="cES"
+                    onchange="EARLY.bestLoss = Infinity; EARLY.badEpochs = 0; log(this.checked ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Early stopping activé&lt;/span&gt;' : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Early stopping désactivé&lt;/span&gt;')"
+                  /><span style="color: var(--text); font-size: 9px"
+                    >Activer</span
+                  >
+                </div>
+                <div class="crow">
+                  <label title="Nombre d'époques sans amélioration significative avant l'arrêt.">Patience (époques)</label
+                  ><input
+                    type="range"
+                    id="cESPat"
+                    min="5"
+                    max="300"
+                    step="5"
+                    value="30"
+                    oninput="this.nextElementSibling.textContent = this.value"
+                  /><span class="cval">30</span>
+                </div>
+                <div class="crow">
+                  <label title="Amélioration minimale de la loss moyenne pour compter comme un progrès.">Δ min. loss</label
+                  ><input
+                    type="range"
+                    id="cESDelta"
+                    min="0"
+                    max="0.01"
+                    step="0.0001"
+                    value="0.0005"
+                    oninput="this.nextElementSibling.textContent = this.value"
+                  /><span class="cval">0.0005</span>
                 </div>
               </div>
             </div>
@@ -7131,6 +7470,13 @@
       let RAF_ID = null,
         SELECTED = null;
       let LAYER_ACTS = [];
+      // ── Techniques d'entraînement additionnelles ──
+      // Batch Normalization : γ/β appris + stats glissantes (moyenne/var) par neurone caché
+      let BN = { gamma: [], beta: [], runMean: [], runVar: [] };
+      let BN_ZHAT = []; // zHat (valeur normalisée avant γ/β) du dernier forward, pour le backward
+      let BN_GRAD = { gamma: [], beta: [] }; // gradients γ/β du dernier backward
+      // Early stopping : suivi de la meilleure loss et du nombre d'époques sans progrès
+      let EARLY = { bestLoss: Infinity, badEpochs: 0 };
 
       const ε = 1e-15;
       const h2r = (h) => {
@@ -7165,6 +7511,50 @@
       }
       function getV(id) {
         return parseFloat(document.getElementById(id).value) || 0;
+      }
+      function bnOn() {
+        const el = document.getElementById("cBN");
+        return !!(el && el.checked);
+      }
+      function bnMomentum() {
+        return getV("cBNMom") || 0.9;
+      }
+      function augOn() {
+        const el = document.getElementById("cAug");
+        return !!(el && el.checked);
+      }
+      function augNoise() {
+        return getV("cAugNoise") || 0;
+      }
+      function earlyOn() {
+        const el = document.getElementById("cES");
+        return !!(el && el.checked);
+      }
+      function earlyPatience() {
+        return Math.max(1, Math.round(getV("cESPat") || 30));
+      }
+      function earlyMinDelta() {
+        return getV("cESDelta") || 0;
+      }
+      // S'assure que les tableaux γ/β/stats de la BN correspondent à la forme actuelle de NET
+      // (couches cachées uniquement, jamais la couche de sortie). Auto-réparateur : peu importe
+      // par quel chemin NET a été (re)construit (buildNet, wizard, import, load…).
+      function ensureBN() {
+        if (!NET) return;
+        const nLayers = Math.max(0, NET.W.length - 1);
+        for (let l = 0; l < nLayers; l++) {
+          const n = NET.W[l].length;
+          if (!BN.gamma[l] || BN.gamma[l].length !== n) {
+            BN.gamma[l] = new Array(n).fill(1);
+            BN.beta[l] = new Array(n).fill(0);
+            BN.runMean[l] = new Array(n).fill(0);
+            BN.runVar[l] = new Array(n).fill(1);
+          }
+        }
+        BN.gamma.length = nLayers;
+        BN.beta.length = nLayers;
+        BN.runMean.length = nLayers;
+        BN.runVar.length = nLayers;
       }
       function fmt(v) {
         return isNaN(v) ? "NaN" : (+v).toFixed(5);
@@ -7381,6 +7771,9 @@
         MA = { w: [], b: [] };
         MV = { w: [], b: [] };
         ADAM_T = 0;
+        BN = { gamma: [], beta: [], runMean: [], runVar: [] };
+        EARLY.bestLoss = Infinity;
+        EARLY.badEpochs = 0;
         const initMethod =
           customInitMethod || document.getElementById("cInit").value;
         for (let l = 0; l < ls.length - 1; l++) {
@@ -7434,7 +7827,7 @@
             ? "mixte[" + LAYER_ACTS.join(",") + "]"
             : getAct();
         log(
-          `<span class="ls">▶ RÉSEAU CRÉÉ</span> — Couches:[${ls.join("→")}] Act:${actDesc} Opt:${getOpt()} Loss:${getLoss()}`,
+          `<span class="ls">▶ RÉSEAU CRÉÉ</span> — Couches:[${ls.join("→")}] Act:${actDesc} Opt:${getOpt()} Loss:${getLoss()}${bnOn() ? " BN:ON" : ""}`,
         );
       }
 
@@ -7442,6 +7835,7 @@
         if (!NET) return;
         if (autoRunning) {
           autoRunning = false;
+          document.body.classList.remove("auto-mode");
           if (RAF_ID) {
             cancelAnimationFrame(RAF_ID);
             RAF_ID = null;
@@ -7452,17 +7846,39 @@
             abtn.textContent = "⚡ Auto";
           }
         }
-        for (let l = 0; l < NET.W.length; l++) {
-          for (let j = 0; j < NET.W[l].length; j++) {
-            for (let k = 0; k < NET.W[l][j].length; k++)
-              NET.W[l][j][k] = initW(NET.L[l], NET.L[l + 1]);
-            NET.B[l][j] = Math.random() * 0.4 - 0.2;
-          }
-        }
         VEL = { w: [], b: [] };
         MA = { w: [], b: [] };
         MV = { w: [], b: [] };
+        for (let l = 0; l < NET.W.length; l++) {
+          const vw = [],
+            mw = [],
+            vb = [],
+            mb = [];
+          for (let j = 0; j < NET.W[l].length; j++) {
+            const vrow = [],
+              mrow = [];
+            for (let k = 0; k < NET.W[l][j].length; k++) {
+              NET.W[l][j][k] = initW(NET.L[l], NET.L[l + 1]);
+              vrow.push(0);
+              mrow.push(0);
+            }
+            NET.B[l][j] = Math.random() * 0.4 - 0.2;
+            vw.push(vrow);
+            mw.push(mrow);
+            vb.push(0);
+            mb.push(0);
+          }
+          VEL.w.push(vw);
+          VEL.b.push(vb);
+          MA.w.push(mw);
+          MA.b.push(mb);
+          MV.w.push(vw.map((r) => r.map(() => 0)));
+          MV.b.push(vb.map(() => 0));
+        }
         ADAM_T = 0;
+        BN = { gamma: [], beta: [], runMean: [], runVar: [] };
+        EARLY.bestLoss = Infinity;
+        EARLY.badEpochs = 0;
         EPOCH = 0;
         LOSS_H = [];
         LAST_ACT = [];
@@ -7489,23 +7905,47 @@
         );
       }
 
-      function forward(input) {
+      function forward(input, isTrain) {
         const drop = getV("cDrop");
+        const bnActive = bnOn();
+        if (bnActive) ensureBN();
+        const bnMom = bnMomentum();
         let a = input.slice(),
           activations = [a.slice()],
           zs = [];
-        for (let l = 0; l < NET.W.length; l++) {
+        const nL = NET.W.length;
+        BN_ZHAT = [];
+        for (let l = 0; l < nL; l++) {
           const fnL = getActForLayer(l);
+          const isLast = l === nL - 1;
           const zL = [],
-            aL = [];
+            aL = [],
+            zHatL = [];
           for (let j = 0; j < NET.W[l].length; j++) {
             let z = NET.B[l][j];
             for (let k = 0; k < a.length; k++) z += NET.W[l][j][k] * a[k];
-            zL.push(z);
+
+            // Batch Normalization (couches cachées uniquement) : normalise z avec des
+            // statistiques glissantes (moyenne/variance), puis applique γ (gain) et β (biais).
+            let zEff = z;
+            if (bnActive && !isLast) {
+              if (isTrain) {
+                BN.runMean[l][j] = bnMom * BN.runMean[l][j] + (1 - bnMom) * z;
+                const d = z - BN.runMean[l][j];
+                BN.runVar[l][j] = bnMom * BN.runVar[l][j] + (1 - bnMom) * d * d;
+              }
+              const zHat =
+                (z - BN.runMean[l][j]) / Math.sqrt(BN.runVar[l][j] + 1e-5);
+              zEff = BN.gamma[l][j] * zHat + BN.beta[l][j];
+              zHatL.push(zHat);
+            } else {
+              zHatL.push(0);
+            }
+            zL.push(zEff);
 
             // Apply node patterns if defined
             const nodeKey = `${l + 1}-${j}`;
-            let activation = act(z, fnL);
+            let activation = act(zEff, fnL);
             if (NET.nodePatterns && NET.nodePatterns[nodeKey]) {
               const pattern = NET.nodePatterns[nodeKey];
               switch (pattern) {
@@ -7526,11 +7966,11 @@
             aL.push(activation);
           }
           let aLF = aL.slice();
-          const isLast = l === NET.W.length - 1;
           if (isLast && fnL === "softmax") aLF = softmax(aL);
           if (!isLast && drop > 0)
             aLF = aLF.map((v) => (Math.random() < drop ? 0 : v));
           zs.push(zL);
+          BN_ZHAT.push(zHatL);
           activations.push(aLF);
           a = aLF;
         }
@@ -7540,6 +7980,8 @@
       function backward(activations, zs, y) {
         const L = NET.W.length - 1;
         const deltas = Array.from({ length: NET.W.length }, () => []);
+        const bnActive = bnOn();
+        BN_GRAD = { gamma: [], beta: [] };
         const gOut = computeLossGrad(activations[L + 1], y);
         const fnOut = getActForLayer(L);
         for (let j = 0; j < NET.W[L].length; j++) {
@@ -7552,11 +7994,31 @@
         }
         for (let l = L - 1; l >= 0; l--) {
           const fnL = getActForLayer(l);
+          const bnLayer = bnActive && BN.gamma[l];
+          const gammaRow = [],
+            betaRow = [];
           for (let k = 0; k < NET.W[l].length; k++) {
             let err = 0;
             for (let j = 0; j < NET.W[l + 1].length; j++)
               err += deltas[l + 1][j] * NET.W[l + 1][j][k];
-            deltas[l].push(err * actD(activations[l + 1][k], zs[l][k], fnL));
+            // dL/dzEff (gradient par rapport à la valeur qui entre réellement dans l'activation,
+            // c'est-à-dire zs[l][k], qu'elle soit brute ou déjà normalisée par la BN)
+            const dzEff = err * actD(activations[l + 1][k], zs[l][k], fnL);
+            if (bnLayer) {
+              // Chaîne à travers l'affine BN (γ,β) — moyenne/variance traitées comme
+              // constantes (stats glissantes détachées), simplification standard pour
+              // ce type d'outil pédagogique.
+              const scale = BN.gamma[l][k] / Math.sqrt(BN.runVar[l][k] + 1e-5);
+              gammaRow.push(dzEff * (BN_ZHAT[l] ? BN_ZHAT[l][k] : 0));
+              betaRow.push(dzEff);
+              deltas[l].push(dzEff * scale); // dL/dz (brut), pour les poids et la couche précédente
+            } else {
+              deltas[l].push(dzEff);
+            }
+          }
+          if (bnLayer) {
+            BN_GRAD.gamma[l] = gammaRow;
+            BN_GRAD.beta[l] = betaRow;
           }
         }
         return deltas;
@@ -7646,6 +8108,16 @@
             }
           }
         }
+        // Mise à jour γ/β de la Batch Norm (SGD simple, indépendant de l'optimiseur choisi)
+        if (bnOn() && BN_GRAD.gamma.length) {
+          for (let l = 0; l < BN_GRAD.gamma.length; l++) {
+            if (!BN_GRAD.gamma[l] || !BN.gamma[l]) continue;
+            for (let j = 0; j < BN_GRAD.gamma[l].length; j++) {
+              BN.gamma[l][j] -= effLR * BN_GRAD.gamma[l][j];
+              BN.beta[l][j] -= effLR * BN_GRAD.beta[l][j];
+            }
+          }
+        }
       }
       function updateParam(w, g, lr, opt, mom, b1, b2, eps, v, m, mv) {
         switch (opt) {
@@ -7674,13 +8146,17 @@
       }
 
       function trainSample(x, y, verbose) {
-        const { activations, zs } = forward(x);
+        // Data augmentation : bruit gaussien ajouté à l'entrée d'entraînement uniquement
+        // (le dataset stocké DS.inputs n'est jamais modifié).
+        const xTrain = augOn() ? x.map((v) => v + gauss() * augNoise()) : x;
+        const { activations, zs } = forward(xTrain, true);
         LAST_ACT = [...activations.map((a) => [...a])];
         LAST_Z = [...zs.map((z) => [...z])];
         const deltas = backward(activations, zs, y);
         LAST_DELTAS = [...deltas.map((d) => [...d])];
         const ll = document.getElementById("logLevel").value;
-        if (verbose && ll !== "off") logFull(x, y, activations, zs, deltas, ll);
+        if (verbose && ll !== "off")
+          logFull(xTrain, y, activations, zs, deltas, ll);
         applyGrad(activations, deltas);
         return computeLoss(activations[activations.length - 1], y);
       }
@@ -7715,6 +8191,33 @@
         redraw();
         flashCanvas();
       }
+      // Met à jour le suivi d'early stopping avec la loss moyenne de l'époque écoulée ;
+      // renvoie true si le nombre d'époques sans amélioration a atteint la patience.
+      function earlyStopUpdate(avgLoss) {
+        if (!earlyOn()) return false;
+        const delta = earlyMinDelta();
+        if (EARLY.bestLoss - avgLoss > delta) {
+          EARLY.bestLoss = avgLoss;
+          EARLY.badEpochs = 0;
+        } else {
+          EARLY.badEpochs++;
+        }
+        return EARLY.badEpochs >= earlyPatience();
+      }
+      function stopAutoWithMessage(msg) {
+        autoRunning = false;
+        document.body.classList.remove("auto-mode");
+        if (RAF_ID) {
+          cancelAnimationFrame(RAF_ID);
+          RAF_ID = null;
+        }
+        const abtn = document.getElementById("btnAuto");
+        if (abtn) {
+          abtn.className = "btn";
+          abtn.textContent = "⚡ Auto";
+        }
+        log(msg);
+      }
       function doEpoch() {
         if (!NET || !DS.inputs.length) return;
         let tot = 0;
@@ -7728,15 +8231,25 @@
         updateStats(avg);
         redraw();
         flashCanvas();
+        if (earlyStopUpdate(avg)) {
+          stopAutoWithMessage(
+            `<span style="color:var(--ylw);font-weight:700">⏸ Early stopping</span> — aucune amélioration depuis ${earlyPatience()} époques (meilleure loss : <span style="color:var(--grn)">${fmt(EARLY.bestLoss)}</span>)`,
+          );
+        }
       }
       function doN(n) {
         if (!NET || !DS.inputs.length) return;
+        let stoppedEarly = false;
         for (let e = 0; e < n; e++) {
           let tot = 0;
           for (let i = 0; i < DS.inputs.length; i++)
             tot += trainSample(DS.inputs[i], DS.outputs[i], false);
           EPOCH++;
           LOSS_H.push(tot / DS.inputs.length);
+          if (earlyStopUpdate(LOSS_H[LOSS_H.length - 1])) {
+            stoppedEarly = true;
+            break;
+          }
         }
         updateStats(LOSS_H[LOSS_H.length - 1]);
         redraw();
@@ -7744,10 +8257,16 @@
         log(
           `<div class="log-epoch-bar"><span style="color:var(--a2);font-weight:700">×${n} epochs</span> &nbsp;|&nbsp; E:${EPOCH} &nbsp;|&nbsp; Loss:<span style="color:var(--red);font-weight:700">${fmt(LOSS_H[LOSS_H.length - 1])}</span> &nbsp;|&nbsp; Acc:<span style="color:var(--grn);font-weight:700">${acc().toFixed(1)}%</span></div>`,
         );
+        if (stoppedEarly) {
+          log(
+            `<span style="color:var(--ylw);font-weight:700">⏸ Early stopping</span> — arrêt anticipé après ${EPOCH} époques (meilleure loss : <span style="color:var(--grn)">${fmt(EARLY.bestLoss)}</span>)`,
+          );
+        }
       }
       function toggleAuto() {
         autoRunning = !autoRunning;
         const btn = document.getElementById("btnAuto");
+        document.body.classList.toggle("auto-mode", autoRunning);
         if (autoRunning) {
           btn.className = "btn on pulse";
           btn.textContent = "⏹ Stop";
@@ -12025,6 +12544,533 @@
         document.getElementById("dsJSON").value = j;
       }
 
+      // ══════════════════════════════════════════════
+      // ── ÉDITEUR VISUEL RÉGRESSION / CLASSIFICATION ──
+      // Génère directement DS.inputs / DS.outputs (utilisés par le réseau
+      // NET du canevas central) à partir de points placés à la souris, avec
+      // un aperçu en direct (frontière de décision / courbe apprise) de ce
+      // que le réseau prédit sur ce dataset.
+      // ══════════════════════════════════════════════
+      const VDS_PALETTE = [
+        "#00e5ff",
+        "#bf5fff",
+        "#ff8c2a",
+        "#00ff9d",
+        "#ffd600",
+        "#ff3d5a",
+        "#5fd0ff",
+        "#e792ff",
+      ];
+      function vdsClassColor(i) {
+        return VDS_PALETTE[i % VDS_PALETTE.length];
+      }
+      function vdsHexToRgb(hex) {
+        const h = hex.replace("#", "");
+        return [
+          parseInt(h.substring(0, 2), 16),
+          parseInt(h.substring(2, 4), 16),
+          parseInt(h.substring(4, 6), 16),
+        ];
+      }
+      function vdsClassColorRGB(i) {
+        return vdsHexToRgb(vdsClassColor(i));
+      }
+
+      let VDS = {
+        activeTab: "class",
+        liveTimer: null,
+        cls: { classes: [], points: [], active: 0, mode: "add" },
+        reg: { points: [], mode: "add" },
+      };
+
+      function vdsEventToCoords(e, canvasId) {
+        const cvs = document.getElementById(canvasId);
+        const rect = cvs.getBoundingClientRect();
+        const rx = (e.clientX - rect.left) / rect.width;
+        const ry = (e.clientY - rect.top) / rect.height;
+        const x1 = clamp(rx, 0, 1) * 2 - 1;
+        const x2 = (1 - clamp(ry, 0, 1)) * 2 - 1;
+        return { x1, x2 };
+      }
+
+      function openVDS() {
+        document.getElementById("vds-modal-bg").classList.add("show");
+        vdsShowTab(VDS.activeTab || "class");
+      }
+      function closeVDS() {
+        document.getElementById("vds-modal-bg").classList.remove("show");
+        vdsStopLive();
+      }
+      {
+        const _vb = document.getElementById("vds-modal-bg");
+        if (_vb)
+          _vb.addEventListener("click", (e) => {
+            if (e.target === _vb) closeVDS();
+          });
+      }
+      function vdsShowTab(name) {
+        VDS.activeTab = name;
+        ["class", "reg"].forEach((t) => {
+          const btn = document.getElementById("vdstab-btn-" + t);
+          const pane = document.getElementById("vdstab-" + t);
+          if (btn) btn.classList.toggle("active", t === name);
+          if (pane) pane.classList.toggle("show", t === name);
+        });
+        // Le dataset actif (DS) suit l'onglet affiché : classification et
+        // régression ne peuvent pas cohabiter dans le même réseau, donc on
+        // recharge dans DS les points de l'onglet qu'on vient d'afficher
+        // (sans effet s'il n'y a pas encore assez de données côté classif.).
+        if (name === "class") vdsClassSync();
+        else vdsRegSync();
+        vdsStartLive();
+      }
+      function vdsRenderActive() {
+        if (VDS.activeTab === "class") vdsRenderClass();
+        else vdsRenderReg();
+      }
+      function vdsStartLive() {
+        vdsStopLive();
+        VDS.liveTimer = setInterval(vdsRenderActive, 400);
+      }
+      function vdsStopLive() {
+        if (VDS.liveTimer) {
+          clearInterval(VDS.liveTimer);
+          VDS.liveTimer = null;
+        }
+      }
+      function vdsSetMode(which, mode) {
+        VDS[which].mode = mode;
+        const addBtn = document.getElementById(which + "ModeAdd");
+        const eraseBtn = document.getElementById(which + "ModeErase");
+        if (addBtn) addBtn.className = "btn" + (mode === "add" ? " on" : "");
+        if (eraseBtn)
+          eraseBtn.className = "btn" + (mode === "erase" ? " on" : "");
+      }
+
+      // Message d'état de compatibilité architecture réseau ↔ dataset, avec
+      // bouton pour reconstruire l'architecture (entrée/sortie) en un clic.
+      function vdsArchMismatchMsg(nIn, nOut) {
+        if (!NET)
+          return (
+            `<span style="color:var(--org)">Aucun réseau construit.</span>` +
+            `<button class="btn ok" onclick="vdsApplyArch(${nIn},${nOut})">⚙ Construire (${nIn}→…→${nOut})</button>`
+          );
+        if (NET.L[0] !== nIn || NET.L[NET.L.length - 1] !== nOut) {
+          return (
+            `<span style="color:var(--org)">⚠ Architecture réseau (${NET.L.join("→")}) incompatible avec ce dataset.</span>` +
+            `<button class="btn ok" onclick="vdsApplyArch(${nIn},${nOut})">⚙ Adapter (${nIn}→…→${nOut})</button>`
+          );
+        }
+        return `<span style="color:var(--grn)">✓ Architecture compatible (${NET.L.join("→")})</span>`;
+      }
+      function vdsApplyArch(nIn, nOut) {
+        const cur = (document.getElementById("iLayers").value || "")
+          .split(",")
+          .map(Number)
+          .filter((n) => n > 0 && !isNaN(n));
+        let ls = cur.length >= 2 ? [...cur] : [nIn, 4, nOut];
+        ls[0] = nIn;
+        ls[ls.length - 1] = nOut;
+        document.getElementById("iLayers").value = ls.join(",");
+        if (nOut > 1) {
+          document.getElementById("iActOut").value = "softmax";
+          document.getElementById("iLoss").value = "logloss";
+        } else {
+          document.getElementById("iActOut").value = "linear";
+          document.getElementById("iLoss").value = "mse";
+        }
+        buildNet();
+        log(
+          `<span class="ls">⚙ Architecture reconstruite</span> — ${ls.join("→")} (poids réinitialisés)`,
+        );
+        vdsRenderActive();
+      }
+
+      // ════════ CLASSIFICATION ════════
+      function vdsClassRenderChips() {
+        const el = document.getElementById("vdsClasses");
+        if (!el) return;
+        if (!VDS.cls.classes.length) {
+          el.innerHTML =
+            '<span style="font-size:9px;color:var(--dim)">Aucune classe pour l\'instant — ajoutez-en au moins 2 ci-dessous, ou utilisez un jeu de démo.</span>';
+        } else {
+          el.innerHTML = VDS.cls.classes
+            .map((c, i) => {
+              const count = VDS.cls.points.filter((p) => p.cls === i).length;
+              const sel = i === VDS.cls.active;
+              return `<span class="cnn-class-chip vds-chip${sel ? " sel" : ""}" style="${sel ? `outline:2px solid ${vdsClassColor(i)}` : ""}" onclick="vdsClassSelect(${i})"><span class="dot" style="background:${vdsClassColor(i)}"></span>${c} (${count})<button onclick="event.stopPropagation();vdsClassRemoveClass(${i})" title="Supprimer la classe">✕</button></span>`;
+            })
+            .join("");
+        }
+      }
+      function vdsClassSelect(i) {
+        VDS.cls.active = i;
+        vdsClassRenderChips();
+      }
+      function vdsClassAddClass() {
+        const inp = document.getElementById("vdsNewClassName");
+        const name = (inp.value || "").trim();
+        if (!name) return;
+        if (VDS.cls.classes.includes(name)) {
+          alert("Cette classe existe déjà.");
+          return;
+        }
+        if (VDS.cls.classes.length >= 8) {
+          alert("Maximum 8 classes.");
+          return;
+        }
+        VDS.cls.classes.push(name);
+        VDS.cls.active = VDS.cls.classes.length - 1;
+        inp.value = "";
+        vdsClassSync();
+      }
+      function vdsClassRemoveClass(i) {
+        const name = VDS.cls.classes[i];
+        const count = VDS.cls.points.filter((p) => p.cls === i).length;
+        if (
+          count > 0 &&
+          !confirm(
+            `Supprimer la classe « ${name} » effacera aussi ses ${count} point(s). Continuer ?`,
+          )
+        )
+          return;
+        VDS.cls.classes.splice(i, 1);
+        VDS.cls.points = VDS.cls.points
+          .filter((p) => p.cls !== i)
+          .map((p) => ({ ...p, cls: p.cls > i ? p.cls - 1 : p.cls }));
+        if (VDS.cls.active >= VDS.cls.classes.length)
+          VDS.cls.active = Math.max(0, VDS.cls.classes.length - 1);
+        vdsClassSync();
+      }
+      function vdsClassCanvasClick(e) {
+        if (!VDS.cls.classes.length) {
+          alert("Ajoutez d'abord au moins une classe.");
+          return;
+        }
+        const { x1, x2 } = vdsEventToCoords(e, "vdsClassPtCvs");
+        if (VDS.cls.mode === "erase") {
+          vdsClassRemoveNearest(x1, x2);
+        } else {
+          VDS.cls.points.push({ x1, x2, cls: VDS.cls.active });
+        }
+        vdsClassSync();
+      }
+      function vdsClassCanvasContext(e) {
+        e.preventDefault();
+        const { x1, x2 } = vdsEventToCoords(e, "vdsClassPtCvs");
+        vdsClassRemoveNearest(x1, x2);
+        vdsClassSync();
+      }
+      function vdsClassRemoveNearest(x1, x2) {
+        if (!VDS.cls.points.length) return;
+        let bi = -1,
+          bd = Infinity;
+        VDS.cls.points.forEach((p, i) => {
+          const d = (p.x1 - x1) ** 2 + (p.x2 - x2) ** 2;
+          if (d < bd) {
+            bd = d;
+            bi = i;
+          }
+        });
+        if (bi >= 0 && bd < 0.02) VDS.cls.points.splice(bi, 1);
+      }
+      function vdsClassClear() {
+        if (!VDS.cls.points.length) return;
+        if (!confirm("Effacer tous les points de classification ?")) return;
+        VDS.cls.points = [];
+        vdsClassSync();
+      }
+      function vdsClassGenerate(kind) {
+        if (VDS.cls.classes.length < 2) {
+          VDS.cls.classes =
+            kind === "blobs"
+              ? ["Classe 1", "Classe 2", "Classe 3"]
+              : ["Classe 1", "Classe 2"];
+          VDS.cls.active = 0;
+        }
+        const nCls = VDS.cls.classes.length;
+        const pts = [];
+        const jitter = () => gauss() * 0.12;
+        if (kind === "circles") {
+          for (let i = 0; i < 80; i++) {
+            const a = Math.random() * Math.PI * 2,
+              r = Math.random() * 0.35;
+            pts.push({ x1: Math.cos(a) * r, x2: Math.sin(a) * r, cls: 0 });
+          }
+          for (let i = 0; i < 80; i++) {
+            const a = Math.random() * Math.PI * 2,
+              r = 0.55 + Math.random() * 0.35;
+            pts.push({ x1: Math.cos(a) * r, x2: Math.sin(a) * r, cls: 1 });
+          }
+        } else if (kind === "spiral") {
+          for (let c = 0; c < 2; c++) {
+            for (let i = 0; i < 90; i++) {
+              const t = i / 90,
+                a = t * 4 * Math.PI + c * Math.PI,
+                r = t * 0.9;
+              pts.push({
+                x1: clamp(Math.cos(a) * r + jitter(), -1, 1),
+                x2: clamp(Math.sin(a) * r + jitter(), -1, 1),
+                cls: c,
+              });
+            }
+          }
+        } else if (kind === "checker") {
+          for (let i = 0; i < 160; i++) {
+            const x1 = Math.random() * 2 - 1,
+              x2 = Math.random() * 2 - 1;
+            const cls = (x1 > 0) !== (x2 > 0) ? 1 : 0;
+            pts.push({ x1, x2, cls });
+          }
+        } else if (kind === "blobs") {
+          for (let c = 0; c < nCls; c++) {
+            const a = (c / nCls) * Math.PI * 2;
+            const cx = Math.cos(a) * 0.55,
+              cy = Math.sin(a) * 0.55;
+            for (let i = 0; i < Math.floor(90 / nCls); i++) {
+              pts.push({
+                x1: clamp(cx + jitter(), -1, 1),
+                x2: clamp(cy + jitter(), -1, 1),
+                cls: c,
+              });
+            }
+          }
+        }
+        VDS.cls.points = pts;
+        vdsClassSync();
+        log(
+          `<span class="ls">✨ Jeu de démo « ${kind} » généré</span> — ${pts.length} points, ${nCls} classes`,
+        );
+      }
+      function vdsClassSync() {
+        const nCls = VDS.cls.classes.length;
+        vdsClassRenderChips();
+        if (nCls >= 2) {
+          DS.inputs = VDS.cls.points.map((p) => [p.x1, p.x2]);
+          DS.outputs = VDS.cls.points.map((p) => {
+            const row = Array(nCls).fill(0);
+            row[p.cls] = 1;
+            return row;
+          });
+          DS.inN = 2;
+          DS.outN = nCls;
+          document.getElementById("dsIn").value = 2;
+          document.getElementById("dsOut").value = nCls;
+          document.getElementById("dsPreset").value = "custom";
+          buildDSEditorFromCurrent();
+          renderDSPreview();
+        }
+        const statEl = document.getElementById("vdsClassStat");
+        if (statEl) {
+          statEl.textContent =
+            nCls >= 2
+              ? `${VDS.cls.points.length} point(s) — ${nCls} classe(s) — sortie du réseau encodée en one-hot`
+              : `Ajoutez au moins 2 classes pour activer ce dataset sur le réseau.`;
+        }
+        vdsRenderClass();
+      }
+      function vdsClassRenderBg() {
+        const cvs = document.getElementById("vdsClassBgCvs");
+        if (!cvs) return;
+        const ctx = cvs.getContext("2d");
+        const res = cvs.width;
+        const nCls = VDS.cls.classes.length;
+        const compatible =
+          NET &&
+          nCls >= 2 &&
+          NET.L[0] === 2 &&
+          NET.L[NET.L.length - 1] === nCls;
+        if (!compatible) {
+          ctx.fillStyle = "#020307";
+          ctx.fillRect(0, 0, res, res);
+          return;
+        }
+        const img = ctx.createImageData(res, res);
+        for (let py = 0; py < res; py++) {
+          for (let px = 0; px < res; px++) {
+            const x1 = (px / (res - 1)) * 2 - 1;
+            const x2 = 1 - (py / (res - 1)) * 2;
+            const { activations } = forward([x1, x2]);
+            const out = activations[activations.length - 1];
+            let bi = 0,
+              bv = -Infinity;
+            for (let i = 0; i < out.length; i++)
+              if (out[i] > bv) {
+                bv = out[i];
+                bi = i;
+              }
+            const [r, g, b] = vdsClassColorRGB(bi);
+            const base = 1 / out.length;
+            const conf =
+              out.length > 1
+                ? clamp((bv - base) / (1 - base), 0, 1)
+                : clamp(bv, 0, 1);
+            const i4 = (py * res + px) * 4;
+            img.data[i4] = r;
+            img.data[i4 + 1] = g;
+            img.data[i4 + 2] = b;
+            img.data[i4 + 3] = Math.floor((0.35 + 0.55 * conf) * 255);
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+      }
+      function vdsClassDrawPoints() {
+        const cvs = document.getElementById("vdsClassPtCvs");
+        if (!cvs) return;
+        const ctx = cvs.getContext("2d");
+        const W = cvs.width,
+          H = cvs.height;
+        ctx.clearRect(0, 0, W, H);
+        ctx.strokeStyle = "rgba(255,255,255,0.08)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(W / 2, 0);
+        ctx.lineTo(W / 2, H);
+        ctx.moveTo(0, H / 2);
+        ctx.lineTo(W, H / 2);
+        ctx.stroke();
+        VDS.cls.points.forEach((p) => {
+          const px = ((p.x1 + 1) / 2) * W,
+            py = (1 - (p.x2 + 1) / 2) * H;
+          const [r, g, b] = vdsClassColorRGB(p.cls);
+          ctx.beginPath();
+          ctx.arc(px, py, 5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgb(${r},${g},${b})`;
+          ctx.fill();
+          ctx.strokeStyle = "#000";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
+      }
+      function vdsRenderClass() {
+        vdsClassRenderBg();
+        vdsClassDrawPoints();
+        const nCls = VDS.cls.classes.length;
+        const banner = document.getElementById("vdsClassArchMsg");
+        if (banner)
+          banner.innerHTML =
+            nCls >= 2
+              ? vdsArchMismatchMsg(2, nCls)
+              : '<span style="color:var(--dim)">Ajoutez au moins 2 classes pour construire / adapter le réseau.</span>';
+      }
+
+      // ════════ RÉGRESSION ════════
+      function vdsRegCanvasClick(e) {
+        const { x1, x2 } = vdsEventToCoords(e, "vdsRegCvs");
+        if (VDS.reg.mode === "erase") {
+          vdsRegRemoveNearest(x1, x2);
+        } else {
+          VDS.reg.points.push({ x: x1, y: x2 });
+        }
+        vdsRegSync();
+      }
+      function vdsRegCanvasContext(e) {
+        e.preventDefault();
+        const { x1, x2 } = vdsEventToCoords(e, "vdsRegCvs");
+        vdsRegRemoveNearest(x1, x2);
+        vdsRegSync();
+      }
+      function vdsRegRemoveNearest(x, y) {
+        if (!VDS.reg.points.length) return;
+        let bi = -1,
+          bd = Infinity;
+        VDS.reg.points.forEach((p, i) => {
+          const d = (p.x - x) ** 2 + (p.y - y) ** 2;
+          if (d < bd) {
+            bd = d;
+            bi = i;
+          }
+        });
+        if (bi >= 0 && bd < 0.02) VDS.reg.points.splice(bi, 1);
+      }
+      function vdsRegClear() {
+        if (!VDS.reg.points.length) return;
+        if (!confirm("Effacer tous les points de régression ?")) return;
+        VDS.reg.points = [];
+        vdsRegSync();
+      }
+      function vdsRegGenerate(kind) {
+        const pts = [];
+        const n = 24;
+        for (let i = 0; i < n; i++) {
+          const x = -0.9 + (1.8 * i) / (n - 1);
+          let y;
+          if (kind === "linear") y = 0.6 * x + gauss() * 0.06;
+          else if (kind === "quad") y = 1.6 * x * x - 0.8 + gauss() * 0.05;
+          else if (kind === "sine")
+            y = Math.sin(x * Math.PI * 1.5) * 0.7 + gauss() * 0.05;
+          pts.push({ x, y: clamp(y, -1, 1) });
+        }
+        VDS.reg.points = pts;
+        vdsRegSync();
+        log(
+          `<span class="ls">✨ Jeu de démo « ${kind} » généré</span> — ${pts.length} points`,
+        );
+      }
+      function vdsRegSync() {
+        DS.inputs = VDS.reg.points.map((p) => [p.x]);
+        DS.outputs = VDS.reg.points.map((p) => [p.y]);
+        DS.inN = 1;
+        DS.outN = 1;
+        document.getElementById("dsIn").value = 1;
+        document.getElementById("dsOut").value = 1;
+        document.getElementById("dsPreset").value = "custom";
+        buildDSEditorFromCurrent();
+        renderDSPreview();
+        const statEl = document.getElementById("vdsRegStat");
+        if (statEl) statEl.textContent = `${VDS.reg.points.length} point(s)`;
+        vdsRenderReg();
+      }
+      function vdsRenderReg() {
+        const cvs = document.getElementById("vdsRegCvs");
+        if (!cvs) return;
+        const ctx = cvs.getContext("2d");
+        const W = cvs.width,
+          H = cvs.height;
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = "#020307";
+        ctx.fillRect(0, 0, W, H);
+        ctx.strokeStyle = "rgba(255,255,255,0.08)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(W / 2, 0);
+        ctx.lineTo(W / 2, H);
+        ctx.moveTo(0, H / 2);
+        ctx.lineTo(W, H / 2);
+        ctx.stroke();
+        const compatible =
+          NET && NET.L[0] === 1 && NET.L[NET.L.length - 1] === 1;
+        const banner = document.getElementById("vdsRegArchMsg");
+        if (banner) banner.innerHTML = vdsArchMismatchMsg(1, 1);
+        if (compatible) {
+          ctx.beginPath();
+          const N = 120;
+          for (let i = 0; i <= N; i++) {
+            const x = (i / N) * 2 - 1;
+            const { activations } = forward([x]);
+            const y = activations[activations.length - 1][0];
+            const px = ((x + 1) / 2) * W;
+            const py = (1 - (clamp(y, -1, 1) + 1) / 2) * H;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.strokeStyle = "#00ff9d";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+        VDS.reg.points.forEach((p) => {
+          const px = ((p.x + 1) / 2) * W,
+            py = (1 - (p.y + 1) / 2) * H;
+          ctx.beginPath();
+          ctx.arc(px, py, 5, 0, Math.PI * 2);
+          ctx.fillStyle = "#ffd600";
+          ctx.fill();
+          ctx.strokeStyle = "#000";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
+      }
+
       const THEMES = {
         dark: {
           cNI: "#ffd600",
@@ -14814,6 +15860,209 @@
       </div>
     </div>
 
+    <!-- Éditeur visuel Régression / Classification -->
+    <div id="vds-modal-bg">
+      <div id="vds-modal">
+        <div id="vds-header">
+          <h2>🎯 Éditeur visuel — Régression &amp; Classification</h2>
+          <button class="btn" onclick="closeVDS()">✕</button>
+        </div>
+        <div id="vds-body">
+          <div class="vds-intro">
+            Ces éditeurs génèrent directement le dataset (onglet «
+            Dataset ») du réseau affiché sur le canevas central. Entraînez
+            ensuite avec les commandes habituelles (▶ Step, +Epoch, ⚡ Auto) —
+            la frontière de décision / la courbe apprise ci-dessous se met à
+            jour en direct, même pendant l'entraînement.
+          </div>
+          <div class="tabs">
+            <div
+              class="tab active"
+              id="vdstab-btn-class"
+              onclick="vdsShowTab('class')"
+            >
+              🟣 Classification
+            </div>
+            <div class="tab" id="vdstab-btn-reg" onclick="vdsShowTab('reg')">
+              📈 Régression
+            </div>
+          </div>
+
+          <!-- ── CLASSIFICATION ── -->
+          <div class="tc show" id="vdstab-class">
+            <div class="vds-layout">
+              <div>
+                <div class="vds-cvs-wrap">
+                  <canvas
+                    id="vdsClassBgCvs"
+                    class="vds-bg-cvs"
+                    width="64"
+                    height="64"
+                  ></canvas>
+                  <canvas
+                    id="vdsClassPtCvs"
+                    width="320"
+                    height="320"
+                    onclick="vdsClassCanvasClick(event)"
+                    oncontextmenu="vdsClassCanvasContext(event)"
+                  ></canvas>
+                </div>
+                <div class="vds-mode-row">
+                  <button
+                    class="btn on"
+                    id="clsModeAdd"
+                    onclick="vdsSetMode('cls','add')"
+                  >
+                    ✚ Ajouter
+                  </button>
+                  <button
+                    class="btn"
+                    id="clsModeErase"
+                    onclick="vdsSetMode('cls','erase')"
+                  >
+                    ✕ Effacer un point
+                  </button>
+                </div>
+                <div class="vds-hint">
+                  Clic gauche = ajoute un point de la classe sélectionnée ·
+                  clic droit = supprime le point le plus proche · le fond
+                  coloré montre la prédiction actuelle du réseau (frontière
+                  de décision), plus la couleur est intense plus le réseau
+                  est confiant.
+                </div>
+              </div>
+              <div class="vds-side-col">
+                <lbl>Classes</lbl>
+                <div id="vdsClasses" style="margin-bottom: 6px"></div>
+                <div style="display: flex; gap: 5px">
+                  <input
+                    type="text"
+                    id="vdsNewClassName"
+                    placeholder="Nom de la classe…"
+                    style="flex: 1; font-size: 9px"
+                    maxlength="16"
+                    onkeydown="if (event.key === 'Enter') vdsClassAddClass();"
+                  />
+                  <button class="btn go" onclick="vdsClassAddClass()">
+                    + Ajouter
+                  </button>
+                </div>
+                <div class="btn-row" style="margin-top: 10px">
+                  <button
+                    class="btn danger"
+                    onclick="vdsClassClear()"
+                    style="flex: 1"
+                  >
+                    🗑 Vider les points
+                  </button>
+                </div>
+                <lbl style="margin-top: 10px; display: block"
+                  >Jeux de démo</lbl
+                >
+                <div class="btn-row" style="flex-wrap: wrap">
+                  <button class="btn" onclick="vdsClassGenerate('circles')">
+                    ◎ Cercles
+                  </button>
+                  <button class="btn" onclick="vdsClassGenerate('spiral')">
+                    🌀 Spirale
+                  </button>
+                  <button class="btn" onclick="vdsClassGenerate('checker')">
+                    ⊞ Damier
+                  </button>
+                  <button class="btn" onclick="vdsClassGenerate('blobs')">
+                    ☁ Blobs
+                  </button>
+                </div>
+                <div id="vdsClassArchMsg" class="vds-arch-msg"></div>
+                <div id="vdsClassStat" class="vds-stat"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── RÉGRESSION ── -->
+          <div class="tc" id="vdstab-reg">
+            <div class="vds-layout">
+              <div>
+                <div class="vds-cvs-wrap">
+                  <canvas
+                    id="vdsRegCvs"
+                    width="320"
+                    height="320"
+                    onclick="vdsRegCanvasClick(event)"
+                    oncontextmenu="vdsRegCanvasContext(event)"
+                  ></canvas>
+                </div>
+                <div class="vds-mode-row">
+                  <button
+                    class="btn on"
+                    id="regModeAdd"
+                    onclick="vdsSetMode('reg','add')"
+                  >
+                    ✚ Ajouter
+                  </button>
+                  <button
+                    class="btn"
+                    id="regModeErase"
+                    onclick="vdsSetMode('reg','erase')"
+                  >
+                    ✕ Effacer un point
+                  </button>
+                </div>
+                <div class="vds-hint">
+                  Clic gauche = pose un point (x,y) à régresser · clic droit =
+                  supprime le point le plus proche · la courbe verte est la
+                  fonction actuellement apprise par le réseau (ŷ = f(x)).
+                </div>
+              </div>
+              <div class="vds-side-col">
+                <div class="btn-row">
+                  <button
+                    class="btn danger"
+                    onclick="vdsRegClear()"
+                    style="flex: 1"
+                  >
+                    🗑 Vider les points
+                  </button>
+                </div>
+                <lbl style="margin-top: 10px; display: block"
+                  >Jeux de démo</lbl
+                >
+                <div class="btn-row" style="flex-wrap: wrap">
+                  <button class="btn" onclick="vdsRegGenerate('linear')">
+                    ／ Linéaire
+                  </button>
+                  <button class="btn" onclick="vdsRegGenerate('quad')">
+                    ⌣ Quadratique
+                  </button>
+                  <button class="btn" onclick="vdsRegGenerate('sine')">
+                    ∿ Sinusoïde
+                  </button>
+                </div>
+                <div id="vdsRegArchMsg" class="vds-arch-msg"></div>
+                <div id="vdsRegStat" class="vds-stat"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          id="vds-footer"
+          style="
+            padding: 8px 18px;
+            border-top: 1px solid var(--brd);
+            display: flex;
+            gap: 6px;
+            align-items: center;
+          "
+        >
+          <span style="font-size: 8px; color: var(--dim); flex: 1"
+            >🔴 Live — se rafraîchit automatiquement pendant l'entraînement
+            (Step/Epoch/Auto)</span
+          >
+          <button class="btn" onclick="vdsRenderActive()">🔄 Actualiser</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Save/Load -->
     <div
       id="saveload-modal-bg"
@@ -15340,17 +16589,41 @@
                   padding: 8px 10px;
                 "
               >
-                <div style="flex: 1; min-width: 130px">
+                <div style="flex: 1; min-width: 160px">
                   <lbl>Taille des images</lbl>
                   <select
                     id="cmSize"
                     data-no-translate
                     onchange="cnnModelSetSize(parseInt(this.value))"
                   >
-                    <option value="8">8×8</option>
-                    <option value="10" selected>10×10</option>
-                    <option value="12">12×12</option>
+                    <optgroup label="Petit — grille de pixels cliquable">
+                      <option value="8">8×8</option>
+                      <option value="10" selected>10×10</option>
+                      <option value="12">12×12</option>
+                      <option value="16">16×16</option>
+                      <option value="20">20×20</option>
+                      <option value="24">24×24</option>
+                      <option value="32">32×32</option>
+                    </optgroup>
+                    <optgroup label="Grand — éditeur de dessin (pinceau, formes…)">
+                      <option value="48">48×48</option>
+                      <option value="64">64×64</option>
+                      <option value="96">96×96</option>
+                      <option value="128">128×128</option>
+                      <option value="192">192×192</option>
+                      <option value="256">256×256</option>
+                      <option value="384">384×384</option>
+                      <option value="512">512×512</option>
+                      <option value="768">768×768</option>
+                      <option value="1024">1024×1024</option>
+                      <option value="1536">1536×1536</option>
+                      <option value="2048">2048×2048</option>
+                    </optgroup>
                   </select>
+                  <div
+                    id="cnnModelSizeWarn"
+                    style="font-size: 8px; margin-top: 3px"
+                  ></div>
                 </div>
                 <div style="flex: 1; min-width: 130px">
                   <lbl>Couches convolutives</lbl>
@@ -15518,7 +16791,7 @@
               >
                 <div style="flex: 1; min-width: 190px">
                   <lbl>Dessin de l'exemple</lbl>
-                  <div id="cnnDsDraftGrid" class="cnn-grid"></div>
+                  <div id="cnnDsDraftGrid"></div>
                   <div class="btn-row" style="margin-top: 6px">
                     <button class="btn" onclick="cnnModelDraftPreset('croix')">
                       ✚
@@ -15637,7 +16910,7 @@
               <div style="display: flex; gap: 14px; flex-wrap: wrap">
                 <div style="flex: 1; min-width: 190px">
                   <lbl>Image à tester</lbl>
-                  <div id="cnnTestGrid" class="cnn-grid"></div>
+                  <div id="cnnTestGrid"></div>
                   <div class="btn-row" style="margin-top: 6px">
                     <button class="btn" onclick="cnnModelTestPreset('croix')">
                       ✚
@@ -18105,6 +19378,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         } else if (name === "config") {
           cnnModelRenderArch();
           cnnModelRenderTrain();
+          cnnModelUpdateSizeWarn();
         }
       }
 
@@ -18175,21 +19449,368 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         return out;
       }
 
+      // ══════════ GRILLE DE PIXELS (≤32×32) / ÉDITEUR CANVAS (>32×32) ══════════
+      // Seuil au-delà duquel une div par pixel deviendrait beaucoup trop
+      // lourde (des millions de nœuds DOM) : on bascule alors sur un vrai
+      // éditeur bitmap dessiné dans un <canvas>.
+      const CNN_PIXEL_THRESHOLD = 32;
+      const CNN_EDITORS = {}; // "draft" | "test" -> instance de l'éditeur
+
+      function cnnGridToImageData(grid, n) {
+        const id = new ImageData(n, n);
+        const data = id.data;
+        for (let y = 0; y < n; y++) {
+          const row = grid[y];
+          for (let x = 0; x < n; x++) {
+            const v = Math.max(0, Math.min(1, row[x] || 0));
+            const g = Math.round(v * 255);
+            const i = (y * n + x) * 4;
+            data[i] = g;
+            data[i + 1] = g;
+            data[i + 2] = g;
+            data[i + 3] = 255;
+          }
+        }
+        return id;
+      }
+      function cnnImageDataToGrid(id, n) {
+        const grid = Array.from({ length: n }, () => Array(n).fill(0));
+        const data = id.data;
+        for (let y = 0; y < n; y++)
+          for (let x = 0; x < n; x++)
+            grid[y][x] = data[(y * n + x) * 4] / 255;
+        return grid;
+      }
+      function cnnGridThumbURL(grid, n) {
+        const off = document.createElement("canvas");
+        off.width = n;
+        off.height = n;
+        off.getContext("2d").putImageData(cnnGridToImageData(grid, n), 0, 0);
+        return off.toDataURL();
+      }
+
+      // Rendu générique : bascule pixels cliquables / éditeur selon la taille,
+      // et (re)synchronise l'affichage depuis les données du modèle.
+      function cnnModelRenderEditableGrid(key, elId, grid, setGrid) {
+        const el = document.getElementById(elId);
+        if (!el || !grid.length) return;
+        const n = CNN_MODEL.size;
+
+        if (n <= CNN_PIXEL_THRESHOLD) {
+          if (CNN_EDITORS[key]) {
+            if (CNN_EDITORS[key].cleanup) CNN_EDITORS[key].cleanup();
+            delete CNN_EDITORS[key];
+          }
+          el.className = "cnn-grid";
+          const cell = n <= 8 ? 20 : n <= 12 ? 16 : n <= 16 ? 12 : n <= 24 ? 9 : 6;
+          el.style.gridTemplateColumns = `repeat(${n},${cell}px)`;
+          const toggleFn = key === "draft" ? "cnnModelToggleDraftCell" : "cnnModelToggleTestCell";
+          let html = "";
+          for (let y = 0; y < n; y++)
+            for (let x = 0; x < n; x++) {
+              const v = grid[y][x],
+                g = Math.round(v * 255);
+              html += `<div class="cnn-cell" style="width:${cell}px;height:${cell}px;background:rgb(${g},${g},${g})" onclick="${toggleFn}(${y},${x})"></div>`;
+            }
+          el.innerHTML = html;
+          return;
+        }
+
+        el.className = "";
+        let ed = CNN_EDITORS[key];
+        if (!ed || ed.size !== n) {
+          if (ed && ed.cleanup) ed.cleanup();
+          el.innerHTML = cnnEditorToolbarHTML(key, n);
+          ed = cnnEditorCreate(key, n, setGrid);
+          CNN_EDITORS[key] = ed;
+        }
+        cnnEditorLoadGrid(key, grid);
+      }
+
+      // ══════════ MOTEUR DE L'ÉDITEUR CANVAS (dessin libre >32×32) ══════════
+      function cnnEditorToolbarHTML(key, n) {
+        const defaultBrush = Math.max(1, Math.min(n, Math.round(n / 20)));
+        const maxBrush = Math.max(2, Math.min(200, n));
+        return `
+          <div class="cnn-editor" id="cnnEd_${key}">
+            <div class="cnn-editor-toolbar">
+              <div class="cnn-tool-row">
+                <button type="button" class="cnn-tool-btn active" data-tool="brush" onclick="cnnEditorSetTool('${key}','brush')" title="Pinceau">🖌</button>
+                <button type="button" class="cnn-tool-btn" data-tool="pencil" onclick="cnnEditorSetTool('${key}','pencil')" title="Crayon (1 pixel)">✏️</button>
+                <button type="button" class="cnn-tool-btn" data-tool="eraser" onclick="cnnEditorSetTool('${key}','eraser')" title="Gomme">🧹</button>
+                <button type="button" class="cnn-tool-btn" data-tool="line" onclick="cnnEditorSetTool('${key}','line')" title="Ligne">╱</button>
+                <button type="button" class="cnn-tool-btn" data-tool="rect" onclick="cnnEditorSetTool('${key}','rect')" title="Rectangle">▭</button>
+                <button type="button" class="cnn-tool-btn" data-tool="ellipse" onclick="cnnEditorSetTool('${key}','ellipse')" title="Cercle / ellipse">◯</button>
+                <button type="button" class="cnn-tool-btn" data-tool="fill" onclick="cnnEditorSetTool('${key}','fill')" title="Pot de peinture (remplissage)">🪣</button>
+              </div>
+              <div class="cnn-tool-row">
+                <label style="font-size:8px;color:var(--dim);display:flex;align-items:center;gap:4px">
+                  Taille
+                  <input type="range" min="1" max="${maxBrush}" value="${defaultBrush}" id="cnnEdBrush_${key}" oninput="cnnEditorBrushChange('${key}',this.value)" style="width:70px" />
+                  <span id="cnnEdBrushVal_${key}">${defaultBrush}</span>px
+                </label>
+                <label style="font-size:8px;color:var(--dim);display:flex;align-items:center;gap:4px">
+                  <input type="checkbox" id="cnnEdFill_${key}" onchange="cnnEditorFillToggle('${key}',this.checked)" /> Rempli
+                </label>
+                <span style="font-size:8px;color:var(--dim)">Couleur</span>
+                <button type="button" class="cnn-color-btn active" data-color="1" onclick="cnnEditorSetColor('${key}',1)" style="background:#fff" title="Blanc"></button>
+                <button type="button" class="cnn-color-btn" data-color="0" onclick="cnnEditorSetColor('${key}',0)" style="background:#000" title="Noir"></button>
+              </div>
+              <div class="cnn-tool-row">
+                <button type="button" class="btn" onclick="cnnEditorUndo('${key}')">↶ Annuler</button>
+                <button type="button" class="btn" onclick="cnnEditorClear('${key}',0)">⬛ Tout noir</button>
+                <button type="button" class="btn" onclick="cnnEditorClear('${key}',1)">⬜ Tout blanc</button>
+                <button type="button" class="btn" onclick="cnnEditorInvert('${key}')">🔄 Inverser</button>
+              </div>
+            </div>
+            <div class="cnn-editor-canvas-wrap">
+              <canvas id="cnnEdCanvas_${key}" width="${n}" height="${n}"></canvas>
+            </div>
+            <div style="font-size:8px;color:var(--dim);margin-top:4px">
+              Dessinez à la souris (ou au doigt) — pinceau, crayon, gomme, ligne, formes géométriques, remplissage. Résolution réelle : ${n}×${n}px.
+            </div>
+          </div>`;
+      }
+
+      function cnnEditorCreate(key, n, setGrid) {
+        const canvas = document.getElementById(`cnnEdCanvas_${key}`);
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.imageSmoothingEnabled = false;
+        const ed = {
+          key,
+          size: n,
+          canvas,
+          ctx,
+          setGrid,
+          tool: "brush",
+          color: 1,
+          brush: Math.max(1, Math.min(n, Math.round(n / 20))),
+          shapeFill: false,
+          drawing: false,
+          startX: 0,
+          startY: 0,
+          lastX: 0,
+          lastY: 0,
+          strokeSnapshot: null,
+          undoStack: [],
+          undoMax: n <= 64 ? 25 : n <= 256 ? 12 : n <= 1024 ? 6 : 3,
+        };
+
+        const paintColor = () =>
+          ed.tool === "eraser" ? "#000" : ed.color === 1 ? "#fff" : "#000";
+
+        const getPos = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          const t = e.touches && e.touches.length ? e.touches[0] : e;
+          const cx = t.clientX - rect.left,
+            cy = t.clientY - rect.top;
+          const x = Math.floor((cx / rect.width) * n),
+            y = Math.floor((cy / rect.height) * n);
+          return {
+            x: Math.max(0, Math.min(n - 1, x)),
+            y: Math.max(0, Math.min(n - 1, y)),
+          };
+        };
+        const pushUndo = () => {
+          try {
+            const snap = ctx.getImageData(0, 0, n, n);
+            ed.undoStack.push(snap);
+            if (ed.undoStack.length > ed.undoMax) ed.undoStack.shift();
+          } catch (e) {}
+        };
+        const commit = () => {
+          ed.setGrid(cnnImageDataToGrid(ctx.getImageData(0, 0, n, n), n));
+        };
+        const paintDot = (x, y) => {
+          const r = ed.tool === "pencil" ? 0.5 : ed.brush / 2;
+          ctx.fillStyle = paintColor();
+          ctx.beginPath();
+          ctx.arc(x + 0.5, y + 0.5, Math.max(0.5, r), 0, Math.PI * 2);
+          ctx.fill();
+        };
+        const paintSeg = (x0, y0, x1, y1) => {
+          const r = ed.tool === "pencil" ? 0.5 : ed.brush / 2;
+          ctx.strokeStyle = paintColor();
+          ctx.lineWidth = Math.max(1, r * 2);
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.beginPath();
+          ctx.moveTo(x0 + 0.5, y0 + 0.5);
+          ctx.lineTo(x1 + 0.5, y1 + 0.5);
+          ctx.stroke();
+        };
+        const floodFill = (x, y) => {
+          const id = ctx.getImageData(0, 0, n, n);
+          const data = id.data;
+          const startIdx = (y * n + x) * 4;
+          const target = data[startIdx];
+          const fillVal = ed.color === 1 ? 255 : 0;
+          if (target === fillVal) return;
+          const visited = new Uint8Array(n * n);
+          const stack = [x, y];
+          while (stack.length) {
+            const cy = stack.pop(),
+              cx = stack.pop();
+            if (cx < 0 || cy < 0 || cx >= n || cy >= n) continue;
+            const vIdx = cy * n + cx;
+            if (visited[vIdx]) continue;
+            const dIdx = vIdx * 4;
+            if (data[dIdx] !== target) continue;
+            visited[vIdx] = 1;
+            data[dIdx] = data[dIdx + 1] = data[dIdx + 2] = fillVal;
+            data[dIdx + 3] = 255;
+            stack.push(cx + 1, cy, cx - 1, cy, cx, cy + 1, cx, cy - 1);
+          }
+          ctx.putImageData(id, 0, 0);
+        };
+        const drawShapePreview = (x, y) => {
+          ctx.putImageData(ed.strokeSnapshot, 0, 0);
+          ctx.fillStyle = ctx.strokeStyle = paintColor();
+          ctx.lineWidth = Math.max(1, ed.brush / 2);
+          if (ed.tool === "line") {
+            paintSeg(ed.startX, ed.startY, x, y);
+          } else if (ed.tool === "rect") {
+            const x0 = Math.min(ed.startX, x),
+              y0 = Math.min(ed.startY, y);
+            const w = Math.abs(x - ed.startX) + 1,
+              h = Math.abs(y - ed.startY) + 1;
+            if (ed.shapeFill) ctx.fillRect(x0, y0, w, h);
+            else ctx.strokeRect(x0 + 0.5, y0 + 0.5, Math.max(1, w - 1), Math.max(1, h - 1));
+          } else if (ed.tool === "ellipse") {
+            const cx = (ed.startX + x) / 2,
+              cy = (ed.startY + y) / 2;
+            const rx = Math.abs(x - ed.startX) / 2,
+              ry = Math.abs(y - ed.startY) / 2;
+            ctx.beginPath();
+            ctx.ellipse(cx + 0.5, cy + 0.5, Math.max(0.5, rx), Math.max(0.5, ry), 0, 0, Math.PI * 2);
+            if (ed.shapeFill) ctx.fill();
+            else ctx.stroke();
+          }
+        };
+
+        const onDown = (e) => {
+          e.preventDefault();
+          const { x, y } = getPos(e);
+          pushUndo();
+          ed.drawing = true;
+          ed.startX = ed.lastX = x;
+          ed.startY = ed.lastY = y;
+          if (ed.tool === "fill") {
+            floodFill(x, y);
+            commit();
+            ed.drawing = false;
+            return;
+          }
+          if (ed.tool === "line" || ed.tool === "rect" || ed.tool === "ellipse") {
+            ed.strokeSnapshot = ctx.getImageData(0, 0, n, n);
+            drawShapePreview(x, y);
+            return;
+          }
+          paintDot(x, y);
+        };
+        const onMove = (e) => {
+          if (!ed.drawing) return;
+          e.preventDefault();
+          const { x, y } = getPos(e);
+          if (ed.tool === "brush" || ed.tool === "pencil" || ed.tool === "eraser") {
+            paintSeg(ed.lastX, ed.lastY, x, y);
+            ed.lastX = x;
+            ed.lastY = y;
+          } else if (ed.tool === "line" || ed.tool === "rect" || ed.tool === "ellipse") {
+            drawShapePreview(x, y);
+          }
+        };
+        const onUp = () => {
+          if (!ed.drawing) return;
+          ed.drawing = false;
+          commit();
+        };
+
+        canvas.addEventListener("mousedown", onDown);
+        canvas.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+        canvas.addEventListener("touchstart", onDown, { passive: false });
+        canvas.addEventListener("touchmove", onMove, { passive: false });
+        canvas.addEventListener("touchend", onUp);
+
+        ed.cleanup = () => {
+          window.removeEventListener("mouseup", onUp);
+        };
+        ed._commit = commit;
+        ed._pushUndo = pushUndo;
+        return ed;
+      }
+
+      function cnnEditorLoadGrid(key, grid) {
+        const ed = CNN_EDITORS[key];
+        if (!ed) return;
+        ed.ctx.putImageData(cnnGridToImageData(grid, ed.size), 0, 0);
+      }
+      function cnnEditorSetTool(key, tool) {
+        const ed = CNN_EDITORS[key];
+        if (!ed) return;
+        ed.tool = tool;
+        const wrap = document.getElementById(`cnnEd_${key}`);
+        if (wrap)
+          wrap
+            .querySelectorAll(".cnn-tool-btn")
+            .forEach((b) => b.classList.toggle("active", b.dataset.tool === tool));
+      }
+      function cnnEditorSetColor(key, c) {
+        const ed = CNN_EDITORS[key];
+        if (!ed) return;
+        ed.color = c;
+        const wrap = document.getElementById(`cnnEd_${key}`);
+        if (wrap)
+          wrap
+            .querySelectorAll(".cnn-color-btn")
+            .forEach((b) => b.classList.toggle("active", parseInt(b.dataset.color) === c));
+      }
+      function cnnEditorBrushChange(key, v) {
+        const ed = CNN_EDITORS[key];
+        if (!ed) return;
+        ed.brush = parseInt(v);
+        const span = document.getElementById(`cnnEdBrushVal_${key}`);
+        if (span) span.textContent = v;
+      }
+      function cnnEditorFillToggle(key, checked) {
+        const ed = CNN_EDITORS[key];
+        if (ed) ed.shapeFill = checked;
+      }
+      function cnnEditorUndo(key) {
+        const ed = CNN_EDITORS[key];
+        if (!ed || !ed.undoStack.length) return;
+        const snap = ed.undoStack.pop();
+        ed.ctx.putImageData(snap, 0, 0);
+        ed.setGrid(cnnImageDataToGrid(snap, ed.size));
+      }
+      function cnnEditorClear(key, val) {
+        const ed = CNN_EDITORS[key];
+        if (!ed) return;
+        ed._pushUndo();
+        ed.ctx.fillStyle = val === 1 ? "#fff" : "#000";
+        ed.ctx.fillRect(0, 0, ed.size, ed.size);
+        ed._commit();
+      }
+      function cnnEditorInvert(key) {
+        const ed = CNN_EDITORS[key];
+        if (!ed) return;
+        ed._pushUndo();
+        const id = ed.ctx.getImageData(0, 0, ed.size, ed.size);
+        const data = id.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const inv = 255 - data[i];
+          data[i] = data[i + 1] = data[i + 2] = inv;
+        }
+        ed.ctx.putImageData(id, 0, 0);
+        ed._commit();
+      }
+
       // ── Grille de dessin (dataset) ──
       function cnnModelRenderDraftGrid() {
-        const el = document.getElementById("cnnDsDraftGrid");
-        if (!el || !CNN_MODEL.draft.length) return;
-        const n = CNN_MODEL.size,
-          cell = n <= 8 ? 20 : n <= 10 ? 16 : 13;
-        el.style.gridTemplateColumns = `repeat(${n},${cell}px)`;
-        let html = "";
-        for (let y = 0; y < n; y++)
-          for (let x = 0; x < n; x++) {
-            const v = CNN_MODEL.draft[y][x],
-              g = Math.round(v * 255);
-            html += `<div class="cnn-cell" style="width:${cell}px;height:${cell}px;background:rgb(${g},${g},${g})" onclick="cnnModelToggleDraftCell(${y},${x})"></div>`;
-          }
-        el.innerHTML = html;
+        cnnModelRenderEditableGrid("draft", "cnnDsDraftGrid", CNN_MODEL.draft, (g) => {
+          CNN_MODEL.draft = g;
+        });
       }
       function cnnModelToggleDraftCell(y, x) {
         CNN_MODEL.draft[y][x] = CNN_MODEL.draft[y][x] > 0 ? 0 : 1;
@@ -18214,19 +19835,9 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
 
       // ── Grille de test ──
       function cnnModelRenderTestGrid() {
-        const el = document.getElementById("cnnTestGrid");
-        if (!el || !CNN_MODEL.testGrid.length) return;
-        const n = CNN_MODEL.size,
-          cell = n <= 8 ? 20 : n <= 10 ? 16 : 13;
-        el.style.gridTemplateColumns = `repeat(${n},${cell}px)`;
-        let html = "";
-        for (let y = 0; y < n; y++)
-          for (let x = 0; x < n; x++) {
-            const v = CNN_MODEL.testGrid[y][x],
-              g = Math.round(v * 255);
-            html += `<div class="cnn-cell" style="width:${cell}px;height:${cell}px;background:rgb(${g},${g},${g})" onclick="cnnModelToggleTestCell(${y},${x})"></div>`;
-          }
-        el.innerHTML = html;
+        cnnModelRenderEditableGrid("test", "cnnTestGrid", CNN_MODEL.testGrid, (g) => {
+          CNN_MODEL.testGrid = g;
+        });
       }
       function cnnModelToggleTestCell(y, x) {
         CNN_MODEL.testGrid[y][x] = CNN_MODEL.testGrid[y][x] > 0 ? 0 : 1;
@@ -18272,6 +19883,23 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         cnnModelRenderDraftGrid();
         cnnModelRenderTestGrid();
         cnnModelRenderArch();
+        cnnModelUpdateSizeWarn();
+      }
+      function cnnModelUpdateSizeWarn() {
+        const el = document.getElementById("cnnModelSizeWarn");
+        if (!el) return;
+        const n = CNN_MODEL.size;
+        if (n > 512) {
+          el.style.color = "var(--red)";
+          el.textContent =
+            "⚠️ Taille très élevée : le dessin reste fluide, mais l'entraînement (calcul CPU pur, sans GPU) peut devenir très lent, voire figer le navigateur. Ajoutez des couches convolutives + max-pooling pour réduire la taille avant l'aplatissement.";
+        } else if (n > 64) {
+          el.style.color = "var(--org)";
+          el.textContent =
+            "⚠️ À cette taille, l'entraînement (CPU pur) sera plus lent qu'avec de petites images. Le max-pooling et plusieurs couches aident à rester réactif.";
+        } else {
+          el.textContent = "";
+        }
       }
       function cnnModelConfigChanged() {
         CNN_MODEL.built = false;
@@ -18409,19 +20037,12 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             '<span style="font-size:9px;color:var(--dim)">Aucun exemple pour l\'instant.</span>';
           return;
         }
-        const cell = 4;
         let html = "";
         CNN_MODEL.dataset.forEach((s, idx) => {
           const ci = CNN_MODEL.classes.indexOf(s.label);
           const color = ci >= 0 ? cnnModelClassColor(ci) : "#888";
-          let grid = `<div class="cnn-grid" style="grid-template-columns:repeat(${s.grid.length},${cell}px);gap:1px">`;
-          for (const row of s.grid)
-            for (const v of row) {
-              const g = Math.round(v * 255);
-              grid += `<div style="width:${cell}px;height:${cell}px;background:rgb(${g},${g},${g})"></div>`;
-            }
-          grid += "</div>";
-          html += `<div class="cnn-ds-item"><button class="rm" onclick="cnnModelDeleteSample(${idx})" title="Supprimer">✕</button>${grid}<div class="lbl" style="color:${color}">${s.label}</div></div>`;
+          const url = cnnGridThumbURL(s.grid, s.grid.length);
+          html += `<div class="cnn-ds-item"><button class="rm" onclick="cnnModelDeleteSample(${idx})" title="Supprimer">✕</button><img class="cnn-ds-thumb" src="${url}" width="40" height="40" alt="" /><div class="lbl" style="color:${color}">${s.label}</div></div>`;
         });
         el.innerHTML = html;
       }
@@ -18444,10 +20065,12 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           Diagonale: "diag",
           Cercle: "rond",
         };
+        const n = CNN_MODEL.size;
+        const variations = n <= 64 ? 9 : n <= 256 ? 5 : n <= 1024 ? 2 : 1;
         CNN_MODEL.classes.forEach((label) => {
-          const base = cnnModelShape(shapeMap[label], CNN_MODEL.size);
+          const base = cnnModelShape(shapeMap[label], n);
           CNN_MODEL.dataset.push({ grid: base, label });
-          for (let i = 0; i < 9; i++)
+          for (let i = 0; i < variations; i++)
             CNN_MODEL.dataset.push({ grid: cnnModelAugment(base), label });
         });
         CNN_MODEL.built = false;
@@ -18497,6 +20120,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           cnnModelRenderDraftGrid();
           cnnModelRenderTestGrid();
           cnnModelRenderArch();
+          cnnModelUpdateSizeWarn();
         } catch (e) {
           alert("JSON invalide : " + e);
         }
@@ -18563,6 +20187,20 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         const lastDim = outDims[blocks - 1];
         const flatLen = filters * lastDim * lastDim;
         CNN_MODEL.flatLen = flatLen;
+
+        const estParams =
+          hidden > 0
+            ? flatLen * hidden + hidden * CNN_MODEL.classes.length
+            : flatLen * CNN_MODEL.classes.length;
+        if (estParams > 15000000) {
+          const msg = `Ce modèle contiendra environ ${(estParams / 1e6).toFixed(1)} millions de paramètres rien que dans la couche dense (image ${n}×${n} → ${lastDim}×${lastDim} après pooling, ${filters} filtres). Cela peut geler ou faire planter le navigateur (calcul CPU pur, sans GPU).\n\nAstuce : ajoutez des couches convolutives et/ou activez le max-pooling pour réduire davantage la taille avant l'aplatissement.\n\nContinuer quand même ?`;
+          if (!confirm(msg)) {
+            if (archBox)
+              archBox.innerHTML =
+                '<span style="color:var(--red)">Construction annulée — réduisez la taille d\'image ou ajoutez des couches/du pooling pour diminuer le nombre de paramètres.</span>';
+            return false;
+          }
+        }
 
         if (hidden > 0) {
           const scaleH = Math.sqrt(2 / flatLen);
@@ -20125,6 +21763,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             "race-modal-bg",
             "cnn-modal-bg",
             "rnn-modal-bg",
+            "vds-modal-bg",
           ].forEach((id) =>
             document.getElementById(id)?.classList.remove("show"),
           );
@@ -20134,6 +21773,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           cnnTrainStop();
           rnnSeqStopAnim();
           rnnTrainStop();
+          vdsStopLive();
         }
       });
 
@@ -21117,7 +22757,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           // à display:none avant l'ouverture, donc les rects mesurés au
           // boot peuvent être nuls. On recalcule au clic sur les boutons
           // d'ouverture, une fois la modal affichée.
-          ["openCNNLab", "openRNNLab"].forEach((fnName) => {
+          ["openCNNLab", "openRNNLab", "openVDS"].forEach((fnName) => {
             const orig = window[fnName];
             if (typeof orig === "function") {
               window[fnName] = function (...args) {
@@ -21285,13 +22925,20 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         const milestones = [25, 50, 75, 90];
         const firedMilestones = new Set();
         function pulseMilestone() {
-          document.body.classList.remove("milestone-flash");
-          void document.body.offsetWidth;
-          document.body.classList.add("milestone-flash");
-          setTimeout(
-            () => document.body.classList.remove("milestone-flash"),
-            720,
-          );
+          // Le flash plein écran est désactivé en mode Auto : les epochs
+          // s'enchaînent vite et l'accuracy peut osciller autour d'un palier,
+          // ce qui le redéclenchait très souvent et donnait une impression
+          // de "refresh"/écran qui s'assombrit en boucle. On garde les
+          // éclats localisés sur la stat d'accuracy dans tous les cas.
+          if (typeof autoRunning === "undefined" || !autoRunning) {
+            document.body.classList.remove("milestone-flash");
+            void document.body.offsetWidth;
+            document.body.classList.add("milestone-flash");
+            setTimeout(
+              () => document.body.classList.remove("milestone-flash"),
+              720,
+            );
+          }
           const box = document.getElementById("sAcc");
           const sb = box && box.closest(".sb");
           if (sb) {
