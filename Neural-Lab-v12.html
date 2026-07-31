@@ -2928,6 +2928,75 @@
         display: flex;
         gap: 6px;
       }
+      /* ── MODE COMPARAISON (2 réseaux en parallèle) ── */
+      #compare-modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 1400;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #compare-modal-bg.show {
+        display: flex;
+      }
+      #compare-modal {
+        background: var(--p1);
+        border: 1px solid var(--org);
+        border-radius: 8px;
+        max-width: 780px;
+        width: 96%;
+        max-height: 92vh;
+        overflow-y: auto;
+        box-shadow: 0 0 40px rgba(255, 140, 42, 0.18);
+      }
+      #compare-header {
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--brd);
+        background: linear-gradient(135deg, var(--p1), var(--p2));
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #compare-header h2 {
+        font-family: "Syne", sans-serif;
+        color: var(--org);
+        font-size: 14px;
+        flex: 1;
+      }
+      #compare-body {
+        padding: 14px 18px;
+      }
+      #compare-footer {
+        padding: 10px 18px;
+        border-top: 1px solid var(--brd);
+        display: flex;
+        gap: 6px;
+      }
+      .cmp-card {
+        background: #030408;
+        border: 1px solid var(--brd);
+        border-radius: 5px;
+        padding: 10px 12px;
+      }
+      .cmp-card-title {
+        font-family: "Syne", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .cmp-bd-cvs {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        image-rendering: pixelated;
+        border: 1px solid var(--brd);
+        border-radius: 3px;
+        background: #020307;
+      }
       #cnn-modal-bg {
         position: fixed;
         inset: 0;
@@ -4252,6 +4321,7 @@
       #boundary-modal-bg.show #boundary-modal,
       #saveload-modal-bg.show #saveload-modal,
       #race-modal-bg.show #race-modal,
+      #compare-modal-bg.show #compare-modal,
       #cnn-modal-bg.show #cnn-modal,
       #rnn-modal-bg.show #rnn-modal,
       #vds-modal-bg.show #vds-modal {
@@ -4469,6 +4539,7 @@
       #boundary-modal-bg.show #boundary-modal,
       #saveload-modal-bg.show #saveload-modal,
       #race-modal-bg.show #race-modal,
+      #compare-modal-bg.show #compare-modal,
       #cnn-modal-bg.show #cnn-modal,
       #rnn-modal-bg.show #rnn-modal,
       #vds-modal-bg.show #vds-modal {
@@ -6196,6 +6267,42 @@
               style="
                 margin-bottom: 8px;
                 background: #030408;
+                border: 1px solid var(--org);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 8px;
+                  color: var(--org);
+                  text-transform: uppercase;
+                  letter-spacing: 0.12em;
+                  margin-bottom: 7px;
+                  font-weight: 700;
+                "
+              >
+                ⚔ Mode Comparaison
+              </div>
+              <div
+                style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
+              >
+                Configurez 2 réseaux (architecture, activation, optimiseur,
+                LR) et entraînez-les côte à côte sur le même dataset
+              </div>
+              <button
+                class="btn"
+                style="width: 100%; border-color: var(--org); color: var(--org)"
+                onclick="openCompare()"
+              >
+                ⚔ Comparer 2 réseaux
+              </button>
+            </div>
+
+            <div
+              style="
+                margin-bottom: 8px;
+                background: #030408;
                 border: 1px solid var(--brd);
                 border-radius: 4px;
                 padding: 10px 12px;
@@ -7052,6 +7159,22 @@
                       color: var(--red);
                     "
                     >R</kbd
+                  >)
+                </div>
+                <div>
+                  <b style="color: var(--text)">⚔ Mode Comparaison</b> — 2
+                  réseaux à l'architecture, activations, optimiseur et LR
+                  indépendants, entraînés côte à côte sur le même dataset
+                  (courbes de perte superposées + frontières de décision,
+                  touche
+                  <kbd
+                    style="
+                      background: #0a0c18;
+                      padding: 1px 3px;
+                      border-radius: 2px;
+                      color: var(--org);
+                    "
+                    >C</kbd
                   >)
                 </div>
                 <div>
@@ -16418,6 +16541,258 @@
       </div>
     </div>
 
+    <div id="compare-modal-bg">
+      <div id="compare-modal">
+        <div id="compare-header">
+          <h2>⚔ Comparaison de réseaux</h2>
+          <button
+            class="btn"
+            onclick="
+              stopCompare();
+              document.getElementById('compare-modal-bg').classList.remove('show');
+            "
+          >
+            ✕
+          </button>
+        </div>
+        <div id="compare-body">
+          <div style="font-size: 9px; color: var(--dim); margin-bottom: 10px">
+            Configurez deux réseaux (architecture, activations, optimiseur,
+            learning rate) et entraînez-les en parallèle sur le même dataset
+            pour voir lequel converge le mieux.
+          </div>
+          <div style="display: flex; gap: 6px; margin-bottom: 10px">
+            <div style="flex: 1">
+              <label style="font-size: 8px; color: var(--dim)">Epochs</label
+              ><input
+                type="number"
+                id="cmp-epochs"
+                value="300"
+                min="10"
+                max="3000"
+                style="width: 100%; font-size: 10px; margin-top: 2px"
+              />
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <div
+              class="cmp-card"
+              style="flex: 1; min-width: 220px; border-color: var(--a1)"
+            >
+              <div class="cmp-card-title" style="color: var(--a1)">
+                ● Réseau A
+              </div>
+              <lbl>Couches</lbl>
+              <input type="text" id="cmp-layers-a" value="2,4,3,1" />
+              <lbl>Activation</lbl>
+              <select id="cmp-act-a">
+                <option value="sigmoid">Sigmoid</option>
+                <option value="relu">ReLU</option>
+                <option value="tanh">Tanh</option>
+                <option value="leakyrelu">Leaky ReLU</option>
+                <option value="elu">ELU</option>
+                <option value="swish">Swish</option>
+                <option value="gelu">GELU</option>
+                <option value="selu">SELU</option>
+                <option value="softsign">Softsign</option>
+                <option value="linear">Linéaire</option>
+              </select>
+              <lbl>Activation sortie</lbl>
+              <select id="cmp-actout-a">
+                <option value="same">Identique (auto)</option>
+                <option value="sigmoid">Sigmoid</option>
+                <option value="linear">Linéaire</option>
+                <option value="relu">ReLU</option>
+                <option value="tanh">Tanh</option>
+                <option value="softmax">Softmax</option>
+              </select>
+              <lbl>Optimiseur</lbl>
+              <select id="cmp-opt-a">
+                <option value="sgd">SGD</option>
+                <option value="momentum">Momentum</option>
+                <option value="rmsprop">RMSProp</option>
+                <option value="adam" selected>Adam</option>
+                <option value="adamw">AdamW</option>
+                <option value="nag">Nesterov AG</option>
+              </select>
+              <lbl>LR</lbl>
+              <input
+                type="number"
+                id="cmp-lr-a"
+                value="0.3"
+                step="0.01"
+                min="0.0001"
+              />
+              <button
+                class="btn"
+                style="width: 100%; margin-top: 8px"
+                onclick="cmpCopyMain('a')"
+              >
+                ↙ Copier config actuelle
+              </button>
+            </div>
+            <div
+              class="cmp-card"
+              style="flex: 1; min-width: 220px; border-color: var(--a2)"
+            >
+              <div class="cmp-card-title" style="color: var(--a2)">
+                ● Réseau B
+              </div>
+              <lbl>Couches</lbl>
+              <input type="text" id="cmp-layers-b" value="2,8,1" />
+              <lbl>Activation</lbl>
+              <select id="cmp-act-b">
+                <option value="sigmoid">Sigmoid</option>
+                <option value="relu" selected>ReLU</option>
+                <option value="tanh">Tanh</option>
+                <option value="leakyrelu">Leaky ReLU</option>
+                <option value="elu">ELU</option>
+                <option value="swish">Swish</option>
+                <option value="gelu">GELU</option>
+                <option value="selu">SELU</option>
+                <option value="softsign">Softsign</option>
+                <option value="linear">Linéaire</option>
+              </select>
+              <lbl>Activation sortie</lbl>
+              <select id="cmp-actout-b">
+                <option value="same">Identique (auto)</option>
+                <option value="sigmoid" selected>Sigmoid</option>
+                <option value="linear">Linéaire</option>
+                <option value="relu">ReLU</option>
+                <option value="tanh">Tanh</option>
+                <option value="softmax">Softmax</option>
+              </select>
+              <lbl>Optimiseur</lbl>
+              <select id="cmp-opt-b">
+                <option value="sgd">SGD</option>
+                <option value="momentum">Momentum</option>
+                <option value="rmsprop">RMSProp</option>
+                <option value="adam">Adam</option>
+                <option value="adamw">AdamW</option>
+                <option value="nag">Nesterov AG</option>
+              </select>
+              <lbl>LR</lbl>
+              <input
+                type="number"
+                id="cmp-lr-b"
+                value="0.1"
+                step="0.01"
+                min="0.0001"
+              />
+              <button
+                class="btn"
+                style="width: 100%; margin-top: 8px"
+                onclick="cmpCopyMain('b')"
+              >
+                ↙ Copier config actuelle
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap">
+            <div class="racer" id="cmp-stat-a" style="flex: 1; min-width: 220px">
+              <div class="racer-name" style="color: var(--a1)">● Réseau A</div>
+              <div class="racer-bar-bg">
+                <div
+                  class="racer-bar"
+                  id="cmp-bar-a"
+                  style="width: 0%; background: var(--a1)"
+                ></div>
+              </div>
+              <div class="racer-stats">
+                Loss: <span id="cmp-loss-a">—</span> &nbsp; Acc:
+                <span id="cmp-acc-a">—</span>%
+              </div>
+              <button
+                class="btn ok"
+                style="width: 100%; margin-top: 6px"
+                onclick="cmpApplyToMain('a')"
+              >
+                → Utiliser ce réseau
+              </button>
+            </div>
+            <div class="racer" id="cmp-stat-b" style="flex: 1; min-width: 220px">
+              <div class="racer-name" style="color: var(--a2)">● Réseau B</div>
+              <div class="racer-bar-bg">
+                <div
+                  class="racer-bar"
+                  id="cmp-bar-b"
+                  style="width: 0%; background: var(--a2)"
+                ></div>
+              </div>
+              <div class="racer-stats">
+                Loss: <span id="cmp-loss-b">—</span> &nbsp; Acc:
+                <span id="cmp-acc-b">—</span>%
+              </div>
+              <button
+                class="btn ok"
+                style="width: 100%; margin-top: 6px"
+                onclick="cmpApplyToMain('b')"
+              >
+                → Utiliser ce réseau
+              </button>
+            </div>
+          </div>
+
+          <canvas
+            id="compare-chart"
+            height="110"
+            style="
+              width: 100%;
+              background: #020307;
+              border: 1px solid var(--brd);
+              border-radius: 3px;
+              margin-top: 8px;
+              display: block;
+            "
+          ></canvas>
+
+          <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap">
+            <div style="flex: 1; min-width: 150px; text-align: center">
+              <div style="font-size: 8px; color: var(--a1); margin-bottom: 3px">
+                Frontière — Réseau A
+              </div>
+              <canvas id="cmp-bd-a" class="cmp-bd-cvs"></canvas>
+            </div>
+            <div style="flex: 1; min-width: 150px; text-align: center">
+              <div style="font-size: 8px; color: var(--a2); margin-bottom: 3px">
+                Frontière — Réseau B
+              </div>
+              <canvas id="cmp-bd-b" class="cmp-bd-cvs"></canvas>
+            </div>
+          </div>
+
+          <div
+            id="compare-winner"
+            style="
+              text-align: center;
+              padding: 8px;
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 13px;
+              font-weight: 800;
+              display: none;
+            "
+          ></div>
+        </div>
+        <div id="compare-footer">
+          <button class="btn go" onclick="startCompare()" style="flex: 1">
+            🚀 Démarrer
+          </button>
+          <button class="btn warn" onclick="stopCompare()">⏹ Stop</button>
+          <button class="btn" onclick="resetCompare()">↺ Réinit.</button>
+          <button
+            class="btn"
+            onclick="
+              stopCompare();
+              document.getElementById('compare-modal-bg').classList.remove('show');
+            "
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="cnn-modal-bg">
       <div id="cnn-modal">
         <div id="cnn-header">
@@ -18517,6 +18892,417 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           clearTimeout(raceTimer);
           raceTimer = null;
         }
+      }
+
+      // ════════════ 5bis. MODE COMPARAISON (2 réseaux configurables en parallèle) ════════════
+      // Moteur indépendant, calqué sur le moteur du Mode Compétition ci-dessus, mais
+      // généralisé pour que chaque réseau ait sa PROPRE architecture (couches,
+      // activations, optimiseur, learning rate). Les deux réseaux s'entraînent sur
+      // le DS (dataset) courant, avec la même fonction de perte (réglage global).
+      const CMP_COLORS = { a: "#00e5ff", b: "#bf5fff" };
+      let CMP = {
+        running: false,
+        epoch: 0,
+        maxEpochs: 300,
+        timer: null,
+        a: null,
+        b: null,
+        cfgA: null,
+        cfgB: null,
+        lossA: [],
+        lossB: [],
+      };
+
+      // Force la couche d'entrée/sortie à correspondre au dataset courant (les
+      // couches cachées restent libres — c'est justement ce qu'on veut comparer).
+      function cmpSanitizeLayers(ls) {
+        let out = Array.isArray(ls) ? ls.filter((n) => n > 0 && !isNaN(n)) : [];
+        if (out.length < 2) out = [DS.inN || 2, 4, DS.outN || 1];
+        out[0] = DS.inN || 1;
+        out[out.length - 1] = DS.outN || 1;
+        return out;
+      }
+      function cmpReadCfg(prefix) {
+        const layersRaw = document
+          .getElementById("cmp-layers-" + prefix)
+          .value.split(",")
+          .map(Number);
+        return {
+          layers: cmpSanitizeLayers(layersRaw),
+          act: document.getElementById("cmp-act-" + prefix).value,
+          actOut: document.getElementById("cmp-actout-" + prefix).value,
+          opt: document.getElementById("cmp-opt-" + prefix).value,
+          lr: parseFloat(document.getElementById("cmp-lr-" + prefix).value) || 0.1,
+        };
+      }
+      function cmpEffOut(cfg) {
+        return cfg.actOut === "same" ? cfg.act : cfg.actOut;
+      }
+      function cmpBuildNet(ls) {
+        const n = { W: [], B: [] },
+          vel = { w: [], b: [] },
+          ma = { w: [], b: [] },
+          mv = { w: [], b: [] };
+        for (let l = 0; l < ls.length - 1; l++) {
+          const W = [],
+            B = [],
+            vw = [],
+            mw = [],
+            vvw = [];
+          for (let j = 0; j < ls[l + 1]; j++) {
+            const row = [],
+              vr = [],
+              mr = [],
+              vvr = [];
+            for (let k = 0; k < ls[l]; k++) {
+              row.push((Math.random() * 2 - 1) * Math.sqrt(2 / ls[l]));
+              vr.push(0);
+              mr.push(0);
+              vvr.push(0);
+            }
+            W.push(row);
+            B.push(Math.random() * 0.4 - 0.2);
+            vw.push(vr);
+            mw.push(mr);
+            vvw.push(vvr);
+          }
+          n.W.push(W);
+          n.B.push(B);
+          vel.w.push(vw);
+          vel.b.push(B.map(() => 0));
+          ma.w.push(mw);
+          ma.b.push(B.map(() => 0));
+          mv.w.push(vvw);
+          mv.b.push(B.map(() => 0));
+        }
+        return { net: n, vel, ma, mv, adamT: 0, L: ls };
+      }
+      function cmpForward(state, cfg, input) {
+        let a = input.slice(),
+          activations = [a.slice()],
+          zs = [];
+        const outAct = cmpEffOut(cfg);
+        const nL = state.net.W.length;
+        for (let l = 0; l < nL; l++) {
+          const isLast = l === nL - 1;
+          const fn = isLast ? outAct : cfg.act;
+          const zL = [],
+            aL = [];
+          for (let j = 0; j < state.net.W[l].length; j++) {
+            let z = state.net.B[l][j];
+            for (let k = 0; k < a.length; k++) z += state.net.W[l][j][k] * a[k];
+            zL.push(z);
+            aL.push(act(z, fn === "softmax" ? "linear" : fn));
+          }
+          let aLF = aL;
+          if (isLast && outAct === "softmax") aLF = softmax(aL);
+          zs.push(zL);
+          activations.push(aLF);
+          a = aLF;
+        }
+        return { activations, zs };
+      }
+      function cmpBackward(state, cfg, activations, zs, y) {
+        const L = state.net.W.length - 1,
+          deltas = Array.from({ length: state.net.W.length }, () => []);
+        const outAct = cmpEffOut(cfg);
+        const gOut = computeLossGrad(activations[L + 1], y);
+        for (let j = 0; j < state.net.W[L].length; j++) {
+          const dz =
+            outAct === "softmax"
+              ? activations[L + 1][j] * (1 - activations[L + 1][j])
+              : actD(activations[L + 1][j], zs[L][j], outAct);
+          deltas[L].push(gOut[j] * dz);
+        }
+        for (let l = L - 1; l >= 0; l--) {
+          for (let k = 0; k < state.net.W[l].length; k++) {
+            let err = 0;
+            for (let j = 0; j < state.net.W[l + 1].length; j++)
+              err += deltas[l + 1][j] * state.net.W[l + 1][j][k];
+            deltas[l].push(err * actD(activations[l + 1][k], zs[l][k], cfg.act));
+          }
+        }
+        return deltas;
+      }
+      function cmpUpdate(state, cfg, activations, deltas) {
+        const lr = cfg.lr,
+          opt = cfg.opt,
+          mom = 0.9,
+          b1 = 0.9,
+          b2 = 0.999,
+          eps = 1e-8;
+        state.adamT++;
+        for (let l = 0; l < state.net.W.length; l++) {
+          for (let j = 0; j < state.net.W[l].length; j++) {
+            const dj = deltas[l][j];
+            for (let k = 0; k < state.net.W[l][j].length; k++) {
+              const g = dj * activations[l][k];
+              const w = state.net.W[l][j][k];
+              let nw;
+              if (opt === "sgd") {
+                nw = w - lr * g;
+              } else if (opt === "momentum" || opt === "nag") {
+                state.vel.w[l][j][k] = mom * (state.vel.w[l][j][k] || 0) + lr * g;
+                nw = w - state.vel.w[l][j][k];
+              } else if (opt === "rmsprop") {
+                state.vel.w[l][j][k] =
+                  b2 * (state.vel.w[l][j][k] || 0) + (1 - b2) * g * g;
+                nw = w - (lr * g) / (Math.sqrt(state.vel.w[l][j][k]) + eps);
+              } else if (opt === "adam" || opt === "adamw") {
+                state.ma.w[l][j][k] = b1 * (state.ma.w[l][j][k] || 0) + (1 - b1) * g;
+                state.mv.w[l][j][k] =
+                  b2 * (state.mv.w[l][j][k] || 0) + (1 - b2) * g * g;
+                const mc = state.ma.w[l][j][k] / (1 - b1 ** state.adamT),
+                  vc = state.mv.w[l][j][k] / (1 - b2 ** state.adamT);
+                const wd = opt === "adamw" ? lr * 0.01 * w : 0;
+                nw = w - (lr * mc) / (Math.sqrt(vc) + eps) - wd;
+              } else {
+                nw = w - lr * g;
+              }
+              state.net.W[l][j][k] = nw;
+            }
+            state.net.B[l][j] -= lr * dj;
+          }
+        }
+      }
+      function cmpAccuracy(state, cfg) {
+        if (!DS.inputs.length) return 0;
+        let ok = 0;
+        for (let i = 0; i < DS.inputs.length; i++) {
+          const { activations } = cmpForward(state, cfg, DS.inputs[i]);
+          const pred = activations[activations.length - 1];
+          if (pred.every((p, j) => Math.round(p) === DS.outputs[i][j])) ok++;
+        }
+        return (ok / DS.inputs.length) * 100;
+      }
+      function cmpRenderOneBoundary(state, cfg, canvasId) {
+        const cvs = document.getElementById(canvasId);
+        if (!cvs || !state) return;
+        const res = 48;
+        cvs.width = res;
+        cvs.height = res;
+        const ctx = cvs.getContext("2d");
+        const img = ctx.createImageData(res, res);
+        const nIn = state.L[0];
+        for (let py = 0; py < res; py++) {
+          for (let px = 0; px < res; px++) {
+            const x1 = (px / (res - 1)) * 1.4 - 0.2,
+              x2 = 1 - (py / (res - 1)) * 1.4 + 0.2;
+            const inp = Array(nIn).fill(0.5);
+            inp[0] = x1;
+            if (inp.length > 1) inp[1] = x2;
+            const { activations } = cmpForward(state, cfg, inp);
+            const out = activations[activations.length - 1][0] ?? 0.5;
+            const i4 = (py * res + px) * 4;
+            if (out < 0.5) {
+              img.data[i4] = 0;
+              img.data[i4 + 1] = Math.floor(out * 2 * 229);
+              img.data[i4 + 2] = Math.floor(out * 2 * 255);
+            } else {
+              img.data[i4] = Math.floor((out - 0.5) * 2 * 191);
+              img.data[i4 + 1] = 0;
+              img.data[i4 + 2] = Math.floor((out - 0.5) * 2 * 255);
+            }
+            img.data[i4 + 3] = 190;
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+        if (DS.inputs.length) {
+          for (let i = 0; i < DS.inputs.length; i++) {
+            const x1 = DS.inputs[i][0] ?? 0,
+              x2 = DS.inputs[i][1] ?? 0;
+            const px = ((x1 + 0.2) / 1.4) * res,
+              py = res - ((x2 + 0.2) / 1.4) * res;
+            const cls = (DS.outputs[i][0] ?? 0) > 0.5;
+            ctx.beginPath();
+            ctx.arc(px, py, 2, 0, Math.PI * 2);
+            ctx.fillStyle = cls ? "#fff" : "#000";
+            ctx.strokeStyle = cls ? "#00ff9d" : "#ff3d5a";
+            ctx.lineWidth = 1;
+            ctx.fill();
+            ctx.stroke();
+          }
+        }
+      }
+      function cmpRenderBoundaries() {
+        if (CMP.a) cmpRenderOneBoundary(CMP.a, CMP.cfgA, "cmp-bd-a");
+        if (CMP.b) cmpRenderOneBoundary(CMP.b, CMP.cfgB, "cmp-bd-b");
+      }
+      function drawCompareChart() {
+        const c = document.getElementById("compare-chart");
+        if (!c) return;
+        const ctx = c.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        c.width = c.clientWidth * dpr;
+        c.height = 110 * dpr;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+        const w = c.clientWidth,
+          h = 110;
+        ctx.clearRect(0, 0, w, h);
+        const all = [...CMP.lossA, ...CMP.lossB].filter((v) => isFinite(v));
+        if (!all.length) return;
+        const maxL = Math.max(...all),
+          minL = Math.min(...all),
+          rng = maxL - minL || 1,
+          maxE = CMP.maxEpochs;
+        [
+          [CMP.lossA, CMP_COLORS.a],
+          [CMP.lossB, CMP_COLORS.b],
+        ].forEach(([pts, color]) => {
+          if (pts.length < 2) return;
+          ctx.beginPath();
+          pts.forEach((v, i) => {
+            const x = (i / (maxE - 1)) * w,
+              y = h - 5 - ((v - minL) / rng) * (h - 10);
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          });
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
+        ctx.font = "8px JetBrains Mono,monospace";
+        ctx.fillStyle = CMP_COLORS.a;
+        ctx.fillText("Réseau A", 4, 10);
+        ctx.fillStyle = CMP_COLORS.b;
+        ctx.fillText("Réseau B", 58, 10);
+      }
+      function initCompareNets() {
+        const cfgA = cmpReadCfg("a"),
+          cfgB = cmpReadCfg("b");
+        CMP.cfgA = cfgA;
+        CMP.cfgB = cfgB;
+        CMP.a = cmpBuildNet(cfgA.layers);
+        CMP.b = cmpBuildNet(cfgB.layers);
+      }
+      function startCompare() {
+        if (!DS.inputs.length) {
+          alert("Dataset vide !");
+          return;
+        }
+        CMP.running = true;
+        CMP.epoch = 0;
+        CMP.lossA = [];
+        CMP.lossB = [];
+        document.getElementById("compare-winner").style.display = "none";
+        CMP.maxEpochs = parseInt(document.getElementById("cmp-epochs").value) || 300;
+        initCompareNets();
+        cmpRenderBoundaries();
+        function step() {
+          if (!CMP.running || CMP.epoch >= CMP.maxEpochs) {
+            endCompare();
+            return;
+          }
+          [
+            ["a", CMP.a, CMP.cfgA, CMP.lossA],
+            ["b", CMP.b, CMP.cfgB, CMP.lossB],
+          ].forEach(([key, state, cfg, lossArr]) => {
+            let tot = 0;
+            for (let i = 0; i < DS.inputs.length; i++) {
+              const { activations, zs } = cmpForward(state, cfg, DS.inputs[i]);
+              const deltas = cmpBackward(state, cfg, activations, zs, DS.outputs[i]);
+              cmpUpdate(state, cfg, activations, deltas);
+              tot += computeLoss(activations[activations.length - 1], DS.outputs[i]);
+            }
+            const al = tot / DS.inputs.length;
+            lossArr.push(al);
+            const accV = cmpAccuracy(state, cfg);
+            const init = lossArr[0] || 1;
+            document.getElementById("cmp-bar-" + key).style.width =
+              Math.max(0, Math.min(100, (1 - al / init) * 100)) + "%";
+            document.getElementById("cmp-loss-" + key).textContent = al.toFixed(5);
+            document.getElementById("cmp-acc-" + key).textContent = accV.toFixed(0);
+          });
+          const lastA = CMP.lossA.at(-1) ?? Infinity,
+            lastB = CMP.lossB.at(-1) ?? Infinity;
+          document
+            .getElementById("cmp-stat-a")
+            ?.classList.toggle("leader", lastA <= lastB);
+          document
+            .getElementById("cmp-stat-b")
+            ?.classList.toggle("leader", lastB < lastA);
+          drawCompareChart();
+          if (CMP.epoch % 10 === 0) cmpRenderBoundaries();
+          CMP.epoch++;
+          CMP.timer = setTimeout(step, 10);
+        }
+        step();
+      }
+      function endCompare() {
+        CMP.running = false;
+        const la = CMP.lossA.at(-1) ?? Infinity,
+          lb = CMP.lossB.at(-1) ?? Infinity;
+        const winner =
+          la <= lb
+            ? { name: "Réseau A", color: CMP_COLORS.a, loss: la }
+            : { name: "Réseau B", color: CMP_COLORS.b, loss: lb };
+        const w = document.getElementById("compare-winner");
+        w.innerHTML = `🏆 Vainqueur : <span style="color:${winner.color}">${winner.name}</span> — Loss finale : ${isFinite(winner.loss) ? winner.loss.toFixed(6) : "—"}`;
+        w.style.display = "block";
+        cmpRenderBoundaries();
+      }
+      function stopCompare() {
+        CMP.running = false;
+        if (CMP.timer) {
+          clearTimeout(CMP.timer);
+          CMP.timer = null;
+        }
+      }
+      function resetCompare() {
+        stopCompare();
+        CMP.epoch = 0;
+        CMP.lossA = [];
+        CMP.lossB = [];
+        CMP.a = null;
+        CMP.b = null;
+        ["a", "b"].forEach((k) => {
+          const bar = document.getElementById("cmp-bar-" + k);
+          if (bar) bar.style.width = "0%";
+          const lo = document.getElementById("cmp-loss-" + k);
+          if (lo) lo.textContent = "—";
+          const ac = document.getElementById("cmp-acc-" + k);
+          if (ac) ac.textContent = "—";
+          document.getElementById("cmp-stat-" + k)?.classList.remove("leader");
+          const bd = document.getElementById("cmp-bd-" + k);
+          if (bd) bd.getContext("2d").clearRect(0, 0, bd.width, bd.height);
+        });
+        document.getElementById("compare-winner").style.display = "none";
+        const cc = document.getElementById("compare-chart");
+        if (cc) cc.getContext("2d").clearRect(0, 0, cc.width, cc.height);
+      }
+      function openCompare() {
+        document.getElementById("compare-modal-bg").classList.add("show");
+        resetCompare();
+      }
+      // Reprend l'architecture/les réglages du panneau principal pour préremplir
+      // la carte A ou B — pratique pour comparer "ma config" vs une variante.
+      function cmpCopyMain(prefix) {
+        document.getElementById("cmp-layers-" + prefix).value =
+          document.getElementById("iLayers").value;
+        document.getElementById("cmp-act-" + prefix).value = getAct();
+        document.getElementById("cmp-actout-" + prefix).value =
+          document.getElementById("iActOut").value;
+        document.getElementById("cmp-opt-" + prefix).value = getOpt();
+        document.getElementById("cmp-lr-" + prefix).value = getLR();
+      }
+      // Charge la config (architecture + activations + optimiseur + LR) du réseau
+      // A ou B dans le panneau principal et reconstruit NET avec — pour continuer
+      // à explorer le "gagnant" de la comparaison dans l'éditeur central.
+      function cmpApplyToMain(prefix) {
+        const cfg = prefix === "a" ? CMP.cfgA : CMP.cfgB;
+        if (!cfg) {
+          alert("Démarrez d'abord une comparaison.");
+          return;
+        }
+        document.getElementById("iLayers").value = cfg.layers.join(",");
+        document.getElementById("iAct").value = cfg.act;
+        document.getElementById("iActOut").value = cfg.actOut;
+        document.getElementById("iOpt").value = cfg.opt;
+        syncLR(cfg.lr);
+        buildNet();
+        log(
+          `<span class="ls">⚔ Config Réseau ${prefix.toUpperCase()}</span> appliquée au panneau principal`,
+        );
       }
 
       // ════════════ 6. CONFETTI ════════════
@@ -21992,6 +22778,8 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           showBoundary();
         } else if (e.key === "r" || e.key === "R") {
           showRace();
+        } else if (e.key === "c" || e.key === "C") {
+          openCompare();
         } else if (e.key === "t" || e.key === "T") {
           showTab("tools");
         } else if (e.key === "g" || e.key === "G") {
@@ -22003,6 +22791,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             "boundary-modal-bg",
             "saveload-modal-bg",
             "race-modal-bg",
+            "compare-modal-bg",
             "cnn-modal-bg",
             "rnn-modal-bg",
             "vds-modal-bg",
@@ -22011,6 +22800,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           );
           stopBoundaryLive();
           stopRace();
+          stopCompare();
           cnnStopAnim();
           cnnTrainStop();
           rnnSeqStopAnim();
@@ -22023,7 +22813,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
       const hintEl = document.getElementById("hint");
       if (hintEl)
         hintEl.textContent =
-          "Clic=détails · Ctrl+clic=forcer · Space=step · E=epoch · A=auto · M=muter · B=boundary · R=race · T=tools · G=gradients · H=heatmap";
+          "Clic=détails · Ctrl+clic=forcer · Space=step · E=epoch · A=auto · M=muter · B=boundary · R=race · C=comparer · T=tools · G=gradients · H=heatmap";
 
       // Initial update
       setTimeout(updateNetStatsBar, 600);
@@ -23216,6 +24006,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           "boundary-modal-bg",
           "saveload-modal-bg",
           "race-modal-bg",
+          "compare-modal-bg",
           "cnn-modal-bg",
           "rnn-modal-bg",
         ];
