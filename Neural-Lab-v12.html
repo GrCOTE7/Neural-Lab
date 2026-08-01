@@ -5532,6 +5532,65 @@
                   ⟳ Rechargez la page pour appliquer entièrement le changement
                   de rendu du canevas.
                 </div>
+                <div
+                  style="
+                    border-top: 1px solid var(--brd);
+                    margin: 10px 0 8px;
+                    padding-top: 8px;
+                    font-size: 8px;
+                    color: var(--dim);
+                    line-height: 1.6;
+                  "
+                >
+                  <b style="color: var(--text)">Calcul d'entraînement (GPU)</b
+                  ><br />
+                  Un navigateur n'a pas accès à CUDA/cuDNN/TensorRT (API
+                  propriétaires NVIDIA) — c'est une limite du bac à sable web.
+                  <b>WebGPU</b> est la seule API de calcul GPU accessible
+                  depuis une page, neutre vis-à-vis du fabricant : elle
+                  utilise bien votre GPU (NVIDIA compris) via le pilote du
+                  navigateur, mais pas les briques logicielles NVIDIA
+                  elles-mêmes.
+                </div>
+                <div class="crow">
+                  <label
+                    title="Exécute le forward/backward/optimiseur sur GPU via WebGPU au lieu du CPU, pour Step/+Epoch/×N/Auto. Repasse automatiquement sur CPU si Batch Norm, Dropout, motifs de neurones ou poids gelés sont actifs. Chaque activation est vérifiée numériquement contre le calcul CPU avant d'être utilisée."
+                    >Calcul d'entraînement sur GPU (WebGPU)</label
+                  ><input
+                    type="checkbox"
+                    id="cGPUTrain"
+                    onchange="setGPUTrain(this.checked)"
+                  /><span style="color: var(--text); font-size: 9px"
+                    >Activer</span
+                  >
+                </div>
+                <div class="crow">
+                  <button
+                    class="btn"
+                    style="flex: 1; font-size: 9px"
+                    onclick="manualVerifyGPU()"
+                  >
+                    🔍 Vérifier GPU vs CPU
+                  </button>
+                </div>
+                <div
+                  id="gpuTrainStatus"
+                  style="font-size: 8px; line-height: 1.7; margin-top: 4px"
+                ></div>
+                <div
+                  style="
+                    font-size: 8px;
+                    color: var(--dim);
+                    margin-top: 4px;
+                    line-height: 1.6;
+                  "
+                >
+                  ⚠ En mode GPU, le calcul se fait par lots : les logs
+                  détaillés pas-à-pas (formules, Δ, etc.) ne sont pas générés
+                  pendant Step/+Epoch/×N/Auto. L'onglet
+                  <b style="color: var(--ylw)">✎ Manuel</b> reste sur CPU (il
+                  sert justement à vérifier vos calculs à la main).
+                </div>
               </div>
             </div>
             <div class="csec">
@@ -8272,6 +8331,7 @@
         log(
           `<span class="ls">▶ RÉSEAU CRÉÉ</span> — Couches:[${ls.join("→")}] Act:${actDesc} Opt:${getOpt()} Loss:${getLoss()}${bnOn() ? " BN:ON" : ""}`,
         );
+        gpuOnNetChanged();
       }
 
       function resetW() {
@@ -8333,6 +8393,7 @@
         drawLossChart();
         redraw();
         log(`<span class="ls">↺ Poids réinitialisés</span>`);
+        gpuOnNetChanged();
       }
 
       function setBias(l, j, val) {
@@ -8603,6 +8664,1012 @@
         applyGrad(activations, deltas);
         return computeLoss(activations[activations.length - 1], y);
       }
+
+      const GPU_WGSL = `
+struct Shape4 { p0: f32, p1: f32, p2: f32, p3: f32 };
+struct StepParams {
+  lr: f32, l2: f32, gc: f32, mom: f32,
+  b1: f32, b2: f32, epsOpt: f32, adamT: f32,
+  hd: f32, epsLoss: f32, nOutFinal: f32, optCode: f32,
+  lossCode: f32, wdFlag: f32, epochIdx: f32, pad0: f32,
+};
+
+fn clampf(z: f32, lo: f32, hi: f32) -> f32 { return max(lo, min(hi, z)); }
+
+fn actf(z: f32, code: u32) -> f32 {
+  if (code == 0u) { return 1.0 / (1.0 + exp(-clampf(z, -500.0, 500.0))); }
+  if (code == 1u) { return max(0.0, z); }
+  if (code == 2u) { return tanh(z); }
+  if (code == 3u) { return select(0.01 * z, z, z > 0.0); }
+  if (code == 4u) { return select(exp(clampf(z, -50.0, 0.0)) - 1.0, z, z >= 0.0); }
+  if (code == 5u) { let s = 1.0 / (1.0 + exp(-clampf(z, -500.0, 500.0))); return z * s; }
+  if (code == 6u) { let t = tanh(0.7978845608 * (z + 0.044715 * z * z * z)); return 0.5 * z * (1.0 + t); }
+  if (code == 7u) { let a = 1.6732632; let sc = 1.0507009; return select(sc * a * (exp(clampf(z, -50.0, 0.0)) - 1.0), sc * z, z >= 0.0); }
+  if (code == 8u) { return z / (1.0 + abs(z)); }
+  return z; // 9 = linear, 10 = softmax (pré-passe identité, normalisée séparément)
+}
+
+fn actd(a: f32, z: f32, code: u32) -> f32 {
+  if (code == 0u) { return a * (1.0 - a); }
+  if (code == 1u) { return select(0.0, 1.0, z > 0.0); }
+  if (code == 2u) { return 1.0 - a * a; }
+  if (code == 3u) { return select(0.01, 1.0, z > 0.0); }
+  if (code == 4u) { return select(a + 1.0, 1.0, z >= 0.0); }
+  if (code == 5u) { let s = 1.0 / (1.0 + exp(-clampf(z, -500.0, 500.0))); return s + z * s * (1.0 - s); }
+  if (code == 6u) {
+    let t = tanh(0.7978845608 * (z + 0.044715 * z * z * z));
+    return 0.5 * (1.0 + t) + 0.5 * z * (1.0 - t * t) * 0.7978845608 * (1.0 + 3.0 * 0.044715 * z * z);
+  }
+  if (code == 7u) { let a2 = 1.6732632; let sc = 1.0507009; return select(sc * a2 * exp(clampf(z, -50.0, 0.0)), sc, z >= 0.0); }
+  if (code == 8u) { return 1.0 / pow(1.0 + abs(z), 2.0); }
+  if (code == 9u) { return 1.0; }
+  return a * (1.0 - a);
+}
+
+fn lossGradOne(p: f32, y: f32, code: u32, n: f32, hd: f32, epsL: f32) -> f32 {
+  if (code == 0u) { return (2.0 * (p - y)) / n; }
+  if (code == 1u) {
+    var s = 0.0;
+    if (p > y) { s = 1.0; } else if (p < y) { s = -1.0; }
+    return s / n;
+  }
+  if (code == 2u) { let c = clampf(p, epsL, 1.0 - epsL); return (-y / c + (1.0 - y) / (1.0 - c)) / n; }
+  if (code == 3u) {
+    let e = p - y;
+    var g = e;
+    if (abs(e) > hd) { g = select(-hd, hd, e > 0.0); }
+    return g / n;
+  }
+  let t = select(-1.0, 1.0, y != 0.0);
+  if (1.0 - t * p > 0.0) { return -t / n; }
+  return 0.0;
+}
+
+fn lossOne(p: f32, y: f32, code: u32, hd: f32) -> f32 {
+  if (code == 0u) { return (p - y) * (p - y); }
+  if (code == 1u) { return abs(p - y); }
+  if (code == 2u) { let c = clampf(p, 1e-7, 1.0 - 1e-7); return -(y * log(c) + (1.0 - y) * log(1.0 - c)); }
+  if (code == 3u) {
+    let e = abs(p - y);
+    if (e <= hd) { return 0.5 * e * e; }
+    return hd * (e - 0.5 * hd);
+  }
+  let t = select(-1.0, 1.0, y != 0.0);
+  return max(0.0, 1.0 - t * p);
+}
+
+fn updateParam(w: f32, g: f32, lr: f32, opt: u32, mom: f32, b1: f32, b2: f32, epsOpt: f32, v: f32, m: f32, mv: f32, adamT: f32, wd: f32) -> f32 {
+  if (opt == 0u) { return w - lr * g; }
+  if (opt == 1u || opt == 2u) { return w - (mom * v + lr * g); }
+  if (opt == 3u) { let vn = b2 * v + (1.0 - b2) * g * g; return w - (lr * g) / (sqrt(vn) + epsOpt); }
+  let mn = b1 * m + (1.0 - b1) * g;
+  let vn2 = b2 * mv + (1.0 - b2) * g * g;
+  let mc = mn / (1.0 - pow(b1, adamT));
+  let vc = vn2 / (1.0 - pow(b2, adamT));
+  var wdTerm: f32 = 0.0;
+  if (wd > 0.5) { wdTerm = lr * 0.01 * w; }
+  return w - (lr * mc) / (sqrt(vc) + epsOpt) - wdTerm;
+}
+
+// ── fwd_layer : une couche du forward pass (z = W·a + b, puis activation) ──
+@group(0) @binding(0) var<uniform> fShape: Shape4; // p0=nIn p1=nOut p2=actCode
+@group(0) @binding(1) var<storage, read> fAIn: array<f32>;
+@group(0) @binding(2) var<storage, read> fW: array<f32>;
+@group(0) @binding(3) var<storage, read> fB: array<f32>;
+@group(0) @binding(4) var<storage, read_write> fAOut: array<f32>;
+@group(0) @binding(5) var<storage, read_write> fZOut: array<f32>;
+@compute @workgroup_size(64)
+fn fwd_layer(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let j = gid.x;
+  let nOut = u32(fShape.p1);
+  if (j >= nOut) { return; }
+  let nIn = u32(fShape.p0);
+  var z: f32 = fB[j];
+  for (var k: u32 = 0u; k < nIn; k = k + 1u) {
+    z = z + fW[j * nIn + k] * fAIn[k];
+  }
+  fZOut[j] = z;
+  fAOut[j] = actf(z, u32(fShape.p2));
+}
+
+// ── softmax_norm : normalisation softmax de la couche de sortie (thread unique) ──
+@group(0) @binding(0) var<uniform> sShape: Shape4; // p0=n
+@group(0) @binding(1) var<storage, read_write> sA: array<f32>;
+@compute @workgroup_size(1)
+fn softmax_norm() {
+  let n = u32(sShape.p0);
+  var m: f32 = sA[0];
+  for (var i: u32 = 1u; i < n; i = i + 1u) { if (sA[i] > m) { m = sA[i]; } }
+  var s: f32 = 0.0;
+  for (var i: u32 = 0u; i < n; i = i + 1u) { let e = exp(sA[i] - m); sA[i] = e; s = s + e; }
+  for (var i: u32 = 0u; i < n; i = i + 1u) { sA[i] = sA[i] / s; }
+}
+
+// ── out_delta : gradient de la loss + delta de la couche de sortie ──
+@group(0) @binding(0) var<uniform> oShape: Shape4; // p0=nOut p1=actCode
+@group(0) @binding(1) var<uniform> oParams: StepParams;
+@group(0) @binding(2) var<storage, read> oPred: array<f32>;
+@group(0) @binding(3) var<storage, read> oY: array<f32>;
+@group(0) @binding(4) var<storage, read> oZ: array<f32>;
+@group(0) @binding(5) var<storage, read_write> oDelta: array<f32>;
+@compute @workgroup_size(64)
+fn out_delta(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let j = gid.x;
+  let n = u32(oShape.p0);
+  if (j >= n) { return; }
+  let code = u32(oShape.p1);
+  let p = oPred[j];
+  let g = lossGradOne(p, oY[j], u32(oParams.lossCode), f32(n), oParams.hd, oParams.epsLoss);
+  var dz: f32;
+  if (code == 10u) { dz = p * (1.0 - p); } else { dz = actd(p, oZ[j], code); }
+  oDelta[j] = g * dz;
+}
+
+// ── bwd_layer : rétropropagation d'une couche (delta[l] à partir de delta[l+1]) ──
+@group(0) @binding(0) var<uniform> bShape: Shape4; // p0=nOutThis p1=nOutNext p2=actCode
+@group(0) @binding(1) var<storage, read> bDeltaNext: array<f32>;
+@group(0) @binding(2) var<storage, read> bWNext: array<f32>;
+@group(0) @binding(3) var<storage, read> bAThis: array<f32>;
+@group(0) @binding(4) var<storage, read> bZThis: array<f32>;
+@group(0) @binding(5) var<storage, read_write> bDeltaOut: array<f32>;
+@compute @workgroup_size(64)
+fn bwd_layer(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let k = gid.x;
+  let nThis = u32(bShape.p0);
+  if (k >= nThis) { return; }
+  let nNext = u32(bShape.p1);
+  var err: f32 = 0.0;
+  for (var j: u32 = 0u; j < nNext; j = j + 1u) {
+    err = err + bDeltaNext[j] * bWNext[j * nThis + k];
+  }
+  let code = u32(bShape.p2);
+  bDeltaOut[k] = err * actd(bAThis[k], bZThis[k], code);
+}
+
+// ── normsq_accum : accumule la somme des carrés des deltas (clipping de gradient) ──
+@group(0) @binding(0) var<uniform> nShape: Shape4; // p0=longueur
+@group(0) @binding(1) var<storage, read> nDelta: array<f32>;
+@group(0) @binding(2) var<storage, read_write> nAcc: array<f32>; // [0]
+@compute @workgroup_size(1)
+fn normsq_accum() {
+  let n = u32(nShape.p0);
+  var s: f32 = 0.0;
+  for (var i: u32 = 0u; i < n; i = i + 1u) { s = s + nDelta[i] * nDelta[i]; }
+  nAcc[0] = nAcc[0] + s;
+}
+
+// ── finalize_clip : calcule le facteur d'échelle du clipping à partir de la norme ──
+@group(0) @binding(0) var<uniform> cParams: StepParams;
+@group(0) @binding(1) var<storage, read_write> cAcc: array<f32>; // [0] = somme des carrés (remise à 0 en sortie)
+@group(0) @binding(2) var<storage, read_write> cScale: array<f32>; // [0] = facteur d'échelle
+@compute @workgroup_size(1)
+fn finalize_clip() {
+  let gc = cParams.gc;
+  if (gc <= 0.0) { cScale[0] = 1.0; cAcc[0] = 0.0; return; }
+  let norm = sqrt(cAcc[0]);
+  if (norm > gc) { cScale[0] = gc / norm; } else { cScale[0] = 1.0; }
+  cAcc[0] = 0.0;
+}
+
+// ── update_weights : applique le gradient (avec clipping, L2, optimiseur choisi) ──
+@group(0) @binding(0) var<uniform> uShape: Shape4; // p0=nIn p1=nOut
+@group(0) @binding(1) var<uniform> uParams: StepParams;
+@group(0) @binding(2) var<storage, read> uDelta: array<f32>;
+@group(0) @binding(3) var<storage, read> uAIn: array<f32>;
+@group(0) @binding(4) var<storage, read> uScale: array<f32>;
+@group(0) @binding(5) var<storage, read_write> uW: array<f32>;
+@group(0) @binding(6) var<storage, read_write> uB: array<f32>;
+@group(0) @binding(7) var<storage, read_write> uVw: array<f32>;
+@group(0) @binding(8) var<storage, read_write> uMw: array<f32>;
+@group(0) @binding(9) var<storage, read_write> uMVw: array<f32>;
+@group(0) @binding(10) var<storage, read_write> uVb: array<f32>;
+@group(0) @binding(11) var<storage, read_write> uMb: array<f32>;
+@group(0) @binding(12) var<storage, read_write> uMVb: array<f32>;
+@compute @workgroup_size(64)
+fn update_weights(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let j = gid.x;
+  let nOut = u32(uShape.p1);
+  if (j >= nOut) { return; }
+  let nIn = u32(uShape.p0);
+  let dj = uDelta[j];
+  let scale = uScale[0];
+  let optc = u32(uParams.optCode);
+  let lr = uParams.lr;
+  let l2 = uParams.l2;
+  for (var k: u32 = 0u; k < nIn; k = k + 1u) {
+    let idx = j * nIn + k;
+    let g = dj * scale * uAIn[k] + l2 * uW[idx];
+    let vOld = uVw[idx]; let mOld = uMw[idx]; let mvOld = uMVw[idx];
+    uW[idx] = updateParam(uW[idx], g, lr, optc, uParams.mom, uParams.b1, uParams.b2, uParams.epsOpt, vOld, mOld, mvOld, uParams.adamT, uParams.wdFlag);
+    if (optc == 1u || optc == 2u) { uVw[idx] = uParams.mom * vOld + lr * g; }
+    else if (optc == 3u) { uVw[idx] = uParams.b2 * vOld + (1.0 - uParams.b2) * g * g; }
+    else if (optc == 4u || optc == 5u) {
+      uMw[idx] = uParams.b1 * mOld + (1.0 - uParams.b1) * g;
+      uMVw[idx] = uParams.b2 * mvOld + (1.0 - uParams.b2) * g * g;
+    }
+  }
+  let gb = dj * scale;
+  let vOldB = uVb[j]; let mOldB = uMb[j]; let mvOldB = uMVb[j];
+  uB[j] = updateParam(uB[j], gb, lr, optc, uParams.mom, uParams.b1, uParams.b2, uParams.epsOpt, vOldB, mOldB, mvOldB, uParams.adamT, uParams.wdFlag);
+  if (optc == 1u || optc == 2u) { uVb[j] = uParams.mom * vOldB + lr * gb; }
+  else if (optc == 3u) { uVb[j] = uParams.b2 * vOldB + (1.0 - uParams.b2) * gb * gb; }
+  else if (optc == 4u || optc == 5u) {
+    uMb[j] = uParams.b1 * mOldB + (1.0 - uParams.b1) * gb;
+    uMVb[j] = uParams.b2 * mvOldB + (1.0 - uParams.b2) * gb * gb;
+  }
+}
+
+// ── loss_accum : accumule la loss du pas courant dans l'emplacement de l'époque courante ──
+@group(0) @binding(0) var<uniform> laShape: Shape4; // p0=nOut
+@group(0) @binding(1) var<uniform> laParams: StepParams;
+@group(0) @binding(2) var<storage, read> laPred: array<f32>;
+@group(0) @binding(3) var<storage, read> laY: array<f32>;
+@group(0) @binding(4) var<storage, read_write> laAcc: array<f32>;
+@compute @workgroup_size(1)
+fn loss_accum() {
+  let n = u32(laShape.p0);
+  let code = u32(laParams.lossCode);
+  let hd = laParams.hd;
+  var s: f32 = 0.0;
+  for (var i: u32 = 0u; i < n; i = i + 1u) { s = s + lossOne(laPred[i], laY[i], code, hd); }
+  let idx = u32(laParams.epochIdx);
+  laAcc[idx] = laAcc[idx] + s / f32(n);
+}
+`;
+
+      // ══════════════════════════════════════════════════════════════════
+      // CALCUL D'ENTRAÎNEMENT SUR GPU (WebGPU) — forward/backward/optimiseur
+      // ══════════════════════════════════════════════════════════════════
+      // Important : un navigateur ne peut pas appeler CUDA/cuDNN/TensorRT
+      // (API propriétaires NVIDIA) — c'est une limite du bac à sable web,
+      // pas de cet outil. WebGPU est l'unique API de calcul GPU accessible
+      // depuis une page web ; elle est volontairement neutre vis-à-vis du
+      // fabricant (NVIDIA/AMD/Intel/Apple), et s'exécute bel et bien sur le
+      // GPU de la machine (y compris NVIDIA) via le pilote du navigateur.
+      //
+      // Portée : ce moteur GPU couvre le cas standard (10 activations, 5
+      // pertes, 6 optimiseurs, L2, clipping de gradient). Il repasse
+      // automatiquement sur le CPU — sans rien casser — dès que la Batch
+      // Normalization, le Dropout, les motifs de neurones ou des poids
+      // gelés sont actifs, car leur sémantique exacte n'est pas répliquée
+      // côté GPU. Chaque activation du mode GPU est vérifiée numériquement
+      // contre le calcul CPU de référence (voir verifyGPUvsCPU) avant
+      // d'être utilisée ; en cas d'écart, retour automatique au CPU.
+      const ACT_CODE = {
+        sigmoid: 0, relu: 1, tanh: 2, leakyrelu: 3, elu: 4,
+        swish: 5, gelu: 6, selu: 7, softsign: 8, linear: 9, softmax: 10,
+      };
+      const LOSS_CODE = { mse: 0, mae: 1, logloss: 2, huber: 3, hinge: 4 };
+      const OPT_CODE = { sgd: 0, momentum: 1, nag: 2, rmsprop: 3, adam: 4, adamw: 5 };
+
+      let GPU = {
+        supported: false,
+        ready: false,
+        device: null,
+        pipelines: null,
+        adapterInfo: "",
+        verified: false,
+        busy: false,
+        main: null, // bundle de buffers pour l'entraînement réel
+      };
+
+      async function initWebGPU() {
+        if (!("gpu" in navigator)) {
+          GPU.supported = false;
+          return false;
+        }
+        try {
+          const adapter = await navigator.gpu.requestAdapter({
+            powerPreference: "high-performance",
+          });
+          if (!adapter) {
+            GPU.supported = false;
+            return false;
+          }
+          const device = await adapter.requestDevice();
+          device.lost.then((info) => {
+            log(
+              `<span style="color:var(--red)">⚠ Contexte GPU perdu (${(info && info.reason) || "inconnu"}) — retour au calcul CPU.</span>`,
+            );
+            GPU.ready = false;
+            GPU.verified = false;
+            const cb = document.getElementById("cGPUTrain");
+            if (cb) cb.checked = false;
+            localStorage.setItem("nl_gpu_train", "0");
+          });
+          GPU.device = device;
+          GPU.supported = true;
+          let info = "";
+          try {
+            const ai =
+              adapter.info ||
+              (adapter.requestAdapterInfo ? await adapter.requestAdapterInfo() : null);
+            if (ai)
+              info = [ai.vendor, ai.architecture, ai.device, ai.description]
+                .filter(Boolean)
+                .join(" · ");
+          } catch (e) {
+            /* info GPU optionnelle, non bloquant */
+          }
+          GPU.adapterInfo = info;
+          buildGPUPipelines();
+          GPU.ready = true;
+          return true;
+        } catch (e) {
+          console.error(e);
+          GPU.supported = false;
+          GPU.ready = false;
+          return false;
+        }
+      }
+
+      function buildGPUPipelines() {
+        const device = GPU.device;
+        const module = device.createShaderModule({ code: GPU_WGSL });
+        const mk = (entryPoint) =>
+          device.createComputePipeline({
+            layout: "auto",
+            compute: { module, entryPoint },
+          });
+        GPU.pipelines = {
+          fwd: mk("fwd_layer"),
+          softmax: mk("softmax_norm"),
+          outDelta: mk("out_delta"),
+          bwd: mk("bwd_layer"),
+          normsq: mk("normsq_accum"),
+          clip: mk("finalize_clip"),
+          update: mk("update_weights"),
+          lossAccum: mk("loss_accum"),
+        };
+      }
+
+      // ── Aides bas niveau (buffers, lecture/écriture) ──
+      function gpuMakeUniform(byteLength) {
+        return GPU.device.createBuffer({
+          size: byteLength,
+          usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+      }
+      function gpuMakeStorage(byteLength) {
+        return GPU.device.createBuffer({
+          size: Math.max(byteLength, 4),
+          usage:
+            GPUBufferUsage.STORAGE |
+            GPUBufferUsage.COPY_SRC |
+            GPUBufferUsage.COPY_DST,
+        });
+      }
+      function gpuWriteF32(buf, arr) {
+        GPU.device.queue.writeBuffer(buf, 0, new Float32Array(arr));
+      }
+      async function gpuReadF32(storageBuf, length) {
+        const bytes = Math.max(length, 1) * 4;
+        const staging = GPU.device.createBuffer({
+          size: bytes,
+          usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
+        });
+        const encoder = GPU.device.createCommandEncoder();
+        encoder.copyBufferToBuffer(storageBuf, 0, staging, 0, bytes);
+        GPU.device.queue.submit([encoder.finish()]);
+        await staging.mapAsync(GPUMapMode.READ);
+        const out = new Float32Array(staging.getMappedRange().slice(0));
+        staging.unmap();
+        staging.destroy();
+        return out;
+      }
+
+      // ── Allocation d'un jeu de buffers pour l'architecture NET courante ──
+      function gpuBuildLayerSet() {
+        const L = NET.W.length;
+        const layers = [];
+        for (let l = 0; l < L; l++) {
+          const nIn = NET.L[l],
+            nOut = NET.L[l + 1];
+          layers.push({
+            nIn,
+            nOut,
+            shapeFwd: gpuMakeUniform(16),
+            shapeBwd: gpuMakeUniform(16),
+            shapeOut: gpuMakeUniform(16),
+            shapeUpd: gpuMakeUniform(16),
+            shapeNorm: gpuMakeUniform(16),
+            W: gpuMakeStorage(nIn * nOut * 4),
+            B: gpuMakeStorage(nOut * 4),
+            Vw: gpuMakeStorage(nIn * nOut * 4),
+            Mw: gpuMakeStorage(nIn * nOut * 4),
+            MVw: gpuMakeStorage(nIn * nOut * 4),
+            Vb: gpuMakeStorage(nOut * 4),
+            Mb: gpuMakeStorage(nOut * 4),
+            MVb: gpuMakeStorage(nOut * 4),
+            A: gpuMakeStorage(nIn * 4),
+            Aout: gpuMakeStorage(nOut * 4),
+            Z: gpuMakeStorage(nOut * 4),
+            Delta: gpuMakeStorage(nOut * 4),
+          });
+        }
+        // La sortie de la couche l est l'entrée de la couche l+1 : buffers partagés
+        for (let l = 0; l < L - 1; l++) layers[l + 1].A = layers[l].Aout;
+        const bundle = {
+          layers,
+          yBuf: gpuMakeStorage(NET.L[L] * 4),
+          clipAcc: gpuMakeStorage(4),
+          clipScale: gpuMakeStorage(4),
+          stepParams: gpuMakeUniform(64),
+          lossAcc: null,
+          lossAccCap: 0,
+          netSig: NET.L.join(","),
+        };
+        gpuWriteStaticShapes(bundle);
+        return bundle;
+      }
+      function gpuWriteStaticShapes(bundle) {
+        const L = NET.W.length;
+        for (let l = 0; l < L; l++) {
+          const ly = bundle.layers[l];
+          const actCode = ACT_CODE[getActForLayer(l)] ?? 0;
+          gpuWriteF32(ly.shapeFwd, [ly.nIn, ly.nOut, actCode, 0]);
+          gpuWriteF32(ly.shapeUpd, [ly.nIn, ly.nOut, 0, 0]);
+          gpuWriteF32(ly.shapeNorm, [ly.nOut, 0, 0, 0]);
+          if (l === L - 1) gpuWriteF32(ly.shapeOut, [ly.nOut, actCode, 0, 0]);
+        }
+        for (let l = 0; l < L - 1; l++) {
+          const ly = bundle.layers[l];
+          const nNext = bundle.layers[l + 1].nOut;
+          const actCode = ACT_CODE[getActForLayer(l)] ?? 0;
+          gpuWriteF32(ly.shapeBwd, [ly.nOut, nNext, actCode, 0]);
+        }
+      }
+      function gpuDestroyLayerSet(bundle) {
+        try {
+          bundle.layers[0].A.destroy();
+        } catch (e) {}
+        for (const ly of bundle.layers) {
+          for (const k of [
+            "shapeFwd", "shapeBwd", "shapeOut", "shapeUpd", "shapeNorm",
+            "W", "B", "Vw", "Mw", "MVw", "Vb", "Mb", "MVb", "Aout", "Z", "Delta",
+          ]) {
+            try {
+              ly[k].destroy();
+            } catch (e) {}
+          }
+        }
+        try {
+          bundle.yBuf.destroy();
+          bundle.clipAcc.destroy();
+          bundle.clipScale.destroy();
+          bundle.stepParams.destroy();
+          if (bundle.lossAcc) bundle.lossAcc.destroy();
+        } catch (e) {}
+      }
+      function gpuAllocateBuffers() {
+        if (!GPU.ready || !NET) return;
+        if (GPU.main) gpuDestroyLayerSet(GPU.main);
+        GPU.main = gpuBuildLayerSet();
+        gpuSyncWeightsToDevice(GPU.main);
+      }
+      function gpuEnsureLossAcc(bundle, n) {
+        if (!bundle.lossAcc || bundle.lossAccCap < n) {
+          if (bundle.lossAcc) bundle.lossAcc.destroy();
+          bundle.lossAcc = gpuMakeStorage(n * 4);
+          bundle.lossAccCap = n;
+        }
+      }
+
+      // ── Synchronisation des poids CPU → GPU / GPU → CPU ──
+      function gpuSyncWeightsToDevice(bundle) {
+        const L = NET.W.length;
+        for (let l = 0; l < L; l++) {
+          const ly = bundle.layers[l];
+          const flatW = [],
+            flatVw = [],
+            flatMw = [],
+            flatMVw = [];
+          for (let j = 0; j < ly.nOut; j++)
+            for (let k = 0; k < ly.nIn; k++) {
+              flatW.push(NET.W[l][j][k]);
+              flatVw.push(VEL.w[l][j][k]);
+              flatMw.push(MA.w[l][j][k]);
+              flatMVw.push(MV.w[l][j][k]);
+            }
+          gpuWriteF32(ly.W, flatW);
+          gpuWriteF32(ly.Vw, flatVw);
+          gpuWriteF32(ly.Mw, flatMw);
+          gpuWriteF32(ly.MVw, flatMVw);
+          gpuWriteF32(ly.B, NET.B[l]);
+          gpuWriteF32(ly.Vb, VEL.b[l]);
+          gpuWriteF32(ly.Mb, MA.b[l]);
+          gpuWriteF32(ly.MVb, MV.b[l]);
+        }
+      }
+      async function gpuReadWeightsFromDevice(bundle) {
+        const L = NET.W.length;
+        const W = [],
+          B = [],
+          Vw = [],
+          Mw = [],
+          MVw = [],
+          Vb = [],
+          Mb = [],
+          MVb = [];
+        for (let l = 0; l < L; l++) {
+          const ly = bundle.layers[l];
+          const flatW = await gpuReadF32(ly.W, ly.nIn * ly.nOut);
+          const flatVw = await gpuReadF32(ly.Vw, ly.nIn * ly.nOut);
+          const flatMw = await gpuReadF32(ly.Mw, ly.nIn * ly.nOut);
+          const flatMVw = await gpuReadF32(ly.MVw, ly.nIn * ly.nOut);
+          const flatB = await gpuReadF32(ly.B, ly.nOut);
+          const flatVb = await gpuReadF32(ly.Vb, ly.nOut);
+          const flatMb = await gpuReadF32(ly.Mb, ly.nOut);
+          const flatMVb = await gpuReadF32(ly.MVb, ly.nOut);
+          const Wl = [],
+            Vwl = [],
+            Mwl = [],
+            MVwl = [];
+          for (let j = 0; j < ly.nOut; j++) {
+            const row = [],
+              vrow = [],
+              mrow = [],
+              mvrow = [];
+            for (let k = 0; k < ly.nIn; k++) {
+              row.push(flatW[j * ly.nIn + k]);
+              vrow.push(flatVw[j * ly.nIn + k]);
+              mrow.push(flatMw[j * ly.nIn + k]);
+              mvrow.push(flatMVw[j * ly.nIn + k]);
+            }
+            Wl.push(row);
+            Vwl.push(vrow);
+            Mwl.push(mrow);
+            MVwl.push(mvrow);
+          }
+          W.push(Wl);
+          Vw.push(Vwl);
+          Mw.push(Mwl);
+          MVw.push(MVwl);
+          B.push(Array.from(flatB));
+          Vb.push(Array.from(flatVb));
+          Mb.push(Array.from(flatMb));
+          MVb.push(Array.from(flatMVb));
+        }
+        return { W, B, Vw, Mw, MVw, Vb, Mb, MVb };
+      }
+      async function gpuCommitResults(bundle) {
+        const r = await gpuReadWeightsFromDevice(bundle);
+        NET.W = r.W;
+        NET.B = r.B;
+        VEL.w = r.Vw;
+        VEL.b = r.Vb;
+        MA.w = r.Mw;
+        MA.b = r.Mb;
+        MV.w = r.MVw;
+        MV.b = r.MVb;
+        // Recompose LAST_ACT/LAST_Z/LAST_DELTAS (dernier échantillon traité)
+        // pour que le schéma du réseau et l'inspection au survol restent
+        // exacts, comme le ferait trainSample() côté CPU.
+        const L = bundle.layers.length;
+        const lastAct = [
+          Array.from(await gpuReadF32(bundle.layers[0].A, bundle.layers[0].nIn)),
+        ];
+        const lastZ = [],
+          lastDelta = [];
+        for (let l = 0; l < L; l++) {
+          const ly = bundle.layers[l];
+          lastAct.push(Array.from(await gpuReadF32(ly.Aout, ly.nOut)));
+          lastZ.push(Array.from(await gpuReadF32(ly.Z, ly.nOut)));
+          lastDelta.push(Array.from(await gpuReadF32(ly.Delta, ly.nOut)));
+        }
+        LAST_ACT = lastAct;
+        LAST_Z = lastZ;
+        LAST_DELTAS = lastDelta;
+      }
+
+      // ── Encodage + soumission d'un échantillon (sans lecture intermédiaire) ──
+      function gpuBindGroup(pipeline, entries) {
+        return GPU.device.createBindGroup({
+          layout: pipeline.getBindGroupLayout(0),
+          entries,
+        });
+      }
+      function gpuEncodeSampleOn(bundle, x, y) {
+        const L = bundle.layers.length;
+        gpuWriteF32(bundle.layers[0].A, x);
+        gpuWriteF32(bundle.yBuf, y);
+        gpuWriteF32(bundle.clipAcc, [0]);
+        const encoder = GPU.device.createCommandEncoder();
+        const pass = encoder.beginComputePass();
+        // forward
+        for (let l = 0; l < L; l++) {
+          const ly = bundle.layers[l];
+          pass.setPipeline(GPU.pipelines.fwd);
+          pass.setBindGroup(
+            0,
+            gpuBindGroup(GPU.pipelines.fwd, [
+              { binding: 0, resource: { buffer: ly.shapeFwd } },
+              { binding: 1, resource: { buffer: ly.A } },
+              { binding: 2, resource: { buffer: ly.W } },
+              { binding: 3, resource: { buffer: ly.B } },
+              { binding: 4, resource: { buffer: ly.Aout } },
+              { binding: 5, resource: { buffer: ly.Z } },
+            ]),
+          );
+          pass.dispatchWorkgroups(Math.max(1, Math.ceil(ly.nOut / 64)));
+        }
+        const lastLy = bundle.layers[L - 1];
+        const lastAct = getActForLayer(L - 1);
+        if (lastAct === "softmax") {
+          pass.setPipeline(GPU.pipelines.softmax);
+          pass.setBindGroup(
+            0,
+            gpuBindGroup(GPU.pipelines.softmax, [
+              { binding: 0, resource: { buffer: lastLy.shapeNorm } },
+              { binding: 1, resource: { buffer: lastLy.Aout } },
+            ]),
+          );
+          pass.dispatchWorkgroups(1);
+        }
+        // gradient de la loss + delta de sortie
+        pass.setPipeline(GPU.pipelines.outDelta);
+        pass.setBindGroup(
+          0,
+          gpuBindGroup(GPU.pipelines.outDelta, [
+            { binding: 0, resource: { buffer: lastLy.shapeOut } },
+            { binding: 1, resource: { buffer: bundle.stepParams } },
+            { binding: 2, resource: { buffer: lastLy.Aout } },
+            { binding: 3, resource: { buffer: bundle.yBuf } },
+            { binding: 4, resource: { buffer: lastLy.Z } },
+            { binding: 5, resource: { buffer: lastLy.Delta } },
+          ]),
+        );
+        pass.dispatchWorkgroups(Math.max(1, Math.ceil(lastLy.nOut / 64)));
+        // accumulation de la loss (pour l'historique / le graphe)
+        pass.setPipeline(GPU.pipelines.lossAccum);
+        pass.setBindGroup(
+          0,
+          gpuBindGroup(GPU.pipelines.lossAccum, [
+            { binding: 0, resource: { buffer: lastLy.shapeOut } },
+            { binding: 1, resource: { buffer: bundle.stepParams } },
+            { binding: 2, resource: { buffer: lastLy.Aout } },
+            { binding: 3, resource: { buffer: bundle.yBuf } },
+            { binding: 4, resource: { buffer: bundle.lossAcc } },
+          ]),
+        );
+        pass.dispatchWorkgroups(1);
+        // rétropropagation des couches restantes
+        for (let l = L - 2; l >= 0; l--) {
+          const ly = bundle.layers[l],
+            nxt = bundle.layers[l + 1];
+          pass.setPipeline(GPU.pipelines.bwd);
+          pass.setBindGroup(
+            0,
+            gpuBindGroup(GPU.pipelines.bwd, [
+              { binding: 0, resource: { buffer: ly.shapeBwd } },
+              { binding: 1, resource: { buffer: nxt.Delta } },
+              { binding: 2, resource: { buffer: nxt.W } },
+              { binding: 3, resource: { buffer: ly.Aout } },
+              { binding: 4, resource: { buffer: ly.Z } },
+              { binding: 5, resource: { buffer: ly.Delta } },
+            ]),
+          );
+          pass.dispatchWorkgroups(Math.max(1, Math.ceil(ly.nOut / 64)));
+        }
+        // clipping de gradient (norme globale sur toutes les couches)
+        for (let l = 0; l < L; l++) {
+          const ly = bundle.layers[l];
+          pass.setPipeline(GPU.pipelines.normsq);
+          pass.setBindGroup(
+            0,
+            gpuBindGroup(GPU.pipelines.normsq, [
+              { binding: 0, resource: { buffer: ly.shapeNorm } },
+              { binding: 1, resource: { buffer: ly.Delta } },
+              { binding: 2, resource: { buffer: bundle.clipAcc } },
+            ]),
+          );
+          pass.dispatchWorkgroups(1);
+        }
+        pass.setPipeline(GPU.pipelines.clip);
+        pass.setBindGroup(
+          0,
+          gpuBindGroup(GPU.pipelines.clip, [
+            { binding: 0, resource: { buffer: bundle.stepParams } },
+            { binding: 1, resource: { buffer: bundle.clipAcc } },
+            { binding: 2, resource: { buffer: bundle.clipScale } },
+          ]),
+        );
+        pass.dispatchWorkgroups(1);
+        // mise à jour des poids (optimiseur choisi)
+        for (let l = 0; l < L; l++) {
+          const ly = bundle.layers[l];
+          pass.setPipeline(GPU.pipelines.update);
+          pass.setBindGroup(
+            0,
+            gpuBindGroup(GPU.pipelines.update, [
+              { binding: 0, resource: { buffer: ly.shapeUpd } },
+              { binding: 1, resource: { buffer: bundle.stepParams } },
+              { binding: 2, resource: { buffer: ly.Delta } },
+              { binding: 3, resource: { buffer: ly.A } },
+              { binding: 4, resource: { buffer: bundle.clipScale } },
+              { binding: 5, resource: { buffer: ly.W } },
+              { binding: 6, resource: { buffer: ly.B } },
+              { binding: 7, resource: { buffer: ly.Vw } },
+              { binding: 8, resource: { buffer: ly.Mw } },
+              { binding: 9, resource: { buffer: ly.MVw } },
+              { binding: 10, resource: { buffer: ly.Vb } },
+              { binding: 11, resource: { buffer: ly.Mb } },
+              { binding: 12, resource: { buffer: ly.MVb } },
+            ]),
+          );
+          pass.dispatchWorkgroups(Math.max(1, Math.ceil(ly.nOut / 64)));
+        }
+        pass.end();
+        GPU.device.queue.submit([encoder.finish()]);
+      }
+
+      function gpuStepParamsArray(epochIdx) {
+        const gc = getV("cGC") || 0,
+          l2 = getV("cL2") || 0;
+        const opt = OPT_CODE[getOpt()] ?? 0;
+        const mom = getV("cMom") || 0.9,
+          b1 = getV("cB1") || 0.9,
+          b2 = getV("cB2") || 0.999;
+        const epsOpt = Math.pow(10, getV("cEps") || -8);
+        const lossCode = LOSS_CODE[getLoss()] ?? 0;
+        const hd = getV("cHD") || 1;
+        const lrd = getV("cLRD") || 1;
+        const wdFlag = opt === 5 ? 1 : 0;
+        const effLR = getLR() * Math.pow(lrd, Math.floor(EPOCH / 100));
+        const nOutFinal = NET.L[NET.L.length - 1];
+        return [
+          effLR, l2, gc, mom, b1, b2, epsOpt, ADAM_T,
+          hd, 1e-7, nOutFinal, opt, lossCode, wdFlag, epochIdx, 0,
+        ];
+      }
+
+      // ── Éligibilité : conditions dans lesquelles le calcul GPU peut remplacer le CPU ──
+      function gpuEligible() {
+        return !!(
+          GPU.ready &&
+          GPU.verified &&
+          !GPU.busy &&
+          GPU.main &&
+          NET &&
+          GPU.main.netSig === NET.L.join(",") &&
+          DS.inputs.length &&
+          localStorage.getItem("nl_gpu_train") === "1" &&
+          !bnOn() &&
+          (getV("cDrop") || 0) === 0 &&
+          !(NET.nodePatterns && Object.keys(NET.nodePatterns).length) &&
+          !(NET.frozenWeights && Object.keys(NET.frozenWeights).length) &&
+          !(NET.frozenNodes && Object.keys(NET.frozenNodes).length)
+        );
+      }
+
+      // ── Entraînement d'un seul échantillon sur GPU (utilisé par doStep) ──
+      async function gpuTrainOneSample(x, y) {
+        GPU.busy = true;
+        try {
+          const bundle = GPU.main;
+          gpuSyncWeightsToDevice(bundle);
+          gpuEnsureLossAcc(bundle, 1);
+          gpuWriteF32(bundle.lossAcc, [0]);
+          ADAM_T++;
+          const xTrain = augOn() ? x.map((v) => v + gauss() * augNoise()) : x;
+          gpuWriteF32(bundle.stepParams, gpuStepParamsArray(0));
+          gpuEncodeSampleOn(bundle, xTrain, y);
+          await GPU.device.queue.onSubmittedWorkDone();
+          const la = await gpuReadF32(bundle.lossAcc, 1);
+          await gpuCommitResults(bundle);
+          return la[0];
+        } finally {
+          GPU.busy = false;
+        }
+      }
+
+      // ── Entraînement de nEpochs époques complètes sur GPU (doEpoch/doN/Auto) ──
+      async function gpuTrainEpochs(nEpochs, checkEarlyStop) {
+        GPU.busy = true;
+        try {
+          const bundle = GPU.main;
+          gpuSyncWeightsToDevice(bundle);
+          gpuEnsureLossAcc(bundle, nEpochs);
+          gpuWriteF32(bundle.lossAcc, new Array(nEpochs).fill(0));
+          const nSamples = DS.inputs.length;
+          const avgLosses = [];
+          let stoppedAt = null;
+          for (let e = 0; e < nEpochs; e++) {
+            for (let i = 0; i < nSamples; i++) {
+              ADAM_T++;
+              const x0 = DS.inputs[i],
+                y0 = DS.outputs[i];
+              const xTrain = augOn()
+                ? x0.map((v) => v + gauss() * augNoise())
+                : x0;
+              gpuWriteF32(bundle.stepParams, gpuStepParamsArray(e));
+              gpuEncodeSampleOn(bundle, xTrain, y0);
+            }
+            EPOCH++;
+            if (checkEarlyStop) {
+              await GPU.device.queue.onSubmittedWorkDone();
+              const la = await gpuReadF32(bundle.lossAcc, nEpochs);
+              const avg = la[e] / nSamples;
+              avgLosses.push(avg);
+              LOSS_H.push(avg);
+              if (earlyStopUpdate(avg)) {
+                stoppedAt = e;
+                break;
+              }
+            }
+          }
+          await GPU.device.queue.onSubmittedWorkDone();
+          if (!checkEarlyStop) {
+            const la = await gpuReadF32(bundle.lossAcc, nEpochs);
+            for (let e = 0; e < nEpochs; e++) {
+              const avg = la[e] / nSamples;
+              avgLosses.push(avg);
+              LOSS_H.push(avg);
+            }
+          }
+          await gpuCommitResults(bundle);
+          return { avgLosses, stoppedAt };
+        } finally {
+          GPU.busy = false;
+        }
+      }
+
+      // ── Vérification numérique GPU vs CPU (sur des buffers/état totalement
+      // isolés — n'affecte jamais le réseau réel) ──
+      function cpuReferenceStep(x, y) {
+        const savedW = NET.W,
+          savedB = NET.B,
+          savedVELw = VEL.w,
+          savedVELb = VEL.b,
+          savedMAw = MA.w,
+          savedMAb = MA.b,
+          savedMVw = MV.w,
+          savedMVb = MV.b,
+          savedAdamT = ADAM_T;
+        NET.W = JSON.parse(JSON.stringify(savedW));
+        NET.B = JSON.parse(JSON.stringify(savedB));
+        VEL.w = JSON.parse(JSON.stringify(savedVELw));
+        VEL.b = JSON.parse(JSON.stringify(savedVELb));
+        MA.w = JSON.parse(JSON.stringify(savedMAw));
+        MA.b = JSON.parse(JSON.stringify(savedMAb));
+        MV.w = JSON.parse(JSON.stringify(savedMVw));
+        MV.b = JSON.parse(JSON.stringify(savedMVb));
+        const loss = trainSample(x, y, false);
+        const result = { W: NET.W, B: NET.B, loss };
+        NET.W = savedW;
+        NET.B = savedB;
+        VEL.w = savedVELw;
+        VEL.b = savedVELb;
+        MA.w = savedMAw;
+        MA.b = savedMAb;
+        MV.w = savedMVw;
+        MV.b = savedMVb;
+        ADAM_T = savedAdamT;
+        return result;
+      }
+      async function verifyGPUvsCPU() {
+        if (!GPU.ready || !NET || !DS.inputs.length)
+          return { ok: false, maxDev: null, msg: "GPU indisponible ou dataset vide." };
+        const x = DS.inputs[0],
+          y = DS.outputs[0];
+        const cpuRef = cpuReferenceStep(x, y);
+        const tmp = gpuBuildLayerSet();
+        gpuSyncWeightsToDevice(tmp);
+        gpuEnsureLossAcc(tmp, 1);
+        gpuWriteF32(tmp.lossAcc, [0]);
+        const savedAdamT = ADAM_T;
+        gpuWriteF32(tmp.stepParams, gpuStepParamsArray(0));
+        gpuEncodeSampleOn(tmp, x, y);
+        ADAM_T = savedAdamT; // le test ne doit pas faire avancer le compteur réel
+        await GPU.device.queue.onSubmittedWorkDone();
+        const r = await gpuReadWeightsFromDevice(tmp);
+        gpuDestroyLayerSet(tmp);
+        let maxDev = 0;
+        for (let l = 0; l < NET.W.length; l++)
+          for (let j = 0; j < NET.W[l].length; j++)
+            for (let k = 0; k < NET.W[l][j].length; k++)
+              maxDev = Math.max(
+                maxDev,
+                Math.abs(r.W[l][j][k] - cpuRef.W[l][j][k]),
+              );
+        return { ok: maxDev < 1e-3, maxDev };
+      }
+
+      // ── UI : activation/désactivation, vérification manuelle ──
+      async function setGPUTrain(on) {
+        const cb = document.getElementById("cGPUTrain");
+        const statusEl = document.getElementById("gpuTrainStatus");
+        if (!on) {
+          localStorage.setItem("nl_gpu_train", "0");
+          GPU.verified = false;
+          if (statusEl) statusEl.innerHTML = "";
+          return;
+        }
+        if (!GPU.ready) {
+          if (statusEl)
+            statusEl.innerHTML =
+              '<span style="color:var(--dim)">Initialisation du GPU…</span>';
+          await initWebGPU();
+        }
+        if (!GPU.ready) {
+          if (statusEl)
+            statusEl.innerHTML =
+              '<span style="color:var(--red)">⚠ WebGPU indisponible sur ce navigateur — calcul CPU conservé.</span>';
+          if (cb) cb.checked = false;
+          localStorage.setItem("nl_gpu_train", "0");
+          return;
+        }
+        if (!GPU.main || GPU.main.netSig !== NET.L.join(",")) gpuAllocateBuffers();
+        if (statusEl)
+          statusEl.innerHTML =
+            '<span style="color:var(--ylw)">🔍 Vérification GPU vs CPU…</span>';
+        const v = await verifyGPUvsCPU();
+        if (v.ok) {
+          GPU.verified = true;
+          localStorage.setItem("nl_gpu_train", "1");
+          if (statusEl)
+            statusEl.innerHTML = `<span style="color:var(--grn)">✓ Vérifié — écart max ${v.maxDev.toExponential(2)}</span>`;
+          log(
+            '<span style="color:var(--grn)">✓ Calcul d\'entraînement GPU activé et vérifié</span> (WebGPU).',
+          );
+        } else {
+          GPU.verified = false;
+          if (cb) cb.checked = false;
+          localStorage.setItem("nl_gpu_train", "0");
+          const devTxt =
+            v.maxDev != null ? v.maxDev.toExponential(2) : "indisponible";
+          if (statusEl)
+            statusEl.innerHTML = `<span style="color:var(--red)">✗ Échec de vérification (écart ${devTxt}) — resté sur CPU.</span>`;
+          log(
+            '<span style="color:var(--red)">✗ Vérification GPU échouée — calcul d\'entraînement resté sur CPU.</span>',
+          );
+        }
+      }
+      async function manualVerifyGPU() {
+        const statusEl = document.getElementById("gpuTrainStatus");
+        if (!GPU.ready) {
+          if (statusEl)
+            statusEl.innerHTML = '<span style="color:var(--red)">GPU non initialisé.</span>';
+          return;
+        }
+        if (!GPU.main) gpuAllocateBuffers();
+        if (statusEl)
+          statusEl.innerHTML = '<span style="color:var(--ylw)">🔍 Vérification…</span>';
+        const v = await verifyGPUvsCPU();
+        GPU.verified = v.ok;
+        if (statusEl)
+          statusEl.innerHTML = v.ok
+            ? `<span style="color:var(--grn)">✓ Vérifié — écart max ${v.maxDev.toExponential(2)}</span>`
+            : `<span style="color:var(--red)">✗ Écart détecté (${v.maxDev != null ? v.maxDev.toExponential(2) : "?"})</span>`;
+      }
+
+      // Appelé depuis buildNet()/resetW() : réalloue les buffers GPU et
+      // relance une vérification silencieuse si le mode GPU était actif.
+      function gpuOnNetChanged() {
+        if (!GPU.ready || !NET) return;
+        gpuAllocateBuffers();
+        if (localStorage.getItem("nl_gpu_train") === "1") {
+          GPU.verified = false;
+          verifyGPUvsCPU().then((v) => {
+            GPU.verified = v.ok;
+            const statusEl = document.getElementById("gpuTrainStatus");
+            if (!v.ok) {
+              const cb = document.getElementById("cGPUTrain");
+              if (cb) cb.checked = false;
+              localStorage.setItem("nl_gpu_train", "0");
+              if (statusEl)
+                statusEl.innerHTML =
+                  '<span style="color:var(--red)">✗ Nouvelle vérification échouée après changement de réseau — retour au CPU.</span>';
+              log(
+                '<span style="color:var(--red)">✗ GPU désactivé automatiquement (vérification échouée après reconstruction du réseau).</span>',
+              );
+            } else if (statusEl) {
+              statusEl.innerHTML = `<span style="color:var(--grn)">✓ Vérifié — écart max ${v.maxDev.toExponential(2)}</span>`;
+            }
+          });
+        }
+      }
+
       // Petites aides d'animation : redémarre une classe CSS pour rejouer l'anim
       function flashEl(el) {
         if (!el) return;
@@ -8621,13 +9688,16 @@
         void cw.offsetWidth;
         cw.classList.add("step-flash");
       }
-      function doStep() {
+      async function doStep() {
         if (!NET || !DS.inputs.length) return;
         const idx =
           (EPOCH * DS.inputs.length +
             Math.floor(Math.random() * DS.inputs.length)) %
           DS.inputs.length;
-        const loss = trainSample(DS.inputs[idx], DS.outputs[idx], true);
+        const useGPU = gpuEligible();
+        const loss = useGPU
+          ? await gpuTrainOneSample(DS.inputs[idx], DS.outputs[idx])
+          : trainSample(DS.inputs[idx], DS.outputs[idx], true);
         EPOCH++;
         LOSS_H.push(loss);
         updateStats(loss);
@@ -8661,44 +9731,65 @@
         }
         log(msg);
       }
-      function doEpoch() {
+      async function doEpoch() {
         if (!NET || !DS.inputs.length) return;
-        let tot = 0;
-        for (let i = 0; i < DS.inputs.length; i++)
-          tot += trainSample(DS.inputs[i], DS.outputs[i], false);
-        EPOCH++;
-        const avg = tot / DS.inputs.length;
-        LOSS_H.push(avg);
+        const useGPU = gpuEligible();
+        let avg, earlyHit;
+        if (useGPU) {
+          const r = await gpuTrainEpochs(1, false);
+          avg = r.avgLosses[0];
+          earlyHit = earlyStopUpdate(avg); // EPOCH/LOSS_H déjà mis à jour par gpuTrainEpochs
+        } else {
+          let tot = 0;
+          for (let i = 0; i < DS.inputs.length; i++)
+            tot += trainSample(DS.inputs[i], DS.outputs[i], false);
+          EPOCH++;
+          avg = tot / DS.inputs.length;
+          LOSS_H.push(avg);
+          earlyHit = earlyStopUpdate(avg);
+        }
         const ll = document.getElementById("logLevel").value;
-        if (ll !== "off") logEpoch(avg);
+        if (ll !== "off") {
+          if (useGPU)
+            log(
+              `<span style="color:var(--a1)">⚡ GPU</span> — Epoch ${EPOCH} · Loss moyenne: <span style="color:var(--red)">${fmt(avg)}</span> <span style="color:var(--dim);font-size:8px">(détail pas-à-pas indisponible en mode GPU)</span>`,
+            );
+          else logEpoch(avg);
+        }
         updateStats(avg);
         redraw();
         flashCanvas();
-        if (earlyStopUpdate(avg)) {
+        if (earlyHit) {
           stopAutoWithMessage(
             `<span style="color:var(--ylw);font-weight:700">⏸ Early stopping</span> — aucune amélioration depuis ${earlyPatience()} époques (meilleure loss : <span style="color:var(--grn)">${fmt(EARLY.bestLoss)}</span>)`,
           );
         }
       }
-      function doN(n) {
+      async function doN(n) {
         if (!NET || !DS.inputs.length) return;
         let stoppedEarly = false;
-        for (let e = 0; e < n; e++) {
-          let tot = 0;
-          for (let i = 0; i < DS.inputs.length; i++)
-            tot += trainSample(DS.inputs[i], DS.outputs[i], false);
-          EPOCH++;
-          LOSS_H.push(tot / DS.inputs.length);
-          if (earlyStopUpdate(LOSS_H[LOSS_H.length - 1])) {
-            stoppedEarly = true;
-            break;
+        const useGPU = gpuEligible();
+        if (useGPU) {
+          const r = await gpuTrainEpochs(n, earlyOn());
+          stoppedEarly = r.stoppedAt !== null;
+        } else {
+          for (let e = 0; e < n; e++) {
+            let tot = 0;
+            for (let i = 0; i < DS.inputs.length; i++)
+              tot += trainSample(DS.inputs[i], DS.outputs[i], false);
+            EPOCH++;
+            LOSS_H.push(tot / DS.inputs.length);
+            if (earlyStopUpdate(LOSS_H[LOSS_H.length - 1])) {
+              stoppedEarly = true;
+              break;
+            }
           }
         }
         updateStats(LOSS_H[LOSS_H.length - 1]);
         redraw();
         flashCanvas();
         log(
-          `<div class="log-epoch-bar"><span style="color:var(--a2);font-weight:700">×${n} epochs</span> &nbsp;|&nbsp; E:${EPOCH} &nbsp;|&nbsp; Loss:<span style="color:var(--red);font-weight:700">${fmt(LOSS_H[LOSS_H.length - 1])}</span> &nbsp;|&nbsp; Acc:<span style="color:var(--grn);font-weight:700">${acc().toFixed(1)}%</span></div>`,
+          `<div class="log-epoch-bar">${useGPU ? '<span style="color:var(--a1)">⚡GPU</span> ' : ""}<span style="color:var(--a2);font-weight:700">×${n} epochs</span> &nbsp;|&nbsp; E:${EPOCH} &nbsp;|&nbsp; Loss:<span style="color:var(--red);font-weight:700">${fmt(LOSS_H[LOSS_H.length - 1])}</span> &nbsp;|&nbsp; Acc:<span style="color:var(--grn);font-weight:700">${acc().toFixed(1)}%</span></div>`,
         );
         if (stoppedEarly) {
           log(
@@ -8731,9 +9822,10 @@
           }
         }
       }
-      function runAuto() {
+      async function runAuto() {
         if (!autoRunning) return;
-        doEpoch();
+        await doEpoch();
+        if (!autoRunning) return; // l'utilisateur a pu cliquer "Stop" pendant le calcul GPU
         const spd = parseInt(document.getElementById("autoSpeed").value) || 0;
         if (spd > 0) setTimeout(runAuto, spd);
         else RAF_ID = requestAnimationFrame(runAuto);
@@ -16266,6 +17358,27 @@
         if (sel) sel.value = renderMode;
         if (liteCb) liteCb.checked = fastLite;
         PERF.fastTrainLite = fastLite;
+        initWebGPU().then((ok) => {
+          const gcb = document.getElementById("cGPUTrain");
+          const statusEl = document.getElementById("gpuTrainStatus");
+          if (!ok) {
+            if (gcb) {
+              gcb.checked = false;
+              gcb.disabled = true;
+            }
+            if (statusEl)
+              statusEl.innerHTML =
+                '<span style="color:var(--dim)">WebGPU indisponible sur ce navigateur/contexte — calcul CPU utilisé.</span>';
+            return;
+          }
+          if (statusEl && GPU.adapterInfo)
+            statusEl.innerHTML = `<span style="color:var(--dim)">GPU détecté : ${GPU.adapterInfo}</span>`;
+          if (NET) gpuAllocateBuffers();
+          if (localStorage.getItem("nl_gpu_train") === "1" && gcb) {
+            gcb.checked = true;
+            setGPUTrain(true);
+          }
+        });
         applyGPUCompositingHints(accelOn);
         detectGPU();
       }
@@ -18452,15 +19565,15 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
 
       // Patch training functions — all hooks consolidated here
       const _v12_doStep = window.doStep;
-      window.doStep = function () {
-        if (_v12_doStep) _v12_doStep();
+      window.doStep = async function () {
+        if (_v12_doStep) await _v12_doStep();
         updateNetStatsBar();
         checkCelebrate();
         applyScheduler();
       };
       const _v12_doEpoch = window.doEpoch;
-      window.doEpoch = function () {
-        if (_v12_doEpoch) _v12_doEpoch();
+      window.doEpoch = async function () {
+        if (_v12_doEpoch) await _v12_doEpoch();
         updateNetStatsBar();
         checkCelebrate();
         applyScheduler();
@@ -18474,8 +19587,8 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         }
       };
       const _v12_doN = window.doN;
-      window.doN = function (n) {
-        if (_v12_doN) _v12_doN(n);
+      window.doN = async function (n) {
+        if (_v12_doN) await _v12_doN(n);
         updateNetStatsBar();
         checkCelebrate();
         drawZoomedLoss();
@@ -23348,21 +24461,28 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         status.innerHTML =
           '<span style="color:var(--ylw)">⏳ Entraînement...</span>';
         let maxEp = 10000;
-        function step() {
+        async function step() {
           if (!NET) {
             stopTargetTrain();
             return;
           }
-          let tot = 0;
-          for (let i = 0; i < DS.inputs.length; i++)
-            tot += trainSample(DS.inputs[i], DS.outputs[i], false);
-          EPOCH++;
-          LOSS_H.push(tot / DS.inputs.length);
-          updateStats(tot / DS.inputs.length);
+          let avg;
+          if (gpuEligible()) {
+            const r = await gpuTrainEpochs(1, false);
+            avg = r.avgLosses[0];
+          } else {
+            let tot = 0;
+            for (let i = 0; i < DS.inputs.length; i++)
+              tot += trainSample(DS.inputs[i], DS.outputs[i], false);
+            EPOCH++;
+            avg = tot / DS.inputs.length;
+            LOSS_H.push(avg);
+          }
+          updateStats(avg);
           redraw();
           maxEp--;
-          if (tot / DS.inputs.length <= target) {
-            status.innerHTML = `<span style="color:var(--grn)">✓ Objectif atteint! Loss=${(tot / DS.inputs.length).toFixed(6)} @ epoch ${EPOCH}</span>`;
+          if (avg <= target) {
+            status.innerHTML = `<span style="color:var(--grn)">✓ Objectif atteint! Loss=${avg.toFixed(6)} @ epoch ${EPOCH}</span>`;
             if (soundEnabled && audioCtx) {
               playTone(784, 0.4, "triangle");
               setTimeout(() => playTone(1047, 0.4, "triangle"), 200);
@@ -23370,10 +24490,10 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             return;
           }
           if (maxEp <= 0) {
-            status.innerHTML = `<span style="color:var(--org)">⚠ Max epochs atteint. Loss=${(tot / DS.inputs.length).toFixed(6)}</span>`;
+            status.innerHTML = `<span style="color:var(--org)">⚠ Max epochs atteint. Loss=${avg.toFixed(6)}</span>`;
             return;
           }
-          status.innerHTML = `<span style="color:var(--dim)">Loss: ${(tot / DS.inputs.length).toFixed(6)} (epoch ${EPOCH})</span>`;
+          status.innerHTML = `<span style="color:var(--dim)">Loss: ${avg.toFixed(6)} (epoch ${EPOCH})</span>`;
           targetTrainTimer = setTimeout(step, 0);
         }
         step();
