@@ -4481,7 +4481,6 @@
       input[type="range"]:active {
         filter: drop-shadow(0 0 5px var(--a1));
       }
-
     </style>
 
     <!-- ══ PACK SATISFACTION — arrivée "wow" des fenêtres/modales ══ -->
@@ -4985,7 +4984,12 @@
             <button
               class="btn on"
               onclick="openVDS()"
-              style="width: 100%; margin-bottom: 10px; justify-content: center; padding: 8px"
+              style="
+                width: 100%;
+                margin-bottom: 10px;
+                justify-content: center;
+                padding: 8px;
+              "
             >
               🎯 Éditeur visuel — Régression / Classification
             </button>
@@ -4997,10 +5001,10 @@
                 line-height: 1.6;
               "
             >
-              Construisez un dataset 2D à la souris (points de classes ou
-              nuage de points à régresser) et entraînez le réseau du canevas
-              central dessus, avec la frontière de décision / la courbe
-              apprise visibles en direct.
+              Construisez un dataset 2D à la souris (points de classes ou nuage
+              de points à régresser) et entraînez le réseau du canevas central
+              dessus, avec la frontière de décision / la courbe apprise visibles
+              en direct.
             </div>
             <lbl>Préréglage</lbl>
             <select id="dsPreset" onchange="loadPreset()">
@@ -5460,7 +5464,8 @@
             </div>
             <div class="csec">
               <div class="csech" onclick="togC(this)">
-                <span>🖥</span><span class="csect">Performance & Accélération matérielle</span
+                <span>🖥</span
+                ><span class="csect">Performance & Accélération matérielle</span
                 ><span class="cseca">▶</span>
               </div>
               <div class="csecb">
@@ -5546,11 +5551,10 @@
                   ><br />
                   Un navigateur n'a pas accès à CUDA/cuDNN/TensorRT (API
                   propriétaires NVIDIA) — c'est une limite du bac à sable web.
-                  <b>WebGPU</b> est la seule API de calcul GPU accessible
-                  depuis une page, neutre vis-à-vis du fabricant : elle
-                  utilise bien votre GPU (NVIDIA compris) via le pilote du
-                  navigateur, mais pas les briques logicielles NVIDIA
-                  elles-mêmes.
+                  <b>WebGPU</b> est la seule API de calcul GPU accessible depuis
+                  une page, neutre vis-à-vis du fabricant : elle utilise bien
+                  votre GPU (NVIDIA compris) via le pilote du navigateur, mais
+                  pas les briques logicielles NVIDIA elles-mêmes.
                 </div>
                 <div class="crow">
                   <label
@@ -5585,9 +5589,9 @@
                     line-height: 1.6;
                   "
                 >
-                  ⚠ En mode GPU, le calcul se fait par lots : les logs
-                  détaillés pas-à-pas (formules, Δ, etc.) ne sont pas générés
-                  pendant Step/+Epoch/×N/Auto. L'onglet
+                  ⚠ En mode GPU, le calcul se fait par lots : les logs détaillés
+                  pas-à-pas (formules, Δ, etc.) ne sont pas générés pendant
+                  Step/+Epoch/×N/Auto. L'onglet
                   <b style="color: var(--ylw)">✎ Manuel</b> reste sur CPU (il
                   sert justement à vérifier vos calculs à la main).
                 </div>
@@ -5734,22 +5738,33 @@
             </div>
             <div class="csec">
               <div class="csech" onclick="togC(this)">
-                <span>🧪</span><span class="csect">Techniques d'entraînement</span
+                <span>🧪</span
+                ><span class="csect">Techniques d'entraînement</span
                 ><span class="cseca">▶</span>
               </div>
               <div class="csecb">
                 <div class="crow">
-                  <label title="Normalise la pré-activation de chaque neurone caché avec des statistiques glissantes (moyenne/variance), puis applique un gain γ et un biais β appris.">Batch Normalization</label
+                  <label
+                    title="Normalise la pré-activation de chaque neurone caché avec des statistiques glissantes (moyenne/variance), puis applique un gain γ et un biais β appris."
+                    >Batch Normalization</label
                   ><input
                     type="checkbox"
                     id="cBN"
-                    onchange="log(this.checked ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Batch Norm activée&lt;/span&gt; — normalisation des couches cachées (γ,β appris + stats glissantes)' : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Batch Norm désactivée&lt;/span&gt;')"
+                    onchange="
+                      log(
+                        this.checked
+                          ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Batch Norm activée&lt;/span&gt; — normalisation des couches cachées (γ,β appris + stats glissantes)'
+                          : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Batch Norm désactivée&lt;/span&gt;',
+                      )
+                    "
                   /><span style="color: var(--text); font-size: 9px"
                     >Activer</span
                   >
                 </div>
                 <div class="crow">
-                  <label title="Vitesse de mise à jour des statistiques glissantes (moyenne/variance) de la Batch Norm.">BN momentum</label
+                  <label
+                    title="Vitesse de mise à jour des statistiques glissantes (moyenne/variance) de la Batch Norm."
+                    >BN momentum</label
                   ><input
                     type="range"
                     id="cBNMom"
@@ -5761,17 +5776,27 @@
                   /><span class="cval">0.90</span>
                 </div>
                 <div class="crow">
-                  <label title="Ajoute un bruit gaussien aléatoire aux entrées à chaque exemple d'entraînement (les entrées affichées/testées restent inchangées).">Data augmentation</label
+                  <label
+                    title="Ajoute un bruit gaussien aléatoire aux entrées à chaque exemple d'entraînement (les entrées affichées/testées restent inchangées)."
+                    >Data augmentation</label
                   ><input
                     type="checkbox"
                     id="cAug"
-                    onchange="log(this.checked ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Augmentation activée&lt;/span&gt; — bruit gaussien ajouté aux entrées d\'entraînement' : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Augmentation désactivée&lt;/span&gt;')"
+                    onchange="
+                      log(
+                        this.checked
+                          ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Augmentation activée&lt;/span&gt; — bruit gaussien ajouté aux entrées d\'entraînement'
+                          : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Augmentation désactivée&lt;/span&gt;',
+                      )
+                    "
                   /><span style="color: var(--text); font-size: 9px"
                     >Activer</span
                   >
                 </div>
                 <div class="crow">
-                  <label title="Écart-type du bruit gaussien ajouté à chaque valeur d'entrée pendant l'entraînement.">Bruit (σ)</label
+                  <label
+                    title="Écart-type du bruit gaussien ajouté à chaque valeur d'entrée pendant l'entraînement."
+                    >Bruit (σ)</label
                   ><input
                     type="range"
                     id="cAugNoise"
@@ -5783,17 +5808,29 @@
                   /><span class="cval">0.05</span>
                 </div>
                 <div class="crow">
-                  <label title="Arrête automatiquement l'entraînement (Auto / ×N époques) quand la loss cesse de s'améliorer.">Early stopping</label
+                  <label
+                    title="Arrête automatiquement l'entraînement (Auto / ×N époques) quand la loss cesse de s'améliorer."
+                    >Early stopping</label
                   ><input
                     type="checkbox"
                     id="cES"
-                    onchange="EARLY.bestLoss = Infinity; EARLY.badEpochs = 0; log(this.checked ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Early stopping activé&lt;/span&gt;' : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Early stopping désactivé&lt;/span&gt;')"
+                    onchange="
+                      EARLY.bestLoss = Infinity;
+                      EARLY.badEpochs = 0;
+                      log(
+                        this.checked
+                          ? '&lt;span style=&quot;color:var(--grn)&quot;&gt;✓ Early stopping activé&lt;/span&gt;'
+                          : '&lt;span style=&quot;color:var(--dim)&quot;&gt;Early stopping désactivé&lt;/span&gt;',
+                      );
+                    "
                   /><span style="color: var(--text); font-size: 9px"
                     >Activer</span
                   >
                 </div>
                 <div class="crow">
-                  <label title="Nombre d'époques sans amélioration significative avant l'arrêt.">Patience (époques)</label
+                  <label
+                    title="Nombre d'époques sans amélioration significative avant l'arrêt."
+                    >Patience (époques)</label
                   ><input
                     type="range"
                     id="cESPat"
@@ -5805,7 +5842,9 @@
                   /><span class="cval">30</span>
                 </div>
                 <div class="crow">
-                  <label title="Amélioration minimale de la loss moyenne pour compter comme un progrès.">Δ min. loss</label
+                  <label
+                    title="Amélioration minimale de la loss moyenne pour compter comme un progrès."
+                    >Δ min. loss</label
                   ><input
                     type="range"
                     id="cESDelta"
@@ -6422,8 +6461,8 @@
               <div
                 style="font-size: 9px; color: var(--dim); margin-bottom: 6px"
               >
-                Configurez 2 réseaux (architecture, activation, optimiseur,
-                LR) et entraînez-les côte à côte sur le même dataset
+                Configurez 2 réseaux (architecture, activation, optimiseur, LR)
+                et entraînez-les côte à côte sur le même dataset
               </div>
               <button
                 class="btn"
@@ -7212,22 +7251,22 @@
                   <b style="color: var(--a2)">🎯 Éditeur visuel</b> (dans
                   l'onglet <span style="color: var(--text)">Dataset</span>) —
                   placez vos points à la souris sur un canvas 2D, en
-                  classification (plusieurs classes, une couleur chacune) ou
-                  en régression (courbe libre), sans rien saisir à la main.
+                  classification (plusieurs classes, une couleur chacune) ou en
+                  régression (courbe libre), sans rien saisir à la main.
                 </div>
                 <div style="margin-bottom: 5px; padding-left: 8px">
-                  <b style="color: var(--ylw)">✎ Manuel</b> — refaites
-                  vous-même les calculs du réseau (forward, loss, δ, mise à
-                  jour des poids) sur un exemple du dataset, puis vérifiez
-                  chaque étape contre le vrai résultat. Un bouton
-                  « Révéler toutes les réponses » existe si besoin.
+                  <b style="color: var(--ylw)">✎ Manuel</b> — refaites vous-même
+                  les calculs du réseau (forward, loss, δ, mise à jour des
+                  poids) sur un exemple du dataset, puis vérifiez chaque étape
+                  contre le vrai résultat. Un bouton « Révéler toutes les
+                  réponses » existe si besoin.
                 </div>
                 <div style="margin-bottom: 5px; padding-left: 8px">
                   <b style="color: var(--grn)">🧠 Quiz</b> — testez vos
                   connaissances par chapitre (bases, forward, loss &amp;
                   backprop, optimisation, CNN, RNN), en QCM, vrai/faux ou
-                  questions ouvertes. Un mode aléatoire tire N questions
-                  toutes catégories confondues.
+                  questions ouvertes. Un mode aléatoire tire N questions toutes
+                  catégories confondues.
                 </div>
                 <div style="padding-left: 8px">
                   <b style="color: var(--org)">🛠 Outils</b> — panneau
@@ -7284,8 +7323,7 @@
                 </div>
                 <div>
                   <b style="color: var(--text)">🏁 Mode Compétition</b> — 4
-                  optimiseurs entraînés en parallèle sur le même dataset
-                  (touche
+                  optimiseurs entraînés en parallèle sur le même dataset (touche
                   <kbd
                     style="
                       background: #0a0c18;
@@ -7300,8 +7338,7 @@
                   <b style="color: var(--text)">⚔ Mode Comparaison</b> — 2
                   réseaux à l'architecture, activations, optimiseur et LR
                   indépendants, entraînés côte à côte sur le même dataset
-                  (courbes de perte superposées + frontières de décision,
-                  touche
+                  (courbes de perte superposées + frontières de décision, touche
                   <kbd
                     style="
                       background: #0a0c18;
@@ -7313,14 +7350,13 @@
                   >)
                 </div>
                 <div>
-                  <b style="color: var(--text)">✨ Effets &amp; Son</b> —
-                  pluie « Matrix », sons d'entraînement, flux animé sur les
+                  <b style="color: var(--text)">✨ Effets &amp; Son</b> — pluie
+                  « Matrix », sons d'entraînement, flux animé sur les
                   connexions, bouton fête 🎉
                 </div>
                 <div>
                   <b style="color: var(--text)">📊 Analyse des gradients</b> —
-                  détecte vanishing/exploding gradient couche par couche
-                  (touche
+                  détecte vanishing/exploding gradient couche par couche (touche
                   <kbd
                     style="
                       background: #0a0c18;
@@ -7341,8 +7377,7 @@
                   <b style="color: var(--text)"
                     >🔬 Inspection couche par couche</b
                   >
-                  — stats détaillées (poids, activations) d'une couche
-                  choisie
+                  — stats détaillées (poids, activations) d'une couche choisie
                 </div>
                 <div>
                   <b style="color: var(--text)">⚡ Benchmark vitesse</b> —
@@ -7428,8 +7463,8 @@
                   Convolution pas-à-pas · Galerie de filtres · Pipeline
                   multi-couches (champ réceptif) · Entraîner un noyau ·
                   <b style="color: var(--grn)">🧠 Modèle complet</b>
-                  (construire, entraîner par vraie rétropropagation et tester
-                  un CNN multi-couches sur des images dessinées sur place)
+                  (construire, entraîner par vraie rétropropagation et tester un
+                  CNN multi-couches sur des images dessinées sur place)
                 </div>
                 <div
                   style="color: var(--a2); font-weight: 600; margin-bottom: 3px"
@@ -7439,8 +7474,7 @@
                 <div style="padding-left: 8px">
                   Cellule (un pas de temps) · Déroulement (mémoire dans le
                   temps) · Mémoire &amp; gradients (vanishing/exploding) ·
-                  Entraîner (BPTT) sur un mini-modèle
-                  caractère-par-caractère
+                  Entraîner (BPTT) sur un mini-modèle caractère-par-caractère
                 </div>
               </div>
             </div>
@@ -7610,16 +7644,15 @@
                 • <b style="color: var(--text)">Test de généralisation</b> :
                 Créez un dataset, entraînez, puis utilisez l'onglet Test pour
                 prédire de nouvelles valeurs<br />
-                • <b style="color: var(--text)">Vanishing gradient en RNN</b>
-                : Dans le labo RNN, onglet « Mémoire &amp; gradients »,
-                augmentez la longueur de séquence et observez la mémoire
-                s'effacer<br />
+                • <b style="color: var(--text)">Vanishing gradient en RNN</b> :
+                Dans le labo RNN, onglet « Mémoire &amp; gradients », augmentez
+                la longueur de séquence et observez la mémoire s'effacer<br />
                 • <b style="color: var(--text)">Champ réceptif d'un CNN</b> :
-                Dans le labo CNN, onglet « Pipeline multi-couches », ajoutez
-                des couches et regardez le champ réceptif grandir<br />
-                • <b style="color: var(--text)">Auto-évaluation</b> : Faites
-                le Quiz en mode aléatoire, puis vérifiez vos calculs sur un
-                exemple concret dans l'onglet Manuel
+                Dans le labo CNN, onglet « Pipeline multi-couches », ajoutez des
+                couches et regardez le champ réceptif grandir<br />
+                • <b style="color: var(--text)">Auto-évaluation</b> : Faites le
+                Quiz en mode aléatoire, puis vérifiez vos calculs sur un exemple
+                concret dans l'onglet Manuel
               </div>
             </div>
 
@@ -7685,8 +7718,8 @@
               "
             >
               Testez vos connaissances : bases, forward pass, loss &amp;
-              backprop, optimisation, CNN, RNN. Mélange de questions
-              fermées (QCM, vrai/faux) et ouvertes (réponse libre).
+              backprop, optimisation, CNN, RNN. Mélange de questions fermées
+              (QCM, vrai/faux) et ouvertes (réponse libre).
             </div>
 
             <div class="sh">Chapitres</div>
@@ -7767,11 +7800,7 @@
                   style="
                     height: 100%;
                     width: 0%;
-                    background: linear-gradient(
-                      90deg,
-                      var(--a1),
-                      var(--a2)
-                    );
+                    background: linear-gradient(90deg, var(--a1), var(--a2));
                     transition: width 0.25s;
                   "
                 ></div>
@@ -8936,11 +8965,27 @@ fn loss_accum() {
       // contre le calcul CPU de référence (voir verifyGPUvsCPU) avant
       // d'être utilisée ; en cas d'écart, retour automatique au CPU.
       const ACT_CODE = {
-        sigmoid: 0, relu: 1, tanh: 2, leakyrelu: 3, elu: 4,
-        swish: 5, gelu: 6, selu: 7, softsign: 8, linear: 9, softmax: 10,
+        sigmoid: 0,
+        relu: 1,
+        tanh: 2,
+        leakyrelu: 3,
+        elu: 4,
+        swish: 5,
+        gelu: 6,
+        selu: 7,
+        softsign: 8,
+        linear: 9,
+        softmax: 10,
       };
       const LOSS_CODE = { mse: 0, mae: 1, logloss: 2, huber: 3, hinge: 4 };
-      const OPT_CODE = { sgd: 0, momentum: 1, nag: 2, rmsprop: 3, adam: 4, adamw: 5 };
+      const OPT_CODE = {
+        sgd: 0,
+        momentum: 1,
+        nag: 2,
+        rmsprop: 3,
+        adam: 4,
+        adamw: 5,
+      };
 
       let GPU = {
         supported: false,
@@ -8983,7 +9028,9 @@ fn loss_accum() {
           try {
             const ai =
               adapter.info ||
-              (adapter.requestAdapterInfo ? await adapter.requestAdapterInfo() : null);
+              (adapter.requestAdapterInfo
+                ? await adapter.requestAdapterInfo()
+                : null);
             if (ai)
               info = [ai.vendor, ai.architecture, ai.device, ai.description]
                 .filter(Boolean)
@@ -9125,8 +9172,22 @@ fn loss_accum() {
         } catch (e) {}
         for (const ly of bundle.layers) {
           for (const k of [
-            "shapeFwd", "shapeBwd", "shapeOut", "shapeUpd", "shapeNorm",
-            "W", "B", "Vw", "Mw", "MVw", "Vb", "Mb", "MVb", "Aout", "Z", "Delta",
+            "shapeFwd",
+            "shapeBwd",
+            "shapeOut",
+            "shapeUpd",
+            "shapeNorm",
+            "W",
+            "B",
+            "Vw",
+            "Mw",
+            "MVw",
+            "Vb",
+            "Mb",
+            "MVb",
+            "Aout",
+            "Z",
+            "Delta",
           ]) {
             try {
               ly[k].destroy();
@@ -9247,7 +9308,9 @@ fn loss_accum() {
         // exacts, comme le ferait trainSample() côté CPU.
         const L = bundle.layers.length;
         const lastAct = [
-          Array.from(await gpuReadF32(bundle.layers[0].A, bundle.layers[0].nIn)),
+          Array.from(
+            await gpuReadF32(bundle.layers[0].A, bundle.layers[0].nIn),
+          ),
         ];
         const lastZ = [],
           lastDelta = [];
@@ -9418,8 +9481,22 @@ fn loss_accum() {
         const effLR = getLR() * Math.pow(lrd, Math.floor(EPOCH / 100));
         const nOutFinal = NET.L[NET.L.length - 1];
         return [
-          effLR, l2, gc, mom, b1, b2, epsOpt, ADAM_T,
-          hd, 1e-7, nOutFinal, opt, lossCode, wdFlag, epochIdx, 0,
+          effLR,
+          l2,
+          gc,
+          mom,
+          b1,
+          b2,
+          epsOpt,
+          ADAM_T,
+          hd,
+          1e-7,
+          nOutFinal,
+          opt,
+          lossCode,
+          wdFlag,
+          epochIdx,
+          0,
         ];
       }
 
@@ -9549,7 +9626,11 @@ fn loss_accum() {
       }
       async function verifyGPUvsCPU() {
         if (!GPU.ready || !NET || !DS.inputs.length)
-          return { ok: false, maxDev: null, msg: "GPU indisponible ou dataset vide." };
+          return {
+            ok: false,
+            maxDev: null,
+            msg: "GPU indisponible ou dataset vide.",
+          };
         const x = DS.inputs[0],
           y = DS.outputs[0];
         const cpuRef = cpuReferenceStep(x, y);
@@ -9599,7 +9680,8 @@ fn loss_accum() {
           localStorage.setItem("nl_gpu_train", "0");
           return;
         }
-        if (!GPU.main || GPU.main.netSig !== NET.L.join(",")) gpuAllocateBuffers();
+        if (!GPU.main || GPU.main.netSig !== NET.L.join(","))
+          gpuAllocateBuffers();
         if (statusEl)
           statusEl.innerHTML =
             '<span style="color:var(--ylw)">🔍 Vérification GPU vs CPU…</span>';
@@ -9629,12 +9711,14 @@ fn loss_accum() {
         const statusEl = document.getElementById("gpuTrainStatus");
         if (!GPU.ready) {
           if (statusEl)
-            statusEl.innerHTML = '<span style="color:var(--red)">GPU non initialisé.</span>';
+            statusEl.innerHTML =
+              '<span style="color:var(--red)">GPU non initialisé.</span>';
           return;
         }
         if (!GPU.main) gpuAllocateBuffers();
         if (statusEl)
-          statusEl.innerHTML = '<span style="color:var(--ylw)">🔍 Vérification…</span>';
+          statusEl.innerHTML =
+            '<span style="color:var(--ylw)">🔍 Vérification…</span>';
         const v = await verifyGPUvsCPU();
         GPU.verified = v.ok;
         if (statusEl)
@@ -11568,1426 +11652,1454 @@ fn loss_accum() {
       };
 
       const QUIZ_BANK = [
-  {
-    "id": 1,
-    "cat": "bases",
-    "type": "qcm",
-    "q": "Dans un neurone artificiel, que représente « z » ?",
-    "options": [
-      "La pré-activation z, c'est-à-dire la somme pondérée des entrées additionnée du biais, avant application de la fonction d'activation",
-      "La sortie finale du neurone, c'est-à-dire la valeur obtenue une fois que la fonction d'activation a été appliquée à la pré-activation z",
-      "Le taux d'apprentissage utilisé par l'optimiseur pour ajuster les poids à chaque itération",
-      "L'erreur totale mesurée entre la sortie du réseau et la valeur attendue sur l'ensemble du batch"
-    ],
-    "answer": 0,
-    "explain": "z = Σ(w·x) + b, la valeur calculée avant de passer dans la fonction d'activation f. La sortie après activation est notée a = f(z)."
-  },
-  {
-    "id": 2,
-    "cat": "bases",
-    "type": "tf",
-    "q": "Le biais (b) permet à un neurone de décaler sa sortie, même quand toutes les entrées valent 0.",
-    "answer": true,
-    "explain": "Sans biais, z serait toujours nul quand x = 0. Le biais donne au neurone un degré de liberté supplémentaire, indépendant des entrées."
-  },
-  {
-    "id": 3,
-    "cat": "bases",
-    "type": "open",
-    "q": "Quel est le nom de la fonction d'activation définie par f(z) = max(0, z) ?",
-    "accept": [
-      "relu"
-    ],
-    "explain": "ReLU (Rectified Linear Unit) laisse passer les valeurs positives telles quelles et écrase les valeurs négatives à 0."
-  },
-  {
-    "id": 16,
-    "cat": "bases",
-    "type": "open",
-    "q": "Quelle fonction d'activation, souvent utilisée en sortie pour une classification binaire, écrase les valeurs entre 0 et 1 ?",
-    "accept": [
-      "sigmoid",
-      "sigmoide",
-      "fonction sigmoide"
-    ],
-    "explain": "La sigmoïde σ(z) = 1/(1+e⁻ᶻ) transforme n'importe quelle valeur réelle en une probabilité entre 0 et 1."
-  },
-  {
-    "id": 4,
-    "cat": "forward",
-    "type": "qcm",
-    "q": "Que fait le « forward pass » dans un réseau de neurones ?",
-    "options": [
-      "Il ajuste chaque poids du réseau dans la direction opposée au gradient de la loss",
-      "Il propage les entrées à travers le réseau, couche après couche, jusqu'à produire une sortie",
-      "Il calcule la dérivée de la fonction de perte par rapport à chaque poids du réseau",
-      "Il tire aléatoirement les valeurs initiales de tous les poids du réseau, une seule fois, avant même que le tout premier entraînement ne commence"
-    ],
-    "answer": 1,
-    "explain": "Le forward pass fait circuler les données de la couche d'entrée vers la couche de sortie, en calculant z puis a à chaque neurone."
-  },
-  {
-    "id": 17,
-    "cat": "forward",
-    "type": "qcm",
-    "q": "Dans ce simulateur, que représente « ŷ » ?",
-    "options": [
-      "Le vrai label associé à l'exemple, tel qu'il est fourni dans le jeu de données d'entraînement",
-      "Le gradient de la loss calculé par rapport aux poids de la dernière couche du réseau",
-      "La prédiction produite par le réseau à l'issue du forward pass, notée ŷ (« y chapeau »)",
-      "Le biais appliqué uniquement au tout dernier neurone de la couche de sortie"
-    ],
-    "answer": 2,
-    "explain": "ŷ (« y chapeau ») désigne la sortie prédite par le réseau, à comparer avec la cible réelle y pour calculer la loss."
-  },
-  {
-    "id": 5,
-    "cat": "loss",
-    "type": "open",
-    "q": "Comment appelle-t-on la fonction qui mesure l'écart entre la prédiction ŷ et la vraie valeur y ?",
-    "accept": [
-      "fonction de perte",
-      "fonction de cout",
-      "fonction de coût",
-      "loss",
-      "loss function"
-    ],
-    "explain": "La fonction de perte (loss, notée L) quantifie l'erreur du réseau. C'est elle que l'entraînement cherche à minimiser."
-  },
-  {
-    "id": 6,
-    "cat": "loss",
-    "type": "qcm",
-    "q": "Pour un problème de classification multi-classes, quelle fonction de perte est la plus adaptée ?",
-    "options": [
-      "La MSE (erreur quadratique moyenne), qui mesure l'écart au carré entre chaque prédiction et sa cible",
-      "La MAE (erreur absolue moyenne), qui mesure la valeur absolue de l'écart entre prédiction et cible",
-      "Aucune fonction de perte n'est nécessaire, la classification se fait uniquement par comparaison directe des labels",
-      "La cross-entropy, qui compare la distribution de probabilité prédite à la distribution réelle (one-hot)"
-    ],
-    "answer": 3,
-    "explain": "La cross-entropy compare la distribution de probabilité prédite à la distribution réelle (one-hot), ce qui la rend idéale pour la classification."
-  },
-  {
-    "id": 7,
-    "cat": "loss",
-    "type": "tf",
-    "q": "La rétropropagation (backprop) utilise la règle de dérivation en chaîne pour calculer la contribution de chaque poids à l'erreur.",
-    "answer": true,
-    "explain": "∂L/∂w = ∂L/∂a · ∂a/∂z · ∂z/∂w : la chain rule permet de propager l'erreur depuis la sortie jusqu'à chaque poids, couche par couche."
-  },
-  {
-    "id": 8,
-    "cat": "loss",
-    "type": "open",
-    "q": "Quel symbole grec (utilisé dans ce simulateur) représente l'erreur locale d'un neurone pendant la rétropropagation ?",
-    "accept": [
-      "delta",
-      "δ"
-    ],
-    "explain": "δ (delta) représente l'erreur locale d'un neurone, utilisée pour calculer les gradients ∂L/∂w des connexions entrantes."
-  },
-  {
-    "id": 9,
-    "cat": "optim",
-    "type": "qcm",
-    "q": "Que se passe-t-il si le learning rate (lr) est beaucoup trop élevé ?",
-    "options": [
-      "La loss peut se mettre à osciller fortement, voire diverger, au lieu de converger vers un minimum",
-      "L'apprentissage devient simplement beaucoup plus lent qu'avec un learning rate bien réglé",
-      "Le réseau cesse totalement de prendre en compte le gradient calculé à chaque itération",
-      "Rien de particulier ne se produit, le learning rate n'influence que la vitesse d'affichage des courbes"
-    ],
-    "answer": 0,
-    "explain": "Un lr trop grand fait « sauter » les poids par-dessus le minimum de la loss, ce qui peut faire diverger l'entraînement au lieu de le faire converger."
-  },
-  {
-    "id": 10,
-    "cat": "optim",
-    "type": "open",
-    "q": "Quel optimiseur très populaire combine la moyenne mobile du gradient (momentum) et celle de son carré (variance) ?",
-    "accept": [
-      "adam"
-    ],
-    "explain": "Adam (Adaptive Moment Estimation) combine deux moments — β1 pour le momentum, β2 pour la variance — afin d'adapter le pas d'apprentissage à chaque poids."
-  },
-  {
-    "id": 11,
-    "cat": "optim",
-    "type": "tf",
-    "q": "La régularisation L2 pénalise les poids de grande valeur pour limiter le surapprentissage (overfitting).",
-    "answer": true,
-    "explain": "L2 ajoute λ·Σw² à la loss, ce qui pousse les poids vers des valeurs plus petites et rend le réseau moins sensible au bruit du dataset d'entraînement."
-  },
-  {
-    "id": 18,
-    "cat": "optim",
-    "type": "open",
-    "q": "Comment appelle-t-on une passe complète sur l'intégralité du dataset d'entraînement ?",
-    "accept": [
-      "epoch",
-      "une epoque",
-      "epoque"
-    ],
-    "explain": "Une epoch correspond à un passage complet (forward + backward) sur tous les exemples du dataset, une seule fois."
-  },
-  {
-    "id": 12,
-    "cat": "cnn",
-    "type": "qcm",
-    "q": "À quoi sert principalement une couche de convolution dans un CNN ?",
-    "options": [
-      "Réduire aléatoirement la taille spatiale de l'image en supprimant certains pixels jugés peu informatifs, un peu comme le ferait une couche de pooling",
-      "Détecter des motifs locaux comme des contours ou des textures, grâce à un noyau (kernel) qui glisse sur l'image",
-      "Normaliser l'intensité de tous les pixels de l'image entre 0 et 1 avant tout traitement",
-      "Mémoriser l'ordre temporel des données, comme le ferait la cellule récurrente d'un RNN"
-    ],
-    "answer": 1,
-    "explain": "Un noyau (kernel) glisse sur l'image et calcule un produit de convolution local, ce qui permet de détecter des motifs comme des contours ou des textures."
-  },
-  {
-    "id": 13,
-    "cat": "cnn",
-    "type": "open",
-    "q": "Comment appelle-t-on la petite matrice de poids qui glisse sur l'image lors d'une convolution ?",
-    "accept": [
-      "noyau",
-      "kernel",
-      "filtre"
-    ],
-    "explain": "Ce noyau (ou kernel/filtre) est une petite matrice de poids appris, qui glisse sur l'image pour produire une carte de caractéristiques (feature map)."
-  },
-  {
-    "id": 14,
-    "cat": "rnn",
-    "type": "qcm",
-    "q": "Pourquoi utilise-t-on un RNN plutôt qu'un réseau classique pour du texte ou des séries temporelles ?",
-    "options": [
-      "Il est systématiquement plus rapide à entraîner qu'un réseau à couches denses classique",
-      "Il n'a besoin d'aucune fonction de perte spécifique, l'erreur étant, selon cette proposition, calculée directement sur la valeur des poids",
-      "Il possède une mémoire interne, l'état caché, qui persiste et se met à jour d'un pas de temps à l'autre",
-      "Il ne peut traiter qu'une seule entrée isolée à la fois, sans aucune notion de séquence"
-    ],
-    "answer": 2,
-    "explain": "Un RNN conserve un état caché qui se met à jour à chaque pas de temps, ce qui lui permet de tenir compte du contexte précédent dans une séquence."
-  },
-  {
-    "id": 15,
-    "cat": "rnn",
-    "type": "tf",
-    "q": "Le LSTM a été conçu notamment pour atténuer le problème de disparition du gradient (vanishing gradient) sur de longues séquences.",
-    "answer": true,
-    "explain": "Grâce à sa cellule mémoire C(t) et ses portes (oublie, entrée, sortie), le LSTM laisse le gradient circuler sur de longues séquences sans s'annuler."
-  },
-  {
-    "id": 19,
-    "cat": "bases",
-    "type": "qcm",
-    "q": "Quel est le rôle d'une fonction d'activation dans un neurone ?",
-    "options": [
-      "Normaliser systématiquement toutes les données d'entrée du réseau afin qu'elles restent toujours comprises strictement entre -1 et 1",
-      "Réduire le nombre total de paramètres appris par le réseau au cours de l'entraînement",
-      "Accélérer mécaniquement le calcul du forward pass en simplifiant les opérations matricielles",
-      "Introduire de la non-linéarité, ce qui permet au réseau d'apprendre des relations complexes entre les données"
-    ],
-    "answer": 3,
-    "explain": "Sans fonction d'activation non-linéaire, un réseau multi-couches se réduirait à une simple transformation linéaire, quel que soit le nombre de couches."
-  },
-  {
-    "id": 20,
-    "cat": "bases",
-    "type": "tf",
-    "q": "Une couche « dense » (ou « fully connected ») relie chaque neurone d'entrée à chaque neurone de sortie.",
-    "answer": true,
-    "explain": "Dans une couche dense, chaque neurone reçoit toutes les sorties de la couche précédente, d'où le nom « fully connected »."
-  },
-  {
-    "id": 21,
-    "cat": "bases",
-    "type": "open",
-    "q": "Comment appelle-t-on la fonction d'activation qui transforme un vecteur de scores en une distribution de probabilités sommant à 1, souvent utilisée en sortie pour la classification multi-classes ?",
-    "accept": [
-      "softmax"
-    ],
-    "explain": "Softmax exponentie chaque score puis normalise par la somme, produisant des probabilités qui somment à 1."
-  },
-  {
-    "id": 22,
-    "cat": "bases",
-    "type": "qcm",
-    "q": "Que représente la couche d'entrée (input layer) d'un réseau de neurones ?",
-    "options": [
-      "Les features brutes fournies au réseau, généralement une valeur par neurone d'entrée",
-      "Les prédictions finales produites par le modèle, une fois que toutes les couches du réseau ont été traversées jusqu'à la sortie",
-      "Les poids appris et ajustés tout au long de l'entraînement du réseau",
-      "La fonction de perte utilisée pour évaluer la qualité des prédictions du modèle"
-    ],
-    "answer": 0,
-    "explain": "La couche d'entrée ne fait aucun calcul : elle représente simplement les valeurs des features fournies au réseau."
-  },
-  {
-    "id": 23,
-    "cat": "bases",
-    "type": "tf",
-    "q": "Plus un réseau a de couches cachées, plus il est automatiquement performant, sans risque de surapprentissage.",
-    "answer": false,
-    "explain": "Ajouter des couches augmente la capacité du modèle mais aussi le risque de surapprentissage (overfitting), surtout avec peu de données."
-  },
-  {
-    "id": 24,
-    "cat": "bases",
-    "type": "open",
-    "q": "Quel terme désigne l'ensemble des poids et biais que le réseau ajuste pendant l'entraînement ?",
-    "accept": [
-      "parametres",
-      "paramètres",
-      "poids et biais"
-    ],
-    "explain": "Les paramètres (poids w et biais b) sont les valeurs apprises par le réseau via la descente de gradient."
-  },
-  {
-    "id": 25,
-    "cat": "forward",
-    "type": "qcm",
-    "q": "Dans quel ordre les calculs se déroulent-ils lors du forward pass ?",
-    "options": [
-      "Couche de sortie, puis couches cachées, puis couche d'entrée, dans cet ordre précis",
-      "Couche d'entrée, puis couches cachées, puis couche de sortie, dans cet ordre précis",
-      "Toutes les couches sont calculées simultanément, en parallèle, sans ordre particulier",
-      "Le gradient de la loss est d'abord calculé, puis la sortie du réseau est produite"
-    ],
-    "answer": 1,
-    "explain": "Le forward pass propage l'information dans le sens direct : entrée → couches cachées → sortie."
-  },
-  {
-    "id": 26,
-    "cat": "forward",
-    "type": "tf",
-    "q": "Lors du forward pass, chaque neurone calcule d'abord sa pré-activation z, puis applique une fonction d'activation pour obtenir a.",
-    "answer": true,
-    "explain": "z = Σ(w·x) + b puis a = f(z) : c'est la séquence de calcul de chaque neurone."
-  },
-  {
-    "id": 27,
-    "cat": "forward",
-    "type": "open",
-    "q": "Quel terme désigne la sortie d'un neurone après application de la fonction d'activation (notée généralement « a ») ?",
-    "accept": [
-      "activation",
-      "sortie activee",
-      "sortie activée"
-    ],
-    "explain": "a = f(z) est appelée l'activation du neurone, par opposition à z qui est la pré-activation."
-  },
-  {
-    "id": 28,
-    "cat": "forward",
-    "type": "qcm",
-    "q": "Que se passe-t-il si on utilise une fonction d'activation linéaire à toutes les couches d'un réseau profond ?",
-    "options": [
-      "Le réseau devient alors capable, en théorie, d'apprendre des fonctions arbitrairement complexes, quelle que soit sa profondeur ou son nombre de couches",
-      "Le calcul du forward pass devient tout simplement impossible à effectuer numériquement",
-      "Le réseau tout entier équivaut mathématiquement à une seule couche linéaire, quel que soit son nombre de couches",
-      "Rien ne change par rapport à un réseau utilisant ReLU comme fonction d'activation"
-    ],
-    "answer": 2,
-    "explain": "La composition de fonctions linéaires reste linéaire : empiler des couches linéaires n'apporte donc aucune capacité supplémentaire par rapport à une seule couche."
-  },
-  {
-    "id": 29,
-    "cat": "forward",
-    "type": "tf",
-    "q": "Le forward pass est utilisé aussi bien pendant l'entraînement que pendant l'inférence (prédiction sur de nouvelles données).",
-    "answer": true,
-    "explain": "Que ce soit pour entraîner le modèle ou pour l'utiliser en production, le calcul de la sortie passe toujours par un forward pass."
-  },
-  {
-    "id": 30,
-    "cat": "forward",
-    "type": "open",
-    "q": "Quel terme désigne l'étape où l'on compare la sortie prédite ŷ à la cible réelle y afin de mesurer l'erreur du réseau, juste après le forward pass ?",
-    "accept": [
-      "calcul de la loss",
-      "calcul de la perte",
-      "evaluation de la loss"
-    ],
-    "explain": "Après le forward pass, on calcule la loss L(ŷ, y), qui quantifie l'écart entre la prédiction et la vraie valeur."
-  },
-  {
-    "id": 31,
-    "cat": "loss",
-    "type": "qcm",
-    "q": "Quelle est la formule de la MSE (erreur quadratique moyenne) pour une seule prédiction ?",
-    "options": [
-      "(y − ŷ) / n — la différence entre la cible et la prédiction, divisée par le nombre d'exemples",
-      "−Σ y·log(ŷ) — la formule utilisée pour la cross-entropy, pas pour la MSE",
-      "|y − ŷ| — la valeur absolue de l'écart, utilisée plutôt pour la MAE",
-      "(y − ŷ)² — le carré de l'écart entre la cible y et la prédiction ŷ"
-    ],
-    "answer": 3,
-    "explain": "La MSE pour un exemple est (y−ŷ)², qu'on moyenne ensuite sur tous les exemples du batch."
-  },
-  {
-    "id": 32,
-    "cat": "loss",
-    "type": "tf",
-    "q": "Le but de l'entraînement est de maximiser la fonction de perte (loss).",
-    "answer": false,
-    "explain": "On cherche au contraire à minimiser la loss : plus elle est faible, plus les prédictions du réseau sont proches des vraies valeurs."
-  },
-  {
-    "id": 33,
-    "cat": "loss",
-    "type": "open",
-    "q": "Quel algorithme permet de calculer efficacement le gradient de la loss par rapport à tous les poids d'un réseau, couche par couche en partant de la sortie ?",
-    "accept": [
-      "backpropagation",
-      "retropropagation",
-      "rétropropagation",
-      "backprop"
-    ],
-    "explain": "La rétropropagation applique la règle de dérivation en chaîne en partant de la sortie et en remontant vers l'entrée, couche par couche."
-  },
-  {
-    "id": 34,
-    "cat": "loss",
-    "type": "qcm",
-    "q": "Que signifie le terme « gradient » dans le contexte de l'entraînement d'un réseau ?",
-    "options": [
-      "Le vecteur regroupant les dérivées partielles de la loss par rapport à chacun des paramètres du réseau",
-      "La vitesse à laquelle le forward pass est effectivement calculé sur le matériel (CPU ou GPU) utilisé pour l'entraînement du réseau",
-      "Le nombre total de couches, cachées et de sortie comprises, que compte le réseau",
-      "La taille du batch, c'est-à-dire le nombre d'exemples utilisés à chaque mise à jour des poids"
-    ],
-    "answer": 0,
-    "explain": "Le gradient ∇L indique dans quelle direction et de combien il faut ajuster chaque paramètre pour réduire la loss."
-  },
-  {
-    "id": 35,
-    "cat": "loss",
-    "type": "tf",
-    "q": "Le problème de « vanishing gradient » (gradient qui s'annule) survient plus fréquemment dans les réseaux très profonds avec certaines fonctions d'activation comme la sigmoïde.",
-    "answer": true,
-    "explain": "En multipliant de nombreuses dérivées inférieures à 1 (comme celle de la sigmoïde) à travers les couches, le gradient devient de plus en plus petit et finit par s'annuler."
-  },
-  {
-    "id": 36,
-    "cat": "loss",
-    "type": "open",
-    "q": "Comment appelle-t-on la technique qui consiste à parcourir le réseau une seconde fois, de la sortie vers l'entrée, pour calculer les gradients après le forward pass ?",
-    "accept": [
-      "backward pass",
-      "passe arriere",
-      "passe arrière"
-    ],
-    "explain": "Le backward pass (ou passe arrière) calcule les gradients ∂L/∂w en propageant l'erreur de la sortie vers l'entrée, à l'inverse du forward pass."
-  },
-  {
-    "id": 37,
-    "cat": "optim",
-    "type": "qcm",
-    "q": "Que fait la descente de gradient (gradient descent) à chaque itération ?",
-    "options": [
-      "Elle modifie chaque poids du réseau de façon totalement aléatoire, sans jamais tenir compte du gradient calculé à l'itération précédente",
-      "Elle met à jour chaque poids dans la direction opposée à son gradient, avec un pas proportionnel au learning rate",
-      "Elle supprime définitivement les neurones jugés inutiles à la performance du réseau",
-      "Elle recalcule entièrement l'architecture du réseau à chaque itération d'entraînement"
-    ],
-    "answer": 1,
-    "explain": "w ← w − lr·∂L/∂w : le poids est déplacé dans la direction qui réduit la loss, avec un pas proportionnel au learning rate."
-  },
-  {
-    "id": 38,
-    "cat": "optim",
-    "type": "tf",
-    "q": "Le « batch size » désigne le nombre d'exemples utilisés pour calculer un gradient avant de mettre à jour les poids.",
-    "answer": true,
-    "explain": "Un batch est un sous-ensemble du dataset ; sa taille détermine combien d'exemples sont utilisés pour estimer le gradient à chaque mise à jour."
-  },
-  {
-    "id": 39,
-    "cat": "optim",
-    "type": "open",
-    "q": "Quel terme désigne le fait qu'un modèle apprend « par cœur » les données d'entraînement au point de mal généraliser sur de nouvelles données ?",
-    "accept": [
-      "overfitting",
-      "surapprentissage"
-    ],
-    "explain": "L'overfitting survient quand le modèle capte le bruit spécifique aux données d'entraînement plutôt que les motifs généraux, ce qui dégrade ses performances sur des données jamais vues."
-  },
-  {
-    "id": 40,
-    "cat": "optim",
-    "type": "qcm",
-    "q": "Quel est l'effet du « dropout » pendant l'entraînement d'un réseau ?",
-    "options": [
-      "Il augmente automatiquement le learning rate dès que la loss cesse de diminuer",
-      "Il ajoute automatiquement de nouvelles couches supplémentaires au réseau à chaque fois que l'entraînement stagne un peu",
-      "Il désactive aléatoirement une partie des neurones à chaque itération, pour limiter le surapprentissage",
-      "Il remplace la fonction de perte utilisée par une autre, choisie aléatoirement"
-    ],
-    "answer": 2,
-    "explain": "En désactivant aléatoirement une fraction des neurones à chaque passage, le dropout empêche le réseau de trop dépendre de neurones spécifiques, ce qui améliore la généralisation."
-  },
-  {
-    "id": 41,
-    "cat": "optim",
-    "type": "tf",
-    "q": "Le momentum, utilisé dans certains optimiseurs, permet d'accélérer la convergence en tenant compte des gradients des itérations précédentes.",
-    "answer": true,
-    "explain": "Le momentum accumule une moyenne mobile des gradients passés, ce qui aide à traverser les zones plates et à amortir les oscillations."
-  },
-  {
-    "id": 42,
-    "cat": "optim",
-    "type": "open",
-    "q": "Comment appelle-t-on la technique consistant à diviser le dataset d'entraînement en petits sous-ensembles traités successivement à chaque epoch ?",
-    "accept": [
-      "mini-batch",
-      "mini batch",
-      "descente de gradient par mini-lots",
-      "mini-lots"
-    ],
-    "explain": "Le mini-batch gradient descent traite le dataset par petits lots plutôt que d'un coup (batch complet) ou un exemple à la fois (SGD pur) : un bon compromis entre vitesse et stabilité."
-  },
-  {
-    "id": 43,
-    "cat": "cnn",
-    "type": "qcm",
-    "q": "Que fait typiquement une couche de « pooling » (ex : max pooling) dans un CNN ?",
-    "options": [
-      "Elle augmente la résolution spatiale de l'image en interpolant de nouveaux pixels",
-      "Elle ajoute délibérément du bruit aléatoire aux feature maps produites, afin de rendre le réseau plus robuste au surapprentissage",
-      "Elle calcule directement la loss du réseau à partir des feature maps produites",
-      "Elle réduit la dimension spatiale des feature maps en résumant l'information d'une zone locale"
-    ],
-    "answer": 3,
-    "explain": "Le pooling (souvent max pooling) sous-échantillonne les feature maps en ne gardant que l'information la plus saillante d'une zone locale, réduisant ainsi la taille et le nombre de calculs."
-  },
-  {
-    "id": 44,
-    "cat": "cnn",
-    "type": "tf",
-    "q": "Dans un CNN, les poids d'un même filtre (kernel) sont partagés sur toute l'image lors du balayage (weight sharing).",
-    "answer": true,
-    "explain": "Le partage de poids permet de détecter le même motif où qu'il apparaisse dans l'image, tout en réduisant fortement le nombre de paramètres par rapport à une couche dense."
-  },
-  {
-    "id": 45,
-    "cat": "cnn",
-    "type": "open",
-    "q": "Comment appelle-t-on la carte résultant de l'application d'un filtre de convolution sur une image ou une couche précédente ?",
-    "accept": [
-      "feature map",
-      "carte de caracteristiques",
-      "carte de caractéristiques",
-      "carte d'activation"
-    ],
-    "explain": "La feature map (ou carte de caractéristiques) contient l'activation du filtre en chaque position de l'image balayée."
-  },
-  {
-    "id": 46,
-    "cat": "cnn",
-    "type": "qcm",
-    "q": "Pourquoi utilise-t-on souvent des CNN plutôt que des couches denses pour traiter des images ?",
-    "options": [
-      "Les CNN exploitent la structure spatiale locale de l'image et partagent leurs poids, ce qui réduit fortement le nombre de paramètres",
-      "Les CNN n'ont besoin d'aucune fonction d'activation pour fonctionner correctement sur des images",
-      "Les CNN ne peuvent traiter que des images en noir et blanc, jamais des images en couleur",
-      "Les couches denses classiques restent, quoi qu'il arrive, toujours plus rapides et plus efficaces qu'un CNN dès qu'il s'agit de traiter des images"
-    ],
-    "answer": 0,
-    "explain": "Une couche dense sur une image demanderait un nombre de paramètres énorme et ignorerait la structure spatiale ; les CNN exploitent les motifs locaux avec beaucoup moins de paramètres."
-  },
-  {
-    "id": 47,
-    "cat": "cnn",
-    "type": "tf",
-    "q": "Le « padding » consiste à ajouter des pixels (souvent des zéros) autour d'une image avant convolution, notamment pour préserver sa taille spatiale.",
-    "answer": true,
-    "explain": "Sans padding, chaque convolution réduit la taille spatiale de l'image ; le zero-padding permet de contrôler, voire préserver, cette dimension."
-  },
-  {
-    "id": 48,
-    "cat": "cnn",
-    "type": "open",
-    "q": "Quel terme désigne le nombre de pixels dont le noyau se déplace à chaque étape lors du balayage de l'image (« stride » en anglais) ?",
-    "accept": [
-      "pas",
-      "stride"
-    ],
-    "explain": "Le stride (ou pas) détermine le déplacement du noyau entre deux positions successives ; un stride plus grand réduit la taille de la feature map produite."
-  },
-  {
-    "id": 49,
-    "cat": "rnn",
-    "type": "qcm",
-    "q": "Quel est le principal problème rencontré par les RNN « vanilla » (simples) sur de longues séquences ?",
-    "options": [
-      "Ils sont, de façon assez contre-intuitive, toujours beaucoup plus rapides à entraîner qu'un réseau à couches denses classique",
-      "Le gradient a tendance à disparaître ou, à l'inverse, à exploser lorsqu'on rétropropage sur de longues séquences",
-      "Ils ne sont physiquement capables de traiter qu'une seule séquence à la fois, jamais un batch entier",
-      "Ils ne partagent pas leurs poids d'un pas de temps à l'autre, contrairement à ce qu'on pourrait penser"
-    ],
-    "answer": 1,
-    "explain": "En rétropropageant l'erreur à travers de nombreux pas de temps, le gradient est multiplié de façon répétée, ce qui le fait souvent disparaître ou exploser."
-  },
-  {
-    "id": 50,
-    "cat": "rnn",
-    "type": "tf",
-    "q": "Dans un RNN, les mêmes poids sont réutilisés à chaque pas de temps de la séquence.",
-    "answer": true,
-    "explain": "Le partage des poids dans le temps permet au RNN de traiter des séquences de longueur variable avec un nombre de paramètres constant."
-  },
-  {
-    "id": 51,
-    "cat": "rnn",
-    "type": "open",
-    "q": "Quel type de cellule récurrente utilise des « portes » (gates) pour contrôler quelles informations garder, oublier ou faire sortir de sa mémoire interne ?",
-    "accept": [
-      "lstm",
-      "gru"
-    ],
-    "explain": "Le LSTM (et sa variante simplifiée le GRU) utilise des portes apprises pour réguler le flux d'information dans sa cellule mémoire, ce qui limite la disparition du gradient."
-  },
-  {
-    "id": 52,
-    "cat": "rnn",
-    "type": "qcm",
-    "q": "Que représente l'état caché h(t) dans un RNN ?",
-    "options": [
-      "Uniquement la toute dernière sortie produite par le réseau, sans lien avec les pas précédents",
-      "Le gradient de la loss calculé spécifiquement au pas de temps t, rien d'autre",
-      "Une forme de mémoire qui résume les informations vues par le réseau jusqu'au pas de temps t",
-      "Le taux d'apprentissage utilisé par l'optimiseur, mais uniquement à l'instant t"
-    ],
-    "answer": 2,
-    "explain": "h(t) est mis à jour à chaque pas de temps et sert de mémoire condensée du passé de la séquence, utilisée pour produire la sortie et pour le pas suivant."
-  },
-  {
-    "id": 53,
-    "cat": "rnn",
-    "type": "tf",
-    "q": "Les GRU (Gated Recurrent Units) sont une variante des LSTM avec généralement moins de paramètres, car ils utilisent moins de portes.",
-    "answer": true,
-    "explain": "Le GRU combine certaines portes du LSTM (par exemple porte d'oubli et porte d'entrée fusionnées), ce qui simplifie l'architecture tout en gardant de bonnes performances."
-  },
-  {
-    "id": 54,
-    "cat": "rnn",
-    "type": "open",
-    "q": "Pour quel type de données les RNN sont-ils particulièrement adaptés, en raison de leur capacité à traiter un ordre temporel ou séquentiel ?",
-    "accept": [
-      "sequences",
-      "séquences",
-      "texte",
-      "series temporelles",
-      "séries temporelles",
-      "donnees sequentielles",
-      "données séquentielles"
-    ],
-    "explain": "Texte, séries temporelles, audio... les RNN sont conçus pour exploiter les dépendances entre éléments successifs d'une séquence."
-  },
-  {
-    "id": 55,
-    "cat": "bases",
-    "type": "tf",
-    "q": "La sortie d'un réseau de neurones est calculée uniquement à l'aide de multiplications, sans aucune addition.",
-    "answer": false,
-    "explain": "z = Σ(w·x) + b combine des multiplications ET une addition (le biais) : il n'y a pas que des multiplications."
-  },
-  {
-    "id": 56,
-    "cat": "bases",
-    "type": "tf",
-    "q": "Le nombre de neurones dans la couche de sortie dépend directement du problème à résoudre (ex : 1 pour une régression, plusieurs pour une classification multi-classes).",
-    "answer": true,
-    "explain": "Pour une régression on utilise souvent 1 neurone de sortie ; pour une classification à K classes on utilise généralement K neurones (avec softmax)."
-  },
-  {
-    "id": 57,
-    "cat": "forward",
-    "type": "tf",
-    "q": "Le forward pass ne peut être calculé qu'une seule fois par epoch, jamais plus.",
-    "answer": false,
-    "explain": "Le forward pass est recalculé pour chaque exemple ou chaque batch, donc plusieurs fois par epoch."
-  },
-  {
-    "id": 58,
-    "cat": "forward",
-    "type": "tf",
-    "q": "Dans un réseau à plusieurs couches, la sortie d'une couche sert d'entrée à la couche suivante.",
-    "answer": true,
-    "explain": "C'est le principe même de l'empilement de couches : a(l) devient l'entrée x de la couche l+1."
-  },
-  {
-    "id": 59,
-    "cat": "forward",
-    "type": "tf",
-    "q": "Le forward pass permet à lui seul de mettre à jour les poids du réseau.",
-    "answer": false,
-    "explain": "Le forward pass ne fait que calculer la sortie ; c'est la rétropropagation (backward pass) qui calcule les gradients utilisés pour mettre à jour les poids."
-  },
-  {
-    "id": 60,
-    "cat": "loss",
-    "type": "tf",
-    "q": "Une loss élevée signifie que les prédictions du réseau sont éloignées des vraies valeurs.",
-    "answer": true,
-    "explain": "Par construction, la loss mesure l'écart entre prédiction et cible : plus elle est élevée, plus l'erreur est grande."
-  },
-  {
-    "id": 61,
-    "cat": "loss",
-    "type": "tf",
-    "q": "La cross-entropy et la MSE sont deux mesures de loss strictement identiques, interchangeables sans conséquence.",
-    "answer": false,
-    "explain": "La MSE est adaptée à la régression tandis que la cross-entropy est adaptée à la classification ; les utiliser à contre-emploi dégrade l'apprentissage."
-  },
-  {
-    "id": 62,
-    "cat": "optim",
-    "type": "tf",
-    "q": "Un learning rate trop faible peut rendre l'entraînement extrêmement lent, sans forcément empêcher la convergence.",
-    "answer": true,
-    "explain": "Avec un lr trop petit, chaque mise à jour des poids est minime : le réseau converge, mais très lentement."
-  },
-  {
-    "id": 63,
-    "cat": "optim",
-    "type": "tf",
-    "q": "Augmenter le nombre d'epochs garantit toujours une meilleure performance sur des données jamais vues.",
-    "answer": false,
-    "explain": "Au-delà d'un certain nombre d'epochs, le réseau peut sur-apprendre (overfitting) et donc moins bien généraliser, même si la loss d'entraînement continue de baisser."
-  },
-  {
-    "id": 64,
-    "cat": "cnn",
-    "type": "tf",
-    "q": "Un CNN peut comporter plusieurs couches de convolution empilées les unes après les autres.",
-    "answer": true,
-    "explain": "Il est courant d'empiler plusieurs couches de convolution, chacune extrayant des motifs de plus en plus abstraits à partir des feature maps précédentes."
-  },
-  {
-    "id": 65,
-    "cat": "cnn",
-    "type": "tf",
-    "q": "Le nombre de filtres d'une couche de convolution détermine le nombre de feature maps produites en sortie.",
-    "answer": true,
-    "explain": "Chaque filtre produit sa propre feature map ; K filtres donnent donc K feature maps en sortie de la couche."
-  },
-  {
-    "id": 66,
-    "cat": "cnn",
-    "type": "tf",
-    "q": "Les CNN ne peuvent être utilisés que sur des images en couleur (RGB), jamais sur des images en niveaux de gris.",
-    "answer": false,
-    "explain": "Les CNN fonctionnent aussi bien sur des images en niveaux de gris (1 canal) que sur des images RGB (3 canaux) ou même davantage de canaux."
-  },
-  {
-    "id": 67,
-    "cat": "rnn",
-    "type": "tf",
-    "q": "Un RNN peut produire une sortie à chaque pas de temps, et pas uniquement à la toute fin de la séquence.",
-    "answer": true,
-    "explain": "Selon l'architecture (many-to-many, many-to-one...), un RNN peut produire une sortie à chaque pas de temps ou une seule sortie finale."
-  },
-  {
-    "id": 68,
-    "cat": "rnn",
-    "type": "tf",
-    "q": "Les RNN traitent obligatoirement toute la séquence en une seule fois, sans notion d'ordre temporel.",
-    "answer": false,
-    "explain": "Au contraire, un RNN traite la séquence pas à pas, dans l'ordre, en mettant à jour son état caché à chaque étape — c'est justement ce qui lui permet d'exploiter l'ordre temporel."
-  },
-  {
-    "id": 69,
-    "cat": "bases",
-    "type": "tf",
-    "q": "Un neurone artificiel avec une fonction d'activation sigmoïde peut produire une sortie strictement négative.",
-    "answer": false,
-    "explain": "La sigmoïde σ(z) = 1/(1+e⁻ᶻ) a pour codomaine ]0, 1[ : sa sortie ne peut jamais être négative, ni nulle, ni égale à 1."
-  },
-  {
-    "id": 70,
-    "cat": "forward",
-    "type": "tf",
-    "q": "Lors du forward pass, la sortie a d'un neurone est calculée avant sa pré-activation z.",
-    "answer": false,
-    "explain": "C'est l'inverse : le neurone calcule d'abord z = Σ(w·x) + b, puis applique la fonction d'activation pour obtenir a = f(z)."
-  },
-  {
-    "id": 71,
-    "cat": "loss",
-    "type": "tf",
-    "q": "La MSE (erreur quadratique moyenne) est généralement préférée à la cross-entropy pour les problèmes de classification multi-classes.",
-    "answer": false,
-    "explain": "C'est l'inverse : la cross-entropy est généralement préférée pour la classification, car elle est mieux adaptée aux sorties de type probabilité (softmax) qu'une MSE."
-  },
-  {
-    "id": 72,
-    "cat": "optim",
-    "type": "tf",
-    "q": "Adam est un optimiseur qui n'utilise jamais l'historique des gradients précédents, contrairement à SGD avec momentum.",
-    "answer": false,
-    "explain": "C'est faux : Adam combine justement une moyenne mobile du gradient (comme le momentum) et une moyenne mobile de son carré, donc il exploite fortement l'historique des gradients."
-  },
-  {
-    "id": 73,
-    "cat": "optim",
-    "type": "tf",
-    "q": "Réduire le batch size revient toujours exactement au même que réduire le learning rate.",
-    "answer": false,
-    "explain": "Ce sont deux leviers différents : le batch size influence le bruit et la précision de l'estimation du gradient, tandis que le learning rate contrôle l'amplitude du pas effectué à chaque mise à jour. Ils ne sont pas interchangeables."
-  },
-  {
-    "id": 74,
-    "cat": "optim",
-    "type": "tf",
-    "q": "Le early stopping consiste à arrêter l'entraînement dès que la loss sur le train set atteint zéro.",
-    "answer": false,
-    "explain": "Le early stopping arrête l'entraînement quand la loss de validation cesse de s'améliorer (signe de surapprentissage), pas quand la loss d'entraînement atteint zéro."
-  },
-  {
-    "id": 75,
-    "cat": "cnn",
-    "type": "tf",
-    "q": "Un filtre (kernel) de convolution a systématiquement la même taille que l'image d'entrée qu'il analyse.",
-    "answer": false,
-    "explain": "Un kernel est généralement beaucoup plus petit que l'image (ex : 3×3 ou 5×5) : il glisse sur l'image pour analyser des zones locales, il n'a pas besoin d'être aussi grand que l'image entière."
-  },
-  {
-    "id": 76,
-    "cat": "cnn",
-    "type": "tf",
-    "q": "Le stride d'une convolution correspond au nombre de filtres appliqués simultanément à l'image.",
-    "answer": false,
-    "explain": "Le stride désigne le pas de déplacement du kernel sur l'image (ex : 1 ou 2 pixels à chaque étape), pas le nombre de filtres. Le nombre de filtres détermine plutôt le nombre de feature maps produites."
-  },
-  {
-    "id": 77,
-    "cat": "cnn",
-    "type": "tf",
-    "q": "Dans un CNN, les couches de convolution profondes détectent nécessairement des motifs plus simples que les toutes premières couches.",
-    "answer": false,
-    "explain": "C'est l'inverse : les premières couches détectent des motifs simples (contours, couleurs), tandis que les couches plus profondes combinent ces motifs pour détecter des formes de plus en plus complexes et abstraites."
-  },
-  {
-    "id": 78,
-    "cat": "rnn",
-    "type": "tf",
-    "q": "Un LSTM ne possède qu'une seule porte (gate), contrairement au RNN classique qui n'en a aucune.",
-    "answer": false,
-    "explain": "Un LSTM possède généralement trois portes : la porte d'oubli (forget gate), la porte d'entrée (input gate) et la porte de sortie (output gate), pas une seule."
-  },
-  {
-    "id": 79,
-    "cat": "rnn",
-    "type": "tf",
-    "q": "Le « teacher forcing » consiste à ignorer complètement les cibles réelles pendant l'entraînement d'un RNN pour du texte.",
-    "answer": false,
-    "explain": "C'est l'inverse : le teacher forcing consiste à utiliser la vraie sortie précédente (la cible) comme entrée du pas suivant pendant l'entraînement, plutôt que la propre prédiction du modèle."
-  },
-  {
-    "id": 80,
-    "cat": "rnn",
-    "type": "tf",
-    "q": "Un RNN bidirectionnel ne peut lire la séquence que dans le sens chronologique, jamais à l'envers.",
-    "answer": false,
-    "explain": "Un RNN bidirectionnel combine justement deux RNN : l'un lit la séquence dans le sens chronologique, l'autre dans le sens inverse, pour capter le contexte passé et futur."
-  },
-  {
-    "id": 81,
-    "cat": "bases",
-    "type": "qcm",
-    "q": "Que représente le poids (w) associé à une connexion entre deux neurones ?",
-    "options": [
-      "La valeur de sortie du neurone après application de la fonction d'activation",
-      "Le nombre total de neurones présents dans la couche suivante du réseau, indépendamment des connexions individuelles établies entre eux",
-      "Le terme constant ajouté à la somme pondérée, indépendant des entrées",
-      "L'importance accordée à cette connexion : elle multiplie l'entrée avant de l'ajouter à la somme pondérée"
-    ],
-    "answer": 3,
-    "explain": "Chaque poids w multiplie l'entrée à laquelle il est associé ; plus |w| est grand, plus cette entrée influence la pré-activation z du neurone recevant la connexion."
-  },
-  {
-    "id": 82,
-    "cat": "bases",
-    "type": "qcm",
-    "q": "Quelle affirmation décrit correctement une couche cachée (hidden layer) ?",
-    "options": [
-      "C'est une couche intermédiaire entre l'entrée et la sortie, dont les valeurs ne sont ni les features brutes ni la prédiction finale",
-      "C'est la toute première couche du réseau, qui reçoit directement les données brutes du dataset",
-      "C'est la dernière couche du réseau, qui produit directement la prédiction finale ŷ",
-      "C'est une couche qui ne contient aucun poids ni aucun biais, contrairement aux autres couches"
-    ],
-    "answer": 0,
-    "explain": "Une couche cachée se situe entre la couche d'entrée et la couche de sortie ; elle transforme progressivement les données mais n'est ni les features brutes ni la prédiction finale."
-  },
-  {
-    "id": 83,
-    "cat": "bases",
-    "type": "qcm",
-    "q": "Pourquoi initialise-t-on généralement les poids d'un réseau de façon aléatoire plutôt qu'à zéro ?",
-    "options": [
-      "Parce qu'une initialisation à zéro ferait planter le programme dès le premier calcul",
-      "Parce qu'avec des poids tous identiques (ex : zéro), les neurones d'une même couche apprendraient tous la même chose (symétrie)",
-      "Parce que des poids initialisés aléatoirement garantiraient, à eux seuls et sans aucune autre condition, la convergence la plus rapide qui soit",
-      "Parce que la loi impose une initialisation aléatoire pour tout modèle de deep learning"
-    ],
-    "answer": 1,
-    "explain": "Si tous les poids partent de la même valeur, tous les neurones d'une couche calculent la même chose et reçoivent le même gradient : ils restent identiques pour toujours. L'aléatoire brise cette symétrie."
-  },
-  {
-    "id": 84,
-    "cat": "forward",
-    "type": "qcm",
-    "q": "Que se passe-t-il concrètement, couche par couche, entre l'entrée et la sortie d'un réseau lors du forward pass ?",
-    "options": [
-      "Chaque couche calcule directement la loss avant de la transmettre à la couche suivante",
-      "Chaque couche met à jour ses propres poids avant de transmettre sa sortie à la couche suivante",
-      "Chaque couche calcule sa pré-activation z à partir de la sortie de la couche précédente, puis applique une fonction d'activation pour produire sa propre sortie",
-      "Chaque couche recalcule aléatoirement l'architecture du réseau avant de produire sa sortie"
-    ],
-    "answer": 2,
-    "explain": "À chaque couche, on calcule z = Σ(w·a_préc) + b puis a = f(z) ; cette sortie a devient l'entrée de la couche suivante, et ainsi de suite jusqu'à la sortie finale."
-  },
-  {
-    "id": 85,
-    "cat": "forward",
-    "type": "qcm",
-    "q": "Un réseau a une couche d'entrée à 4 neurones, une couche cachée à 5 neurones, et une couche de sortie à 2 neurones. Que peut-on dire de sa sortie ?",
-    "options": [
-      "Il produira directement 4 sorties, car c'est systématiquement le nombre de neurones de la couche d'entrée qui fixe le nombre de sorties",
-      "Il produira 5 sorties, car c'est la couche cachée qui détermine le nombre de sorties finales",
-      "Il ne peut pas être calculé, car le nombre de neurones diminue puis change entre les couches",
-      "Il produira 2 sorties, car c'est la taille de la couche de sortie qui détermine le nombre de valeurs prédites"
-    ],
-    "answer": 3,
-    "explain": "Le nombre de sorties d'un réseau est toujours déterminé par le nombre de neurones de sa couche de sortie, quelle que soit la taille des couches précédentes."
-  },
-  {
-    "id": 86,
-    "cat": "loss",
-    "type": "qcm",
-    "q": "Que mesure concrètement une fonction de perte (loss) pendant l'entraînement ?",
-    "options": [
-      "L'écart entre la prédiction du réseau et la valeur réelle attendue, pour un exemple ou un batch donné",
-      "Le nombre total de paramètres (poids et biais) que compte le réseau de neurones",
-      "Le temps de calcul nécessaire pour effectuer un forward pass complet sur le réseau",
-      "La proportion exacte de neurones désactivés aléatoirement par le dropout à chaque itération d'entraînement, exprimée en pourcentage"
-    ],
-    "answer": 0,
-    "explain": "La loss quantifie à quel point les prédictions du réseau s'éloignent des vraies valeurs ; c'est précisément cette quantité que l'entraînement cherche à minimiser."
-  },
-  {
-    "id": 87,
-    "cat": "loss",
-    "type": "qcm",
-    "q": "Dans la règle de dérivation en chaîne utilisée par la rétropropagation, comment calcule-t-on l'influence d'un poids éloigné de la sortie sur la loss ?",
-    "options": [
-      "On l'ignore, seuls les poids de la dernière couche influencent réellement la loss",
-      "On multiplie entre elles les dérivées partielles de chaque étape intermédiaire, de la sortie jusqu'à ce poids",
-      "On additionne simplement la valeur de tous les poids situés entre ce poids et la sortie",
-      "On recalcule un forward pass complet pour chaque poids, sans utiliser aucune dérivée"
-    ],
-    "answer": 1,
-    "explain": "La règle de la chaîne décompose la dérivée totale en un produit de dérivées locales à chaque couche traversée, ce qui permet de remonter efficacement jusqu'aux poids les plus éloignés de la sortie."
-  },
-  {
-    "id": 88,
-    "cat": "loss",
-    "type": "qcm",
-    "q": "Que signifie observer une loss d'entraînement qui continue de baisser alors que la loss de validation remonte ?",
-    "options": [
-      "Le réseau n'a pas encore assez de données pour commencer à apprendre correctement",
-      "Le learning rate est très certainement beaucoup trop faible pour cette architecture, ce qui ralentit anormalement toute la convergence",
-      "Le réseau est probablement en train de surapprendre (overfitting) : il mémorise le train set au lieu de généraliser",
-      "C'est un comportement normal et souhaitable qui indique une convergence optimale"
-    ],
-    "answer": 2,
-    "explain": "Une loss d'entraînement qui baisse pendant que la loss de validation remonte est le signe classique du surapprentissage : le réseau colle de plus en plus aux exemples vus, au détriment de sa capacité à généraliser."
-  },
-  {
-    "id": 89,
-    "cat": "optim",
-    "type": "qcm",
-    "q": "Qu'est-ce qu'une « epoch » dans le vocabulaire de l'entraînement d'un réseau de neurones ?",
-    "options": [
-      "Un seul exemple du dataset utilisé pour calculer un unique gradient",
-      "Le nombre de neurones présents dans la couche cachée la plus large du réseau",
-      "La valeur du learning rate utilisée pendant la toute première itération de l'entraînement",
-      "Un passage complet à travers l'intégralité du jeu de données d'entraînement"
-    ],
-    "answer": 3,
-    "explain": "Une epoch correspond à un cycle complet où chaque exemple du dataset d'entraînement a été vu exactement une fois par le réseau, qu'il soit traité en un seul batch ou en plusieurs."
-  },
-  {
-    "id": 90,
-    "cat": "optim",
-    "type": "qcm",
-    "q": "Quelle est la principale différence entre le batch gradient descent et le mini-batch (ou stochastic) gradient descent ?",
-    "options": [
-      "Le batch gradient descent calcule le gradient sur tout le dataset avant chaque mise à jour, tandis que le mini-batch ne l'utilise que sur un sous-ensemble",
-      "Le batch gradient descent n'utilise jamais de learning rate, contrairement au mini-batch",
-      "Le mini-batch gradient descent ne peut être utilisé qu'avec des réseaux sans couche cachée",
-      "Le batch gradient descent est une méthode réservée uniquement aux CNN, pas aux autres architectures"
-    ],
-    "answer": 0,
-    "explain": "Le batch gradient descent calcule un gradient précis mais coûteux sur tout le dataset ; le mini-batch (ou SGD) utilise un sous-ensemble à chaque étape, ce qui accélère et introduit un peu de bruit utile dans l'optimisation."
-  },
-  {
-    "id": 91,
-    "cat": "optim",
-    "type": "qcm",
-    "q": "Pourquoi le momentum aide-t-il parfois à sortir d'un minimum local peu profond pendant l'optimisation ?",
-    "options": [
-      "Parce qu'il désactive complètement le calcul du gradient pendant plusieurs itérations",
-      "Parce qu'il accumule une forme de « vitesse » issue des gradients précédents, ce qui peut permettre de franchir de petites irrégularités de la loss",
-      "Parce qu'il multiplie automatiquement le learning rate par dix chaque fois qu'un minimum local est détecté par l'optimiseur en cours d'entraînement",
-      "Parce qu'il remplace entièrement la fonction de perte par une version simplifiée"
-    ],
-    "answer": 1,
-    "explain": "Le momentum conserve une trace des directions de gradient précédentes, un peu comme une inertie physique, ce qui peut aider à traverser de petits creux ou plateaux au lieu de s'y arrêter immédiatement."
-  },
-  {
-    "id": 92,
-    "cat": "optim",
-    "type": "qcm",
-    "q": "Que fait la régularisation L1, par rapport à la L2, sur les poids d'un réseau ?",
-    "options": [
-      "Elle n'a strictement aucun effet sur les poids, contrairement à la L2",
-      "Elle augmente systématiquement la valeur de tous les poids du réseau",
-      "Elle a tendance à pousser certains poids exactement à zéro, produisant des modèles plus « épars » (sparse)",
-      "Elle remplace entièrement la fonction de perte originale par une nouvelle fonction"
-    ],
-    "answer": 2,
-    "explain": "Contrairement à la L2, qui réduit les grands poids sans les annuler complètement, la pénalité L1 a tendance à amener certains poids exactement à zéro, ce qui peut servir à une forme de sélection de features."
-  },
-  {
-    "id": 93,
-    "cat": "optim",
-    "type": "qcm",
-    "q": "À quoi sert typiquement un « learning rate scheduler » pendant l'entraînement ?",
-    "options": [
-      "À choisir aléatoirement une nouvelle architecture de réseau à chaque epoch",
-      "À remplacer entièrement la fonction de perte utilisée toutes les quelques epochs",
-      "À figer définitivement et sans aucune exception le learning rate à sa valeur initiale pour la totalité de l'entraînement",
-      "À faire varier le learning rate au fil de l'entraînement, souvent en le diminuant progressivement"
-    ],
-    "answer": 3,
-    "explain": "Un scheduler ajuste le learning rate au cours de l'entraînement — le plus souvent en le réduisant progressivement — pour permettre de grands pas au début et des ajustements plus fins vers la fin."
-  },
-  {
-    "id": 94,
-    "cat": "cnn",
-    "type": "qcm",
-    "q": "Qu'appelle-t-on une « feature map » en sortie d'une couche de convolution ?",
-    "options": [
-      "Le résultat de l'application d'un filtre sur l'image, indiquant où le motif recherché a été détecté",
-      "La liste complète et exhaustive des labels possibles envisagés pour la tâche de classification actuellement en cours",
-      "Le schéma d'architecture décrivant l'enchaînement des couches du réseau",
-      "La valeur unique de la loss calculée après le passage dans la couche de convolution"
-    ],
-    "answer": 0,
-    "explain": "Une feature map est la sortie 2D obtenue en faisant glisser un filtre sur l'image : ses valeurs indiquent l'intensité de détection du motif appris par ce filtre à chaque position."
-  },
-  {
-    "id": 95,
-    "cat": "cnn",
-    "type": "qcm",
-    "q": "Que se passe-t-il si on empile plusieurs couches de convolution les unes après les autres dans un CNN ?",
-    "options": [
-      "Rien de particulier : la deuxième couche de convolution refait exactement le même calcul que la première",
-      "Le champ réceptif effectif augmente, ce qui permet aux couches profondes de détecter des motifs plus larges et plus abstraits",
-      "Le réseau perd automatiquement toute capacité à détecter des contours dans l'image",
-      "La taille de l'image d'entrée doit obligatoirement doubler à chaque nouvelle couche ajoutée"
-    ],
-    "answer": 1,
-    "explain": "En empilant les convolutions, chaque neurone d'une couche profonde « voit » indirectement une zone de plus en plus large de l'image d'origine (champ réceptif), ce qui permet de combiner des motifs simples en motifs plus complexes."
-  },
-  {
-    "id": 96,
-    "cat": "cnn",
-    "type": "qcm",
-    "q": "Pourquoi ajoute-t-on souvent une fonction d'activation (comme ReLU) après une couche de convolution ?",
-    "options": [
-      "Parce que la convolution seule modifie déjà, à elle seule, la taille spatiale de l'image produite, ce qu'il faudrait absolument corriger ensuite",
-      "Parce que sans cela, le calcul de la convolution serait numériquement impossible à effectuer",
-      "Parce que la convolution est une opération linéaire ; sans non-linéarité, empiler plusieurs couches n'apporterait aucune capacité supplémentaire",
-      "Parce que la loi impose l'usage de ReLU spécifiquement après chaque couche de convolution"
-    ],
-    "answer": 2,
-    "explain": "Comme une couche dense, une convolution reste une opération linéaire. Ajouter une activation non-linéaire après chaque convolution est nécessaire pour que l'empilement de couches permette d'apprendre des relations complexes."
-  },
-  {
-    "id": 97,
-    "cat": "cnn",
-    "type": "qcm",
-    "q": "Dans un CNN destiné à la classification d'images, à quoi sert généralement la ou les couches denses situées après les couches de convolution ?",
-    "options": [
-      "À appliquer un filtre supplémentaire pour détecter encore plus de contours dans l'image",
-      "À réduire la résolution spatiale de l'image avant même la première convolution",
-      "À remplacer entièrement la fonction de perte par une version adaptée aux images",
-      "À combiner les features extraites par les convolutions pour produire la prédiction finale (les probabilités de classe)"
-    ],
-    "answer": 3,
-    "explain": "Après extraction des features par les couches convolutives, on aplatit généralement le résultat pour le passer dans une ou plusieurs couches denses, qui combinent ces features pour produire la sortie finale du réseau."
-  },
-  {
-    "id": 98,
-    "cat": "cnn",
-    "type": "qcm",
-    "q": "Que se passe-t-il si on utilise un stride de 2 au lieu de 1 dans une couche de convolution ?",
-    "options": [
-      "Le filtre se déplace de 2 pixels à chaque étape au lieu d'un seul, ce qui produit une feature map de dimensions plus réduites",
-      "Le nombre de filtres utilisés par cette couche de convolution se trouve alors automatiquement doublé, indépendamment de la taille du kernel choisi",
-      "La couche de convolution devient équivalente à une couche de pooling classique",
-      "La taille du kernel utilisé passe automatiquement de 3×3 à 5×5"
-    ],
-    "answer": 0,
-    "explain": "Le stride définit le pas de déplacement du filtre sur l'image. Un stride de 2 fait « sauter » un pixel sur deux, ce qui produit une feature map environ deux fois plus petite dans chaque dimension qu'avec un stride de 1."
-  },
-  {
-    "id": 99,
-    "cat": "rnn",
-    "type": "qcm",
-    "q": "Quel est le principal inconvénient d'un RNN qui traite une séquence de façon strictement séquentielle, pas à pas ?",
-    "options": [
-      "Il ne peut techniquement jamais produire plus d'une seule sortie pour toute la séquence",
-      "Il est difficile à paralléliser dans le temps, car chaque pas dépend du résultat du pas précédent",
-      "Il ne peut être utilisé que sur des séquences de longueur strictement inférieure à dix",
-      "Il ne peut, quoi qu'il arrive, jamais être combiné avec une fonction de perte de type cross-entropy pendant l'entraînement"
-    ],
-    "answer": 1,
-    "explain": "Comme h(t) dépend de h(t-1), les pas de temps doivent être calculés dans l'ordre : contrairement à un CNN ou à une couche dense, on ne peut pas facilement paralléliser les calculs le long de la séquence."
-  },
-  {
-    "id": 100,
-    "cat": "rnn",
-    "type": "qcm",
-    "q": "En quoi une porte (« gate ») d'un LSTM diffère-t-elle d'une simple connexion classique entre deux neurones ?",
-    "options": [
-      "Une porte ne contient jamais de poids appris, contrairement à une connexion classique",
-      "Une porte ne peut être utilisée que pendant l'inférence, jamais pendant l'entraînement",
-      "Une porte produit une valeur entre 0 et 1 qui contrôle la quantité d'information laissée passer, plutôt que de simplement la transmettre",
-      "Une porte remplace entièrement la fonction de perte utilisée par le reste du réseau"
-    ],
-    "answer": 2,
-    "explain": "Une gate (souvent basée sur une sigmoïde) produit une valeur entre 0 et 1 qui agit comme un robinet : elle module la quantité d'information (mémoire, entrée...) qui est effectivement conservée ou transmise, au lieu de la laisser simplement passer telle quelle."
-  },
-  {
-    "id": 101,
-    "cat": "rnn",
-    "type": "qcm",
-    "q": "Pour une tâche de traduction automatique (séquence vers séquence), quelle architecture de RNN est la plus adaptée ?",
-    "options": [
-      "Une architecture qui produit systématiquement une seule sortie, dès qu'elle a lu un unique mot de la phrase d'entrée fournie",
-      "Une architecture qui ignore complètement l'ordre des mots dans la phrase source",
-      "Une architecture qui n'utilise aucun état caché, uniquement les entrées brutes",
-      "Une architecture encodeur-décodeur, qui résume d'abord toute la séquence source avant de générer la séquence cible"
-    ],
-    "answer": 3,
-    "explain": "Les architectures encodeur-décodeur lisent d'abord toute la phrase source pour en construire une représentation (l'état caché final de l'encodeur), puis le décodeur génère la phrase cible mot par mot à partir de cette représentation."
-  },
-  {
-    "id": 102,
-    "cat": "rnn",
-    "type": "qcm",
-    "q": "Que signifie le fait que les poids d'un RNN sont « partagés dans le temps » ?",
-    "options": [
-      "Les mêmes matrices de poids sont réutilisées identiquement à chaque pas de temps de la séquence",
-      "Chaque pas de temps de la séquence utilise un jeu de poids totalement différent et indépendant",
-      "Les poids changent aléatoirement d'une séquence à l'autre pendant l'entraînement",
-      "Les poids sont partagés uniquement entre le premier et le dernier pas de la séquence"
-    ],
-    "answer": 0,
-    "explain": "Contrairement à un réseau classique où chaque couche a ses propres poids, un RNN applique la même transformation (les mêmes poids) à chaque pas de temps, ce qui lui permet de traiter des séquences de longueur variable."
-  },
-  {
-    "id": 103,
-    "cat": "rnn",
-    "type": "qcm",
-    "q": "Pourquoi le « gradient clipping » est-il souvent utilisé lors de l'entraînement des RNN ?",
-    "options": [
-      "Pour supprimer définitivement certains pas de temps jugés inutiles dans la séquence",
-      "Pour limiter la norme du gradient et éviter qu'il n'explose lors de la rétropropagation sur de longues séquences",
-      "Pour remplacer automatiquement le learning rate par une valeur fixe pendant tout l'entraînement",
-      "Pour forcer le réseau à ignorer complètement les premiers pas de temps de chaque séquence"
-    ],
-    "answer": 1,
-    "explain": "Le gradient clipping consiste à plafonner (« clipper ») la norme du gradient avant la mise à jour des poids, ce qui évite les explosions de gradient parfois observées sur de longues séquences dans les RNN."
-  },
-  {
-    "id": 104,
-    "cat": "bases",
-    "type": "open",
-    "q": "Comment appelle-t-on un réseau de neurones composé d'une seule couche de neurones, sans couche cachée, historiquement le premier modèle de ce type ?",
-    "accept": [
-      "perceptron"
-    ],
-    "explain": "Le perceptron, introduit par Frank Rosenblatt en 1958, est le modèle historique le plus simple : une seule couche de neurones, sans couche cachée, capable de séparer linéairement deux classes."
-  },
-  {
-    "id": 105,
-    "cat": "bases",
-    "type": "open",
-    "q": "Comment appelle-t-on, de façon générale, un paramètre de configuration du réseau (comme le learning rate ou le nombre de couches) qui n'est pas appris automatiquement par l'entraînement mais choisi avant celui-ci ?",
-    "accept": [
-      "hyperparametre",
-      "hyperparametres",
-      "hyper parametre"
-    ],
-    "explain": "Un hyperparamètre (learning rate, nombre de couches, taille du batch...) est fixé avant l'entraînement, contrairement aux poids et biais qui sont appris automatiquement par le réseau."
-  },
-  {
-    "id": 106,
-    "cat": "forward",
-    "type": "open",
-    "q": "Comment appelle-t-on le fait de faire passer plusieurs exemples simultanément à travers le réseau en une seule fois, sous forme de matrice, plutôt qu'un par un ?",
-    "accept": [
-      "batch",
-      "traitement par batch"
-    ],
-    "explain": "Regrouper plusieurs exemples dans un batch permet de calculer le forward pass (et le gradient) sur tous ces exemples en une seule fois, via des opérations matricielles bien plus efficaces qu'un traitement exemple par exemple."
-  },
-  {
-    "id": 107,
-    "cat": "forward",
-    "type": "open",
-    "q": "Quel terme désigne l'étape où l'on utilise un réseau déjà entraîné pour produire une prédiction sur une nouvelle donnée, sans mise à jour des poids ?",
-    "accept": [
-      "inference",
-      "l inference"
-    ],
-    "explain": "L'inférence consiste à faire un simple forward pass avec des poids déjà appris, sans rétropropagation ni mise à jour, pour obtenir une prédiction sur une donnée jamais vue."
-  },
-  {
-    "id": 108,
-    "cat": "forward",
-    "type": "open",
-    "q": "Comment appelle-t-on l'opération mathématique de base effectuée entre le vecteur des entrées et le vecteur des poids pour obtenir la pré-activation z (avant d'ajouter le biais) ?",
-    "accept": [
-      "produit scalaire",
-      "somme ponderee",
-      "produit matriciel"
-    ],
-    "explain": "z est obtenu en calculant le produit scalaire entre le vecteur des entrées et le vecteur des poids (Σ w·x), auquel on ajoute ensuite le biais b."
-  },
-  {
-    "id": 109,
-    "cat": "forward",
-    "type": "open",
-    "q": "Dans un réseau à plusieurs couches, comment appelle-t-on la toute dernière couche, celle qui produit directement la prédiction finale ŷ ?",
-    "accept": [
-      "couche de sortie",
-      "output layer"
-    ],
-    "explain": "La couche de sortie (output layer) est la dernière couche du réseau : ses neurones produisent directement la prédiction finale ŷ, après le dernier forward pass à travers le réseau."
-  },
-  {
-    "id": 110,
-    "cat": "loss",
-    "type": "open",
-    "q": "Comment appelle-t-on la fonction de perte adaptée à la classification binaire, souvent utilisée avec une sortie sigmoïde, parfois appelée « log loss » ?",
-    "accept": [
-      "binary cross entropy",
-      "cross entropy binaire",
-      "log loss",
-      "entropie croisee binaire"
-    ],
-    "explain": "La binary cross-entropy (ou log loss) mesure l'écart entre une probabilité prédite et un label binaire (0 ou 1) ; elle est la loss naturelle associée à une sortie sigmoïde pour une classification à deux classes."
-  },
-  {
-    "id": 111,
-    "cat": "loss",
-    "type": "open",
-    "q": "Comment appelle-t-on la surface, formée par les valeurs de la loss en fonction des différents poids du réseau, sur laquelle se déplace la descente de gradient ?",
-    "accept": [
-      "paysage de la loss",
-      "loss landscape",
-      "surface de la loss",
-      "paysage de loss"
-    ],
-    "explain": "Le « loss landscape » (ou paysage de la loss) désigne la surface formée par la valeur de la loss pour toutes les combinaisons possibles de poids ; l'entraînement consiste à s'y déplacer vers un minimum en suivant le gradient."
-  },
-  {
-    "id": 112,
-    "cat": "optim",
-    "type": "open",
-    "q": "Comment appelle-t-on la technique consistant à s'arrêter d'entraîner un réseau dès que la loss de validation cesse de s'améliorer, afin d'éviter le surapprentissage ?",
-    "accept": [
-      "early stopping",
-      "arret precoce"
-    ],
-    "explain": "L'early stopping surveille la loss de validation et interrompt l'entraînement dès qu'elle cesse de progresser, ce qui évite de continuer à surapprendre le train set."
-  },
-  {
-    "id": 113,
-    "cat": "optim",
-    "type": "open",
-    "q": "Comment appelle-t-on la technique consistant à artificiellement augmenter la taille et la diversité du dataset d'entraînement, par exemple en appliquant des rotations ou des recadrages aléatoires à des images ?",
-    "accept": [
-      "augmentation de donnees",
-      "data augmentation"
-    ],
-    "explain": "La data augmentation génère de nouvelles variantes des exemples d'entraînement (rotation, recadrage, bruit...) afin d'améliorer la capacité de généralisation du réseau sans avoir besoin de collecter plus de données."
-  },
-  {
-    "id": 114,
-    "cat": "optim",
-    "type": "open",
-    "q": "Quel est le nom de l'optimiseur le plus basique, qui met simplement à jour chaque poids proportionnellement à l'opposé de son gradient, sans mémoire des itérations précédentes ni adaptation individuelle du learning rate ?",
-    "accept": [
-      "sgd",
-      "descente de gradient stochastique",
-      "gradient descent"
-    ],
-    "explain": "Le SGD (Stochastic Gradient Descent) de base applique directement w ← w − lr·∂L/∂w à chaque itération, sans moyenne mobile du gradient ni ajustement du learning rate par paramètre, contrairement à des optimiseurs comme Adam."
-  },
-  {
-    "id": 115,
-    "cat": "optim",
-    "type": "open",
-    "q": "Comment appelle-t-on le compromis fondamental entre la capacité d'un modèle à bien s'ajuster à ses données d'entraînement et sa capacité à généraliser sur de nouvelles données ?",
-    "accept": [
-      "biais variance",
-      "compromis biais variance",
-      "bias variance"
-    ],
-    "explain": "Le compromis biais-variance oppose le sous-apprentissage (modèle trop simple, biais élevé) au surapprentissage (modèle trop complexe, variance élevée) : l'objectif est de trouver un juste milieu."
-  },
-  {
-    "id": 116,
-    "cat": "cnn",
-    "type": "open",
-    "q": "Comment appelle-t-on l'opération qui consiste à transformer la sortie multidimensionnelle des dernières couches de convolution/pooling en un unique vecteur, avant de la transmettre à une couche dense ?",
-    "accept": [
-      "flatten",
-      "aplatissement",
-      "mise a plat"
-    ],
-    "explain": "Le flatten (aplatissement) transforme une feature map multidimensionnelle en un vecteur 1D, ce qui permet de la connecter à une ou plusieurs couches denses classiques en fin de réseau."
-  },
-  {
-    "id": 117,
-    "cat": "cnn",
-    "type": "open",
-    "q": "Comment appelle-t-on la zone de l'image d'entrée dont dépend, directement ou indirectement, la valeur d'un neurone donné d'une couche profonde d'un CNN ?",
-    "accept": [
-      "champ receptif",
-      "receptive field"
-    ],
-    "explain": "Le champ réceptif d'un neurone désigne la portion de l'image d'entrée qui influence sa valeur ; il grandit à mesure qu'on empile des couches de convolution."
-  },
-  {
-    "id": 118,
-    "cat": "cnn",
-    "type": "open",
-    "q": "Comment appelle-t-on la pratique consistant à repartir d'un CNN déjà entraîné sur un grand dataset (comme ImageNet), puis à l'adapter à une nouvelle tâche avec peu de données ?",
-    "accept": [
-      "transfer learning",
-      "apprentissage par transfert"
-    ],
-    "explain": "Le transfer learning consiste à repartir d'un réseau déjà entraîné sur une grande tâche générale, puis à l'adapter (fine-tuning) à une nouvelle tâche plus spécifique, souvent avec beaucoup moins de données."
-  },
-  {
-    "id": 119,
-    "cat": "cnn",
-    "type": "open",
-    "q": "Comment appelle-t-on l'architecture de CNN historique (1998) conçue par Yann LeCun pour la reconnaissance de chiffres manuscrits, souvent citée comme l'une des toutes premières architectures modernes de ce type ?",
-    "accept": [
-      "lenet",
-      "lenet 5"
-    ],
-    "explain": "LeNet-5, proposée par Yann LeCun en 1998, est l'une des toutes premières architectures de CNN modernes, initialement conçue pour reconnaître des chiffres manuscrits."
-  },
-  {
-    "id": 120,
-    "cat": "cnn",
-    "type": "open",
-    "q": "Comment appelle-t-on la technique qui consiste à normaliser les activations d'une couche (moyenne et variance) au sein de chaque mini-batch, afin de stabiliser et accélérer l'entraînement des réseaux profonds ?",
-    "accept": [
-      "batch normalization",
-      "normalisation par batch",
-      "batchnorm"
-    ],
-    "explain": "La batch normalization normalise les activations d'une couche à l'intérieur de chaque mini-batch, ce qui stabilise et accélère souvent l'entraînement des réseaux profonds, CNN inclus."
-  },
-  {
-    "id": 121,
-    "cat": "rnn",
-    "type": "open",
-    "q": "Comment appelle-t-on le mécanisme, initialement conçu pour améliorer les RNN en traduction automatique, qui permet au décodeur de pondérer différemment chaque mot de la séquence source à chaque étape de génération ?",
-    "accept": [
-      "attention",
-      "mecanisme d attention"
-    ],
-    "explain": "Le mécanisme d'attention permet au décodeur de porter un poids différent à chaque position de la séquence source à chaque pas de génération, plutôt que de s'appuyer sur un unique vecteur résumé fixe."
-  },
-  {
-    "id": 122,
-    "cat": "rnn",
-    "type": "open",
-    "q": "Comment appelle-t-on l'architecture qui empile plusieurs couches de RNN les unes sur les autres, la sortie de chaque couche à chaque pas de temps servant d'entrée à la couche suivante ?",
-    "accept": [
-      "rnn empile",
-      "rnn empiles",
-      "stacked rnn",
-      "rnn multicouche",
-      "rnn multicouches"
-    ],
-    "explain": "Un RNN empilé (« stacked RNN ») superpose plusieurs couches récurrentes : la sortie de chaque couche, à chaque pas de temps, sert d'entrée à la couche récurrente suivante, ce qui permet d'apprendre des représentations plus riches."
-  },
-  {
-    "id": 123,
-    "cat": "rnn",
-    "type": "open",
-    "q": "Comment appelle-t-on la porte d'un LSTM qui décide quelle proportion de la mémoire précédente (cell state) doit être conservée ou effacée à chaque pas de temps ?",
-    "accept": [
-      "porte d oubli",
-      "forget gate"
-    ],
-    "explain": "La forget gate (porte d'oubli) d'un LSTM produit, à chaque pas de temps, une valeur entre 0 et 1 qui détermine quelle proportion de la mémoire précédente (cell state) est conservée ou oubliée."
-  },
-  {
-    "id": 124,
-    "cat": "rnn",
-    "type": "open",
-    "q": "Dans un LSTM, comment appelle-t-on la ligne de mémoire à long terme qui traverse toute la séquence et que les différentes portes modifient à chaque pas de temps, distincte de l'état caché h(t) ?",
-    "accept": [
-      "cell state",
-      "etat de cellule",
-      "etat cellulaire"
-    ],
-    "explain": "Le cell state (état de cellule) est la mémoire à long terme d'un LSTM : les portes d'oubli et d'entrée y ajoutent ou y suppriment de l'information à chaque pas de temps, indépendamment de l'état caché h(t) qui sert de sortie."
-  },
-  {
-    "id": 125,
-    "cat": "rnn",
-    "type": "open",
-    "q": "Comment appelle-t-on la technique consistant à traiter une séquence à la fois dans le sens chronologique et dans le sens inverse, avant de combiner les deux représentations obtenues ?",
-    "accept": [
-      "rnn bidirectionnel",
-      "bidirectionnel",
-      "bilstm",
-      "bi rnn"
-    ],
-    "explain": "Un RNN bidirectionnel combine deux RNN distincts : l'un lit la séquence de gauche à droite, l'autre de droite à gauche, ce qui permet à chaque pas de temps de disposer à la fois du contexte passé et futur."
-  },
-  {
-    "id": 126,
-    "cat": "rnn",
-    "type": "open",
-    "q": "Comment appelle-t-on l'architecture de réseau, aujourd'hui dominante en traitement du langage, qui a largement remplacé les RNN pour de nombreuses tâches en s'appuyant uniquement sur des mécanismes d'attention, sans aucune récurrence ?",
-    "accept": [
-      "transformer",
-      "transformers"
-    ],
-    "explain": "Les Transformers traitent toute la séquence en parallèle grâce à des mécanismes d'attention, sans aucune récurrence pas à pas, ce qui les rend beaucoup plus parallélisables que les RNN classiques et les a rendus dominants en NLP."
-  }
-];
+        {
+          id: 1,
+          cat: "bases",
+          type: "qcm",
+          q: "Dans un neurone artificiel, que représente « z » ?",
+          options: [
+            "La pré-activation z, c'est-à-dire la somme pondérée des entrées additionnée du biais, avant application de la fonction d'activation",
+            "La sortie finale du neurone, c'est-à-dire la valeur obtenue une fois que la fonction d'activation a été appliquée à la pré-activation z",
+            "Le taux d'apprentissage utilisé par l'optimiseur pour ajuster les poids à chaque itération",
+            "L'erreur totale mesurée entre la sortie du réseau et la valeur attendue sur l'ensemble du batch",
+          ],
+          answer: 0,
+          explain:
+            "z = Σ(w·x) + b, la valeur calculée avant de passer dans la fonction d'activation f. La sortie après activation est notée a = f(z).",
+        },
+        {
+          id: 2,
+          cat: "bases",
+          type: "tf",
+          q: "Le biais (b) permet à un neurone de décaler sa sortie, même quand toutes les entrées valent 0.",
+          answer: true,
+          explain:
+            "Sans biais, z serait toujours nul quand x = 0. Le biais donne au neurone un degré de liberté supplémentaire, indépendant des entrées.",
+        },
+        {
+          id: 3,
+          cat: "bases",
+          type: "open",
+          q: "Quel est le nom de la fonction d'activation définie par f(z) = max(0, z) ?",
+          accept: ["relu"],
+          explain:
+            "ReLU (Rectified Linear Unit) laisse passer les valeurs positives telles quelles et écrase les valeurs négatives à 0.",
+        },
+        {
+          id: 16,
+          cat: "bases",
+          type: "open",
+          q: "Quelle fonction d'activation, souvent utilisée en sortie pour une classification binaire, écrase les valeurs entre 0 et 1 ?",
+          accept: ["sigmoid", "sigmoide", "fonction sigmoide"],
+          explain:
+            "La sigmoïde σ(z) = 1/(1+e⁻ᶻ) transforme n'importe quelle valeur réelle en une probabilité entre 0 et 1.",
+        },
+        {
+          id: 4,
+          cat: "forward",
+          type: "qcm",
+          q: "Que fait le « forward pass » dans un réseau de neurones ?",
+          options: [
+            "Il ajuste chaque poids du réseau dans la direction opposée au gradient de la loss",
+            "Il propage les entrées à travers le réseau, couche après couche, jusqu'à produire une sortie",
+            "Il calcule la dérivée de la fonction de perte par rapport à chaque poids du réseau",
+            "Il tire aléatoirement les valeurs initiales de tous les poids du réseau, une seule fois, avant même que le tout premier entraînement ne commence",
+          ],
+          answer: 1,
+          explain:
+            "Le forward pass fait circuler les données de la couche d'entrée vers la couche de sortie, en calculant z puis a à chaque neurone.",
+        },
+        {
+          id: 17,
+          cat: "forward",
+          type: "qcm",
+          q: "Dans ce simulateur, que représente « ŷ » ?",
+          options: [
+            "Le vrai label associé à l'exemple, tel qu'il est fourni dans le jeu de données d'entraînement",
+            "Le gradient de la loss calculé par rapport aux poids de la dernière couche du réseau",
+            "La prédiction produite par le réseau à l'issue du forward pass, notée ŷ (« y chapeau »)",
+            "Le biais appliqué uniquement au tout dernier neurone de la couche de sortie",
+          ],
+          answer: 2,
+          explain:
+            "ŷ (« y chapeau ») désigne la sortie prédite par le réseau, à comparer avec la cible réelle y pour calculer la loss.",
+        },
+        {
+          id: 5,
+          cat: "loss",
+          type: "open",
+          q: "Comment appelle-t-on la fonction qui mesure l'écart entre la prédiction ŷ et la vraie valeur y ?",
+          accept: [
+            "fonction de perte",
+            "fonction de cout",
+            "fonction de coût",
+            "loss",
+            "loss function",
+          ],
+          explain:
+            "La fonction de perte (loss, notée L) quantifie l'erreur du réseau. C'est elle que l'entraînement cherche à minimiser.",
+        },
+        {
+          id: 6,
+          cat: "loss",
+          type: "qcm",
+          q: "Pour un problème de classification multi-classes, quelle fonction de perte est la plus adaptée ?",
+          options: [
+            "La MSE (erreur quadratique moyenne), qui mesure l'écart au carré entre chaque prédiction et sa cible",
+            "La MAE (erreur absolue moyenne), qui mesure la valeur absolue de l'écart entre prédiction et cible",
+            "Aucune fonction de perte n'est nécessaire, la classification se fait uniquement par comparaison directe des labels",
+            "La cross-entropy, qui compare la distribution de probabilité prédite à la distribution réelle (one-hot)",
+          ],
+          answer: 3,
+          explain:
+            "La cross-entropy compare la distribution de probabilité prédite à la distribution réelle (one-hot), ce qui la rend idéale pour la classification.",
+        },
+        {
+          id: 7,
+          cat: "loss",
+          type: "tf",
+          q: "La rétropropagation (backprop) utilise la règle de dérivation en chaîne pour calculer la contribution de chaque poids à l'erreur.",
+          answer: true,
+          explain:
+            "∂L/∂w = ∂L/∂a · ∂a/∂z · ∂z/∂w : la chain rule permet de propager l'erreur depuis la sortie jusqu'à chaque poids, couche par couche.",
+        },
+        {
+          id: 8,
+          cat: "loss",
+          type: "open",
+          q: "Quel symbole grec (utilisé dans ce simulateur) représente l'erreur locale d'un neurone pendant la rétropropagation ?",
+          accept: ["delta", "δ"],
+          explain:
+            "δ (delta) représente l'erreur locale d'un neurone, utilisée pour calculer les gradients ∂L/∂w des connexions entrantes.",
+        },
+        {
+          id: 9,
+          cat: "optim",
+          type: "qcm",
+          q: "Que se passe-t-il si le learning rate (lr) est beaucoup trop élevé ?",
+          options: [
+            "La loss peut se mettre à osciller fortement, voire diverger, au lieu de converger vers un minimum",
+            "L'apprentissage devient simplement beaucoup plus lent qu'avec un learning rate bien réglé",
+            "Le réseau cesse totalement de prendre en compte le gradient calculé à chaque itération",
+            "Rien de particulier ne se produit, le learning rate n'influence que la vitesse d'affichage des courbes",
+          ],
+          answer: 0,
+          explain:
+            "Un lr trop grand fait « sauter » les poids par-dessus le minimum de la loss, ce qui peut faire diverger l'entraînement au lieu de le faire converger.",
+        },
+        {
+          id: 10,
+          cat: "optim",
+          type: "open",
+          q: "Quel optimiseur très populaire combine la moyenne mobile du gradient (momentum) et celle de son carré (variance) ?",
+          accept: ["adam"],
+          explain:
+            "Adam (Adaptive Moment Estimation) combine deux moments — β1 pour le momentum, β2 pour la variance — afin d'adapter le pas d'apprentissage à chaque poids.",
+        },
+        {
+          id: 11,
+          cat: "optim",
+          type: "tf",
+          q: "La régularisation L2 pénalise les poids de grande valeur pour limiter le surapprentissage (overfitting).",
+          answer: true,
+          explain:
+            "L2 ajoute λ·Σw² à la loss, ce qui pousse les poids vers des valeurs plus petites et rend le réseau moins sensible au bruit du dataset d'entraînement.",
+        },
+        {
+          id: 18,
+          cat: "optim",
+          type: "open",
+          q: "Comment appelle-t-on une passe complète sur l'intégralité du dataset d'entraînement ?",
+          accept: ["epoch", "une epoque", "epoque"],
+          explain:
+            "Une epoch correspond à un passage complet (forward + backward) sur tous les exemples du dataset, une seule fois.",
+        },
+        {
+          id: 12,
+          cat: "cnn",
+          type: "qcm",
+          q: "À quoi sert principalement une couche de convolution dans un CNN ?",
+          options: [
+            "Réduire aléatoirement la taille spatiale de l'image en supprimant certains pixels jugés peu informatifs, un peu comme le ferait une couche de pooling",
+            "Détecter des motifs locaux comme des contours ou des textures, grâce à un noyau (kernel) qui glisse sur l'image",
+            "Normaliser l'intensité de tous les pixels de l'image entre 0 et 1 avant tout traitement",
+            "Mémoriser l'ordre temporel des données, comme le ferait la cellule récurrente d'un RNN",
+          ],
+          answer: 1,
+          explain:
+            "Un noyau (kernel) glisse sur l'image et calcule un produit de convolution local, ce qui permet de détecter des motifs comme des contours ou des textures.",
+        },
+        {
+          id: 13,
+          cat: "cnn",
+          type: "open",
+          q: "Comment appelle-t-on la petite matrice de poids qui glisse sur l'image lors d'une convolution ?",
+          accept: ["noyau", "kernel", "filtre"],
+          explain:
+            "Ce noyau (ou kernel/filtre) est une petite matrice de poids appris, qui glisse sur l'image pour produire une carte de caractéristiques (feature map).",
+        },
+        {
+          id: 14,
+          cat: "rnn",
+          type: "qcm",
+          q: "Pourquoi utilise-t-on un RNN plutôt qu'un réseau classique pour du texte ou des séries temporelles ?",
+          options: [
+            "Il est systématiquement plus rapide à entraîner qu'un réseau à couches denses classique",
+            "Il n'a besoin d'aucune fonction de perte spécifique, l'erreur étant, selon cette proposition, calculée directement sur la valeur des poids",
+            "Il possède une mémoire interne, l'état caché, qui persiste et se met à jour d'un pas de temps à l'autre",
+            "Il ne peut traiter qu'une seule entrée isolée à la fois, sans aucune notion de séquence",
+          ],
+          answer: 2,
+          explain:
+            "Un RNN conserve un état caché qui se met à jour à chaque pas de temps, ce qui lui permet de tenir compte du contexte précédent dans une séquence.",
+        },
+        {
+          id: 15,
+          cat: "rnn",
+          type: "tf",
+          q: "Le LSTM a été conçu notamment pour atténuer le problème de disparition du gradient (vanishing gradient) sur de longues séquences.",
+          answer: true,
+          explain:
+            "Grâce à sa cellule mémoire C(t) et ses portes (oublie, entrée, sortie), le LSTM laisse le gradient circuler sur de longues séquences sans s'annuler.",
+        },
+        {
+          id: 19,
+          cat: "bases",
+          type: "qcm",
+          q: "Quel est le rôle d'une fonction d'activation dans un neurone ?",
+          options: [
+            "Normaliser systématiquement toutes les données d'entrée du réseau afin qu'elles restent toujours comprises strictement entre -1 et 1",
+            "Réduire le nombre total de paramètres appris par le réseau au cours de l'entraînement",
+            "Accélérer mécaniquement le calcul du forward pass en simplifiant les opérations matricielles",
+            "Introduire de la non-linéarité, ce qui permet au réseau d'apprendre des relations complexes entre les données",
+          ],
+          answer: 3,
+          explain:
+            "Sans fonction d'activation non-linéaire, un réseau multi-couches se réduirait à une simple transformation linéaire, quel que soit le nombre de couches.",
+        },
+        {
+          id: 20,
+          cat: "bases",
+          type: "tf",
+          q: "Une couche « dense » (ou « fully connected ») relie chaque neurone d'entrée à chaque neurone de sortie.",
+          answer: true,
+          explain:
+            "Dans une couche dense, chaque neurone reçoit toutes les sorties de la couche précédente, d'où le nom « fully connected ».",
+        },
+        {
+          id: 21,
+          cat: "bases",
+          type: "open",
+          q: "Comment appelle-t-on la fonction d'activation qui transforme un vecteur de scores en une distribution de probabilités sommant à 1, souvent utilisée en sortie pour la classification multi-classes ?",
+          accept: ["softmax"],
+          explain:
+            "Softmax exponentie chaque score puis normalise par la somme, produisant des probabilités qui somment à 1.",
+        },
+        {
+          id: 22,
+          cat: "bases",
+          type: "qcm",
+          q: "Que représente la couche d'entrée (input layer) d'un réseau de neurones ?",
+          options: [
+            "Les features brutes fournies au réseau, généralement une valeur par neurone d'entrée",
+            "Les prédictions finales produites par le modèle, une fois que toutes les couches du réseau ont été traversées jusqu'à la sortie",
+            "Les poids appris et ajustés tout au long de l'entraînement du réseau",
+            "La fonction de perte utilisée pour évaluer la qualité des prédictions du modèle",
+          ],
+          answer: 0,
+          explain:
+            "La couche d'entrée ne fait aucun calcul : elle représente simplement les valeurs des features fournies au réseau.",
+        },
+        {
+          id: 23,
+          cat: "bases",
+          type: "tf",
+          q: "Plus un réseau a de couches cachées, plus il est automatiquement performant, sans risque de surapprentissage.",
+          answer: false,
+          explain:
+            "Ajouter des couches augmente la capacité du modèle mais aussi le risque de surapprentissage (overfitting), surtout avec peu de données.",
+        },
+        {
+          id: 24,
+          cat: "bases",
+          type: "open",
+          q: "Quel terme désigne l'ensemble des poids et biais que le réseau ajuste pendant l'entraînement ?",
+          accept: ["parametres", "paramètres", "poids et biais"],
+          explain:
+            "Les paramètres (poids w et biais b) sont les valeurs apprises par le réseau via la descente de gradient.",
+        },
+        {
+          id: 25,
+          cat: "forward",
+          type: "qcm",
+          q: "Dans quel ordre les calculs se déroulent-ils lors du forward pass ?",
+          options: [
+            "Couche de sortie, puis couches cachées, puis couche d'entrée, dans cet ordre précis",
+            "Couche d'entrée, puis couches cachées, puis couche de sortie, dans cet ordre précis",
+            "Toutes les couches sont calculées simultanément, en parallèle, sans ordre particulier",
+            "Le gradient de la loss est d'abord calculé, puis la sortie du réseau est produite",
+          ],
+          answer: 1,
+          explain:
+            "Le forward pass propage l'information dans le sens direct : entrée → couches cachées → sortie.",
+        },
+        {
+          id: 26,
+          cat: "forward",
+          type: "tf",
+          q: "Lors du forward pass, chaque neurone calcule d'abord sa pré-activation z, puis applique une fonction d'activation pour obtenir a.",
+          answer: true,
+          explain:
+            "z = Σ(w·x) + b puis a = f(z) : c'est la séquence de calcul de chaque neurone.",
+        },
+        {
+          id: 27,
+          cat: "forward",
+          type: "open",
+          q: "Quel terme désigne la sortie d'un neurone après application de la fonction d'activation (notée généralement « a ») ?",
+          accept: ["activation", "sortie activee", "sortie activée"],
+          explain:
+            "a = f(z) est appelée l'activation du neurone, par opposition à z qui est la pré-activation.",
+        },
+        {
+          id: 28,
+          cat: "forward",
+          type: "qcm",
+          q: "Que se passe-t-il si on utilise une fonction d'activation linéaire à toutes les couches d'un réseau profond ?",
+          options: [
+            "Le réseau devient alors capable, en théorie, d'apprendre des fonctions arbitrairement complexes, quelle que soit sa profondeur ou son nombre de couches",
+            "Le calcul du forward pass devient tout simplement impossible à effectuer numériquement",
+            "Le réseau tout entier équivaut mathématiquement à une seule couche linéaire, quel que soit son nombre de couches",
+            "Rien ne change par rapport à un réseau utilisant ReLU comme fonction d'activation",
+          ],
+          answer: 2,
+          explain:
+            "La composition de fonctions linéaires reste linéaire : empiler des couches linéaires n'apporte donc aucune capacité supplémentaire par rapport à une seule couche.",
+        },
+        {
+          id: 29,
+          cat: "forward",
+          type: "tf",
+          q: "Le forward pass est utilisé aussi bien pendant l'entraînement que pendant l'inférence (prédiction sur de nouvelles données).",
+          answer: true,
+          explain:
+            "Que ce soit pour entraîner le modèle ou pour l'utiliser en production, le calcul de la sortie passe toujours par un forward pass.",
+        },
+        {
+          id: 30,
+          cat: "forward",
+          type: "open",
+          q: "Quel terme désigne l'étape où l'on compare la sortie prédite ŷ à la cible réelle y afin de mesurer l'erreur du réseau, juste après le forward pass ?",
+          accept: [
+            "calcul de la loss",
+            "calcul de la perte",
+            "evaluation de la loss",
+          ],
+          explain:
+            "Après le forward pass, on calcule la loss L(ŷ, y), qui quantifie l'écart entre la prédiction et la vraie valeur.",
+        },
+        {
+          id: 31,
+          cat: "loss",
+          type: "qcm",
+          q: "Quelle est la formule de la MSE (erreur quadratique moyenne) pour une seule prédiction ?",
+          options: [
+            "(y − ŷ) / n — la différence entre la cible et la prédiction, divisée par le nombre d'exemples",
+            "−Σ y·log(ŷ) — la formule utilisée pour la cross-entropy, pas pour la MSE",
+            "|y − ŷ| — la valeur absolue de l'écart, utilisée plutôt pour la MAE",
+            "(y − ŷ)² — le carré de l'écart entre la cible y et la prédiction ŷ",
+          ],
+          answer: 3,
+          explain:
+            "La MSE pour un exemple est (y−ŷ)², qu'on moyenne ensuite sur tous les exemples du batch.",
+        },
+        {
+          id: 32,
+          cat: "loss",
+          type: "tf",
+          q: "Le but de l'entraînement est de maximiser la fonction de perte (loss).",
+          answer: false,
+          explain:
+            "On cherche au contraire à minimiser la loss : plus elle est faible, plus les prédictions du réseau sont proches des vraies valeurs.",
+        },
+        {
+          id: 33,
+          cat: "loss",
+          type: "open",
+          q: "Quel algorithme permet de calculer efficacement le gradient de la loss par rapport à tous les poids d'un réseau, couche par couche en partant de la sortie ?",
+          accept: [
+            "backpropagation",
+            "retropropagation",
+            "rétropropagation",
+            "backprop",
+          ],
+          explain:
+            "La rétropropagation applique la règle de dérivation en chaîne en partant de la sortie et en remontant vers l'entrée, couche par couche.",
+        },
+        {
+          id: 34,
+          cat: "loss",
+          type: "qcm",
+          q: "Que signifie le terme « gradient » dans le contexte de l'entraînement d'un réseau ?",
+          options: [
+            "Le vecteur regroupant les dérivées partielles de la loss par rapport à chacun des paramètres du réseau",
+            "La vitesse à laquelle le forward pass est effectivement calculé sur le matériel (CPU ou GPU) utilisé pour l'entraînement du réseau",
+            "Le nombre total de couches, cachées et de sortie comprises, que compte le réseau",
+            "La taille du batch, c'est-à-dire le nombre d'exemples utilisés à chaque mise à jour des poids",
+          ],
+          answer: 0,
+          explain:
+            "Le gradient ∇L indique dans quelle direction et de combien il faut ajuster chaque paramètre pour réduire la loss.",
+        },
+        {
+          id: 35,
+          cat: "loss",
+          type: "tf",
+          q: "Le problème de « vanishing gradient » (gradient qui s'annule) survient plus fréquemment dans les réseaux très profonds avec certaines fonctions d'activation comme la sigmoïde.",
+          answer: true,
+          explain:
+            "En multipliant de nombreuses dérivées inférieures à 1 (comme celle de la sigmoïde) à travers les couches, le gradient devient de plus en plus petit et finit par s'annuler.",
+        },
+        {
+          id: 36,
+          cat: "loss",
+          type: "open",
+          q: "Comment appelle-t-on la technique qui consiste à parcourir le réseau une seconde fois, de la sortie vers l'entrée, pour calculer les gradients après le forward pass ?",
+          accept: ["backward pass", "passe arriere", "passe arrière"],
+          explain:
+            "Le backward pass (ou passe arrière) calcule les gradients ∂L/∂w en propageant l'erreur de la sortie vers l'entrée, à l'inverse du forward pass.",
+        },
+        {
+          id: 37,
+          cat: "optim",
+          type: "qcm",
+          q: "Que fait la descente de gradient (gradient descent) à chaque itération ?",
+          options: [
+            "Elle modifie chaque poids du réseau de façon totalement aléatoire, sans jamais tenir compte du gradient calculé à l'itération précédente",
+            "Elle met à jour chaque poids dans la direction opposée à son gradient, avec un pas proportionnel au learning rate",
+            "Elle supprime définitivement les neurones jugés inutiles à la performance du réseau",
+            "Elle recalcule entièrement l'architecture du réseau à chaque itération d'entraînement",
+          ],
+          answer: 1,
+          explain:
+            "w ← w − lr·∂L/∂w : le poids est déplacé dans la direction qui réduit la loss, avec un pas proportionnel au learning rate.",
+        },
+        {
+          id: 38,
+          cat: "optim",
+          type: "tf",
+          q: "Le « batch size » désigne le nombre d'exemples utilisés pour calculer un gradient avant de mettre à jour les poids.",
+          answer: true,
+          explain:
+            "Un batch est un sous-ensemble du dataset ; sa taille détermine combien d'exemples sont utilisés pour estimer le gradient à chaque mise à jour.",
+        },
+        {
+          id: 39,
+          cat: "optim",
+          type: "open",
+          q: "Quel terme désigne le fait qu'un modèle apprend « par cœur » les données d'entraînement au point de mal généraliser sur de nouvelles données ?",
+          accept: ["overfitting", "surapprentissage"],
+          explain:
+            "L'overfitting survient quand le modèle capte le bruit spécifique aux données d'entraînement plutôt que les motifs généraux, ce qui dégrade ses performances sur des données jamais vues.",
+        },
+        {
+          id: 40,
+          cat: "optim",
+          type: "qcm",
+          q: "Quel est l'effet du « dropout » pendant l'entraînement d'un réseau ?",
+          options: [
+            "Il augmente automatiquement le learning rate dès que la loss cesse de diminuer",
+            "Il ajoute automatiquement de nouvelles couches supplémentaires au réseau à chaque fois que l'entraînement stagne un peu",
+            "Il désactive aléatoirement une partie des neurones à chaque itération, pour limiter le surapprentissage",
+            "Il remplace la fonction de perte utilisée par une autre, choisie aléatoirement",
+          ],
+          answer: 2,
+          explain:
+            "En désactivant aléatoirement une fraction des neurones à chaque passage, le dropout empêche le réseau de trop dépendre de neurones spécifiques, ce qui améliore la généralisation.",
+        },
+        {
+          id: 41,
+          cat: "optim",
+          type: "tf",
+          q: "Le momentum, utilisé dans certains optimiseurs, permet d'accélérer la convergence en tenant compte des gradients des itérations précédentes.",
+          answer: true,
+          explain:
+            "Le momentum accumule une moyenne mobile des gradients passés, ce qui aide à traverser les zones plates et à amortir les oscillations.",
+        },
+        {
+          id: 42,
+          cat: "optim",
+          type: "open",
+          q: "Comment appelle-t-on la technique consistant à diviser le dataset d'entraînement en petits sous-ensembles traités successivement à chaque epoch ?",
+          accept: [
+            "mini-batch",
+            "mini batch",
+            "descente de gradient par mini-lots",
+            "mini-lots",
+          ],
+          explain:
+            "Le mini-batch gradient descent traite le dataset par petits lots plutôt que d'un coup (batch complet) ou un exemple à la fois (SGD pur) : un bon compromis entre vitesse et stabilité.",
+        },
+        {
+          id: 43,
+          cat: "cnn",
+          type: "qcm",
+          q: "Que fait typiquement une couche de « pooling » (ex : max pooling) dans un CNN ?",
+          options: [
+            "Elle augmente la résolution spatiale de l'image en interpolant de nouveaux pixels",
+            "Elle ajoute délibérément du bruit aléatoire aux feature maps produites, afin de rendre le réseau plus robuste au surapprentissage",
+            "Elle calcule directement la loss du réseau à partir des feature maps produites",
+            "Elle réduit la dimension spatiale des feature maps en résumant l'information d'une zone locale",
+          ],
+          answer: 3,
+          explain:
+            "Le pooling (souvent max pooling) sous-échantillonne les feature maps en ne gardant que l'information la plus saillante d'une zone locale, réduisant ainsi la taille et le nombre de calculs.",
+        },
+        {
+          id: 44,
+          cat: "cnn",
+          type: "tf",
+          q: "Dans un CNN, les poids d'un même filtre (kernel) sont partagés sur toute l'image lors du balayage (weight sharing).",
+          answer: true,
+          explain:
+            "Le partage de poids permet de détecter le même motif où qu'il apparaisse dans l'image, tout en réduisant fortement le nombre de paramètres par rapport à une couche dense.",
+        },
+        {
+          id: 45,
+          cat: "cnn",
+          type: "open",
+          q: "Comment appelle-t-on la carte résultant de l'application d'un filtre de convolution sur une image ou une couche précédente ?",
+          accept: [
+            "feature map",
+            "carte de caracteristiques",
+            "carte de caractéristiques",
+            "carte d'activation",
+          ],
+          explain:
+            "La feature map (ou carte de caractéristiques) contient l'activation du filtre en chaque position de l'image balayée.",
+        },
+        {
+          id: 46,
+          cat: "cnn",
+          type: "qcm",
+          q: "Pourquoi utilise-t-on souvent des CNN plutôt que des couches denses pour traiter des images ?",
+          options: [
+            "Les CNN exploitent la structure spatiale locale de l'image et partagent leurs poids, ce qui réduit fortement le nombre de paramètres",
+            "Les CNN n'ont besoin d'aucune fonction d'activation pour fonctionner correctement sur des images",
+            "Les CNN ne peuvent traiter que des images en noir et blanc, jamais des images en couleur",
+            "Les couches denses classiques restent, quoi qu'il arrive, toujours plus rapides et plus efficaces qu'un CNN dès qu'il s'agit de traiter des images",
+          ],
+          answer: 0,
+          explain:
+            "Une couche dense sur une image demanderait un nombre de paramètres énorme et ignorerait la structure spatiale ; les CNN exploitent les motifs locaux avec beaucoup moins de paramètres.",
+        },
+        {
+          id: 47,
+          cat: "cnn",
+          type: "tf",
+          q: "Le « padding » consiste à ajouter des pixels (souvent des zéros) autour d'une image avant convolution, notamment pour préserver sa taille spatiale.",
+          answer: true,
+          explain:
+            "Sans padding, chaque convolution réduit la taille spatiale de l'image ; le zero-padding permet de contrôler, voire préserver, cette dimension.",
+        },
+        {
+          id: 48,
+          cat: "cnn",
+          type: "open",
+          q: "Quel terme désigne le nombre de pixels dont le noyau se déplace à chaque étape lors du balayage de l'image (« stride » en anglais) ?",
+          accept: ["pas", "stride"],
+          explain:
+            "Le stride (ou pas) détermine le déplacement du noyau entre deux positions successives ; un stride plus grand réduit la taille de la feature map produite.",
+        },
+        {
+          id: 49,
+          cat: "rnn",
+          type: "qcm",
+          q: "Quel est le principal problème rencontré par les RNN « vanilla » (simples) sur de longues séquences ?",
+          options: [
+            "Ils sont, de façon assez contre-intuitive, toujours beaucoup plus rapides à entraîner qu'un réseau à couches denses classique",
+            "Le gradient a tendance à disparaître ou, à l'inverse, à exploser lorsqu'on rétropropage sur de longues séquences",
+            "Ils ne sont physiquement capables de traiter qu'une seule séquence à la fois, jamais un batch entier",
+            "Ils ne partagent pas leurs poids d'un pas de temps à l'autre, contrairement à ce qu'on pourrait penser",
+          ],
+          answer: 1,
+          explain:
+            "En rétropropageant l'erreur à travers de nombreux pas de temps, le gradient est multiplié de façon répétée, ce qui le fait souvent disparaître ou exploser.",
+        },
+        {
+          id: 50,
+          cat: "rnn",
+          type: "tf",
+          q: "Dans un RNN, les mêmes poids sont réutilisés à chaque pas de temps de la séquence.",
+          answer: true,
+          explain:
+            "Le partage des poids dans le temps permet au RNN de traiter des séquences de longueur variable avec un nombre de paramètres constant.",
+        },
+        {
+          id: 51,
+          cat: "rnn",
+          type: "open",
+          q: "Quel type de cellule récurrente utilise des « portes » (gates) pour contrôler quelles informations garder, oublier ou faire sortir de sa mémoire interne ?",
+          accept: ["lstm", "gru"],
+          explain:
+            "Le LSTM (et sa variante simplifiée le GRU) utilise des portes apprises pour réguler le flux d'information dans sa cellule mémoire, ce qui limite la disparition du gradient.",
+        },
+        {
+          id: 52,
+          cat: "rnn",
+          type: "qcm",
+          q: "Que représente l'état caché h(t) dans un RNN ?",
+          options: [
+            "Uniquement la toute dernière sortie produite par le réseau, sans lien avec les pas précédents",
+            "Le gradient de la loss calculé spécifiquement au pas de temps t, rien d'autre",
+            "Une forme de mémoire qui résume les informations vues par le réseau jusqu'au pas de temps t",
+            "Le taux d'apprentissage utilisé par l'optimiseur, mais uniquement à l'instant t",
+          ],
+          answer: 2,
+          explain:
+            "h(t) est mis à jour à chaque pas de temps et sert de mémoire condensée du passé de la séquence, utilisée pour produire la sortie et pour le pas suivant.",
+        },
+        {
+          id: 53,
+          cat: "rnn",
+          type: "tf",
+          q: "Les GRU (Gated Recurrent Units) sont une variante des LSTM avec généralement moins de paramètres, car ils utilisent moins de portes.",
+          answer: true,
+          explain:
+            "Le GRU combine certaines portes du LSTM (par exemple porte d'oubli et porte d'entrée fusionnées), ce qui simplifie l'architecture tout en gardant de bonnes performances.",
+        },
+        {
+          id: 54,
+          cat: "rnn",
+          type: "open",
+          q: "Pour quel type de données les RNN sont-ils particulièrement adaptés, en raison de leur capacité à traiter un ordre temporel ou séquentiel ?",
+          accept: [
+            "sequences",
+            "séquences",
+            "texte",
+            "series temporelles",
+            "séries temporelles",
+            "donnees sequentielles",
+            "données séquentielles",
+          ],
+          explain:
+            "Texte, séries temporelles, audio... les RNN sont conçus pour exploiter les dépendances entre éléments successifs d'une séquence.",
+        },
+        {
+          id: 55,
+          cat: "bases",
+          type: "tf",
+          q: "La sortie d'un réseau de neurones est calculée uniquement à l'aide de multiplications, sans aucune addition.",
+          answer: false,
+          explain:
+            "z = Σ(w·x) + b combine des multiplications ET une addition (le biais) : il n'y a pas que des multiplications.",
+        },
+        {
+          id: 56,
+          cat: "bases",
+          type: "tf",
+          q: "Le nombre de neurones dans la couche de sortie dépend directement du problème à résoudre (ex : 1 pour une régression, plusieurs pour une classification multi-classes).",
+          answer: true,
+          explain:
+            "Pour une régression on utilise souvent 1 neurone de sortie ; pour une classification à K classes on utilise généralement K neurones (avec softmax).",
+        },
+        {
+          id: 57,
+          cat: "forward",
+          type: "tf",
+          q: "Le forward pass ne peut être calculé qu'une seule fois par epoch, jamais plus.",
+          answer: false,
+          explain:
+            "Le forward pass est recalculé pour chaque exemple ou chaque batch, donc plusieurs fois par epoch.",
+        },
+        {
+          id: 58,
+          cat: "forward",
+          type: "tf",
+          q: "Dans un réseau à plusieurs couches, la sortie d'une couche sert d'entrée à la couche suivante.",
+          answer: true,
+          explain:
+            "C'est le principe même de l'empilement de couches : a(l) devient l'entrée x de la couche l+1.",
+        },
+        {
+          id: 59,
+          cat: "forward",
+          type: "tf",
+          q: "Le forward pass permet à lui seul de mettre à jour les poids du réseau.",
+          answer: false,
+          explain:
+            "Le forward pass ne fait que calculer la sortie ; c'est la rétropropagation (backward pass) qui calcule les gradients utilisés pour mettre à jour les poids.",
+        },
+        {
+          id: 60,
+          cat: "loss",
+          type: "tf",
+          q: "Une loss élevée signifie que les prédictions du réseau sont éloignées des vraies valeurs.",
+          answer: true,
+          explain:
+            "Par construction, la loss mesure l'écart entre prédiction et cible : plus elle est élevée, plus l'erreur est grande.",
+        },
+        {
+          id: 61,
+          cat: "loss",
+          type: "tf",
+          q: "La cross-entropy et la MSE sont deux mesures de loss strictement identiques, interchangeables sans conséquence.",
+          answer: false,
+          explain:
+            "La MSE est adaptée à la régression tandis que la cross-entropy est adaptée à la classification ; les utiliser à contre-emploi dégrade l'apprentissage.",
+        },
+        {
+          id: 62,
+          cat: "optim",
+          type: "tf",
+          q: "Un learning rate trop faible peut rendre l'entraînement extrêmement lent, sans forcément empêcher la convergence.",
+          answer: true,
+          explain:
+            "Avec un lr trop petit, chaque mise à jour des poids est minime : le réseau converge, mais très lentement.",
+        },
+        {
+          id: 63,
+          cat: "optim",
+          type: "tf",
+          q: "Augmenter le nombre d'epochs garantit toujours une meilleure performance sur des données jamais vues.",
+          answer: false,
+          explain:
+            "Au-delà d'un certain nombre d'epochs, le réseau peut sur-apprendre (overfitting) et donc moins bien généraliser, même si la loss d'entraînement continue de baisser.",
+        },
+        {
+          id: 64,
+          cat: "cnn",
+          type: "tf",
+          q: "Un CNN peut comporter plusieurs couches de convolution empilées les unes après les autres.",
+          answer: true,
+          explain:
+            "Il est courant d'empiler plusieurs couches de convolution, chacune extrayant des motifs de plus en plus abstraits à partir des feature maps précédentes.",
+        },
+        {
+          id: 65,
+          cat: "cnn",
+          type: "tf",
+          q: "Le nombre de filtres d'une couche de convolution détermine le nombre de feature maps produites en sortie.",
+          answer: true,
+          explain:
+            "Chaque filtre produit sa propre feature map ; K filtres donnent donc K feature maps en sortie de la couche.",
+        },
+        {
+          id: 66,
+          cat: "cnn",
+          type: "tf",
+          q: "Les CNN ne peuvent être utilisés que sur des images en couleur (RGB), jamais sur des images en niveaux de gris.",
+          answer: false,
+          explain:
+            "Les CNN fonctionnent aussi bien sur des images en niveaux de gris (1 canal) que sur des images RGB (3 canaux) ou même davantage de canaux.",
+        },
+        {
+          id: 67,
+          cat: "rnn",
+          type: "tf",
+          q: "Un RNN peut produire une sortie à chaque pas de temps, et pas uniquement à la toute fin de la séquence.",
+          answer: true,
+          explain:
+            "Selon l'architecture (many-to-many, many-to-one...), un RNN peut produire une sortie à chaque pas de temps ou une seule sortie finale.",
+        },
+        {
+          id: 68,
+          cat: "rnn",
+          type: "tf",
+          q: "Les RNN traitent obligatoirement toute la séquence en une seule fois, sans notion d'ordre temporel.",
+          answer: false,
+          explain:
+            "Au contraire, un RNN traite la séquence pas à pas, dans l'ordre, en mettant à jour son état caché à chaque étape — c'est justement ce qui lui permet d'exploiter l'ordre temporel.",
+        },
+        {
+          id: 69,
+          cat: "bases",
+          type: "tf",
+          q: "Un neurone artificiel avec une fonction d'activation sigmoïde peut produire une sortie strictement négative.",
+          answer: false,
+          explain:
+            "La sigmoïde σ(z) = 1/(1+e⁻ᶻ) a pour codomaine ]0, 1[ : sa sortie ne peut jamais être négative, ni nulle, ni égale à 1.",
+        },
+        {
+          id: 70,
+          cat: "forward",
+          type: "tf",
+          q: "Lors du forward pass, la sortie a d'un neurone est calculée avant sa pré-activation z.",
+          answer: false,
+          explain:
+            "C'est l'inverse : le neurone calcule d'abord z = Σ(w·x) + b, puis applique la fonction d'activation pour obtenir a = f(z).",
+        },
+        {
+          id: 71,
+          cat: "loss",
+          type: "tf",
+          q: "La MSE (erreur quadratique moyenne) est généralement préférée à la cross-entropy pour les problèmes de classification multi-classes.",
+          answer: false,
+          explain:
+            "C'est l'inverse : la cross-entropy est généralement préférée pour la classification, car elle est mieux adaptée aux sorties de type probabilité (softmax) qu'une MSE.",
+        },
+        {
+          id: 72,
+          cat: "optim",
+          type: "tf",
+          q: "Adam est un optimiseur qui n'utilise jamais l'historique des gradients précédents, contrairement à SGD avec momentum.",
+          answer: false,
+          explain:
+            "C'est faux : Adam combine justement une moyenne mobile du gradient (comme le momentum) et une moyenne mobile de son carré, donc il exploite fortement l'historique des gradients.",
+        },
+        {
+          id: 73,
+          cat: "optim",
+          type: "tf",
+          q: "Réduire le batch size revient toujours exactement au même que réduire le learning rate.",
+          answer: false,
+          explain:
+            "Ce sont deux leviers différents : le batch size influence le bruit et la précision de l'estimation du gradient, tandis que le learning rate contrôle l'amplitude du pas effectué à chaque mise à jour. Ils ne sont pas interchangeables.",
+        },
+        {
+          id: 74,
+          cat: "optim",
+          type: "tf",
+          q: "Le early stopping consiste à arrêter l'entraînement dès que la loss sur le train set atteint zéro.",
+          answer: false,
+          explain:
+            "Le early stopping arrête l'entraînement quand la loss de validation cesse de s'améliorer (signe de surapprentissage), pas quand la loss d'entraînement atteint zéro.",
+        },
+        {
+          id: 75,
+          cat: "cnn",
+          type: "tf",
+          q: "Un filtre (kernel) de convolution a systématiquement la même taille que l'image d'entrée qu'il analyse.",
+          answer: false,
+          explain:
+            "Un kernel est généralement beaucoup plus petit que l'image (ex : 3×3 ou 5×5) : il glisse sur l'image pour analyser des zones locales, il n'a pas besoin d'être aussi grand que l'image entière.",
+        },
+        {
+          id: 76,
+          cat: "cnn",
+          type: "tf",
+          q: "Le stride d'une convolution correspond au nombre de filtres appliqués simultanément à l'image.",
+          answer: false,
+          explain:
+            "Le stride désigne le pas de déplacement du kernel sur l'image (ex : 1 ou 2 pixels à chaque étape), pas le nombre de filtres. Le nombre de filtres détermine plutôt le nombre de feature maps produites.",
+        },
+        {
+          id: 77,
+          cat: "cnn",
+          type: "tf",
+          q: "Dans un CNN, les couches de convolution profondes détectent nécessairement des motifs plus simples que les toutes premières couches.",
+          answer: false,
+          explain:
+            "C'est l'inverse : les premières couches détectent des motifs simples (contours, couleurs), tandis que les couches plus profondes combinent ces motifs pour détecter des formes de plus en plus complexes et abstraites.",
+        },
+        {
+          id: 78,
+          cat: "rnn",
+          type: "tf",
+          q: "Un LSTM ne possède qu'une seule porte (gate), contrairement au RNN classique qui n'en a aucune.",
+          answer: false,
+          explain:
+            "Un LSTM possède généralement trois portes : la porte d'oubli (forget gate), la porte d'entrée (input gate) et la porte de sortie (output gate), pas une seule.",
+        },
+        {
+          id: 79,
+          cat: "rnn",
+          type: "tf",
+          q: "Le « teacher forcing » consiste à ignorer complètement les cibles réelles pendant l'entraînement d'un RNN pour du texte.",
+          answer: false,
+          explain:
+            "C'est l'inverse : le teacher forcing consiste à utiliser la vraie sortie précédente (la cible) comme entrée du pas suivant pendant l'entraînement, plutôt que la propre prédiction du modèle.",
+        },
+        {
+          id: 80,
+          cat: "rnn",
+          type: "tf",
+          q: "Un RNN bidirectionnel ne peut lire la séquence que dans le sens chronologique, jamais à l'envers.",
+          answer: false,
+          explain:
+            "Un RNN bidirectionnel combine justement deux RNN : l'un lit la séquence dans le sens chronologique, l'autre dans le sens inverse, pour capter le contexte passé et futur.",
+        },
+        {
+          id: 81,
+          cat: "bases",
+          type: "qcm",
+          q: "Que représente le poids (w) associé à une connexion entre deux neurones ?",
+          options: [
+            "La valeur de sortie du neurone après application de la fonction d'activation",
+            "Le nombre total de neurones présents dans la couche suivante du réseau, indépendamment des connexions individuelles établies entre eux",
+            "Le terme constant ajouté à la somme pondérée, indépendant des entrées",
+            "L'importance accordée à cette connexion : elle multiplie l'entrée avant de l'ajouter à la somme pondérée",
+          ],
+          answer: 3,
+          explain:
+            "Chaque poids w multiplie l'entrée à laquelle il est associé ; plus |w| est grand, plus cette entrée influence la pré-activation z du neurone recevant la connexion.",
+        },
+        {
+          id: 82,
+          cat: "bases",
+          type: "qcm",
+          q: "Quelle affirmation décrit correctement une couche cachée (hidden layer) ?",
+          options: [
+            "C'est une couche intermédiaire entre l'entrée et la sortie, dont les valeurs ne sont ni les features brutes ni la prédiction finale",
+            "C'est la toute première couche du réseau, qui reçoit directement les données brutes du dataset",
+            "C'est la dernière couche du réseau, qui produit directement la prédiction finale ŷ",
+            "C'est une couche qui ne contient aucun poids ni aucun biais, contrairement aux autres couches",
+          ],
+          answer: 0,
+          explain:
+            "Une couche cachée se situe entre la couche d'entrée et la couche de sortie ; elle transforme progressivement les données mais n'est ni les features brutes ni la prédiction finale.",
+        },
+        {
+          id: 83,
+          cat: "bases",
+          type: "qcm",
+          q: "Pourquoi initialise-t-on généralement les poids d'un réseau de façon aléatoire plutôt qu'à zéro ?",
+          options: [
+            "Parce qu'une initialisation à zéro ferait planter le programme dès le premier calcul",
+            "Parce qu'avec des poids tous identiques (ex : zéro), les neurones d'une même couche apprendraient tous la même chose (symétrie)",
+            "Parce que des poids initialisés aléatoirement garantiraient, à eux seuls et sans aucune autre condition, la convergence la plus rapide qui soit",
+            "Parce que la loi impose une initialisation aléatoire pour tout modèle de deep learning",
+          ],
+          answer: 1,
+          explain:
+            "Si tous les poids partent de la même valeur, tous les neurones d'une couche calculent la même chose et reçoivent le même gradient : ils restent identiques pour toujours. L'aléatoire brise cette symétrie.",
+        },
+        {
+          id: 84,
+          cat: "forward",
+          type: "qcm",
+          q: "Que se passe-t-il concrètement, couche par couche, entre l'entrée et la sortie d'un réseau lors du forward pass ?",
+          options: [
+            "Chaque couche calcule directement la loss avant de la transmettre à la couche suivante",
+            "Chaque couche met à jour ses propres poids avant de transmettre sa sortie à la couche suivante",
+            "Chaque couche calcule sa pré-activation z à partir de la sortie de la couche précédente, puis applique une fonction d'activation pour produire sa propre sortie",
+            "Chaque couche recalcule aléatoirement l'architecture du réseau avant de produire sa sortie",
+          ],
+          answer: 2,
+          explain:
+            "À chaque couche, on calcule z = Σ(w·a_préc) + b puis a = f(z) ; cette sortie a devient l'entrée de la couche suivante, et ainsi de suite jusqu'à la sortie finale.",
+        },
+        {
+          id: 85,
+          cat: "forward",
+          type: "qcm",
+          q: "Un réseau a une couche d'entrée à 4 neurones, une couche cachée à 5 neurones, et une couche de sortie à 2 neurones. Que peut-on dire de sa sortie ?",
+          options: [
+            "Il produira directement 4 sorties, car c'est systématiquement le nombre de neurones de la couche d'entrée qui fixe le nombre de sorties",
+            "Il produira 5 sorties, car c'est la couche cachée qui détermine le nombre de sorties finales",
+            "Il ne peut pas être calculé, car le nombre de neurones diminue puis change entre les couches",
+            "Il produira 2 sorties, car c'est la taille de la couche de sortie qui détermine le nombre de valeurs prédites",
+          ],
+          answer: 3,
+          explain:
+            "Le nombre de sorties d'un réseau est toujours déterminé par le nombre de neurones de sa couche de sortie, quelle que soit la taille des couches précédentes.",
+        },
+        {
+          id: 86,
+          cat: "loss",
+          type: "qcm",
+          q: "Que mesure concrètement une fonction de perte (loss) pendant l'entraînement ?",
+          options: [
+            "L'écart entre la prédiction du réseau et la valeur réelle attendue, pour un exemple ou un batch donné",
+            "Le nombre total de paramètres (poids et biais) que compte le réseau de neurones",
+            "Le temps de calcul nécessaire pour effectuer un forward pass complet sur le réseau",
+            "La proportion exacte de neurones désactivés aléatoirement par le dropout à chaque itération d'entraînement, exprimée en pourcentage",
+          ],
+          answer: 0,
+          explain:
+            "La loss quantifie à quel point les prédictions du réseau s'éloignent des vraies valeurs ; c'est précisément cette quantité que l'entraînement cherche à minimiser.",
+        },
+        {
+          id: 87,
+          cat: "loss",
+          type: "qcm",
+          q: "Dans la règle de dérivation en chaîne utilisée par la rétropropagation, comment calcule-t-on l'influence d'un poids éloigné de la sortie sur la loss ?",
+          options: [
+            "On l'ignore, seuls les poids de la dernière couche influencent réellement la loss",
+            "On multiplie entre elles les dérivées partielles de chaque étape intermédiaire, de la sortie jusqu'à ce poids",
+            "On additionne simplement la valeur de tous les poids situés entre ce poids et la sortie",
+            "On recalcule un forward pass complet pour chaque poids, sans utiliser aucune dérivée",
+          ],
+          answer: 1,
+          explain:
+            "La règle de la chaîne décompose la dérivée totale en un produit de dérivées locales à chaque couche traversée, ce qui permet de remonter efficacement jusqu'aux poids les plus éloignés de la sortie.",
+        },
+        {
+          id: 88,
+          cat: "loss",
+          type: "qcm",
+          q: "Que signifie observer une loss d'entraînement qui continue de baisser alors que la loss de validation remonte ?",
+          options: [
+            "Le réseau n'a pas encore assez de données pour commencer à apprendre correctement",
+            "Le learning rate est très certainement beaucoup trop faible pour cette architecture, ce qui ralentit anormalement toute la convergence",
+            "Le réseau est probablement en train de surapprendre (overfitting) : il mémorise le train set au lieu de généraliser",
+            "C'est un comportement normal et souhaitable qui indique une convergence optimale",
+          ],
+          answer: 2,
+          explain:
+            "Une loss d'entraînement qui baisse pendant que la loss de validation remonte est le signe classique du surapprentissage : le réseau colle de plus en plus aux exemples vus, au détriment de sa capacité à généraliser.",
+        },
+        {
+          id: 89,
+          cat: "optim",
+          type: "qcm",
+          q: "Qu'est-ce qu'une « epoch » dans le vocabulaire de l'entraînement d'un réseau de neurones ?",
+          options: [
+            "Un seul exemple du dataset utilisé pour calculer un unique gradient",
+            "Le nombre de neurones présents dans la couche cachée la plus large du réseau",
+            "La valeur du learning rate utilisée pendant la toute première itération de l'entraînement",
+            "Un passage complet à travers l'intégralité du jeu de données d'entraînement",
+          ],
+          answer: 3,
+          explain:
+            "Une epoch correspond à un cycle complet où chaque exemple du dataset d'entraînement a été vu exactement une fois par le réseau, qu'il soit traité en un seul batch ou en plusieurs.",
+        },
+        {
+          id: 90,
+          cat: "optim",
+          type: "qcm",
+          q: "Quelle est la principale différence entre le batch gradient descent et le mini-batch (ou stochastic) gradient descent ?",
+          options: [
+            "Le batch gradient descent calcule le gradient sur tout le dataset avant chaque mise à jour, tandis que le mini-batch ne l'utilise que sur un sous-ensemble",
+            "Le batch gradient descent n'utilise jamais de learning rate, contrairement au mini-batch",
+            "Le mini-batch gradient descent ne peut être utilisé qu'avec des réseaux sans couche cachée",
+            "Le batch gradient descent est une méthode réservée uniquement aux CNN, pas aux autres architectures",
+          ],
+          answer: 0,
+          explain:
+            "Le batch gradient descent calcule un gradient précis mais coûteux sur tout le dataset ; le mini-batch (ou SGD) utilise un sous-ensemble à chaque étape, ce qui accélère et introduit un peu de bruit utile dans l'optimisation.",
+        },
+        {
+          id: 91,
+          cat: "optim",
+          type: "qcm",
+          q: "Pourquoi le momentum aide-t-il parfois à sortir d'un minimum local peu profond pendant l'optimisation ?",
+          options: [
+            "Parce qu'il désactive complètement le calcul du gradient pendant plusieurs itérations",
+            "Parce qu'il accumule une forme de « vitesse » issue des gradients précédents, ce qui peut permettre de franchir de petites irrégularités de la loss",
+            "Parce qu'il multiplie automatiquement le learning rate par dix chaque fois qu'un minimum local est détecté par l'optimiseur en cours d'entraînement",
+            "Parce qu'il remplace entièrement la fonction de perte par une version simplifiée",
+          ],
+          answer: 1,
+          explain:
+            "Le momentum conserve une trace des directions de gradient précédentes, un peu comme une inertie physique, ce qui peut aider à traverser de petits creux ou plateaux au lieu de s'y arrêter immédiatement.",
+        },
+        {
+          id: 92,
+          cat: "optim",
+          type: "qcm",
+          q: "Que fait la régularisation L1, par rapport à la L2, sur les poids d'un réseau ?",
+          options: [
+            "Elle n'a strictement aucun effet sur les poids, contrairement à la L2",
+            "Elle augmente systématiquement la valeur de tous les poids du réseau",
+            "Elle a tendance à pousser certains poids exactement à zéro, produisant des modèles plus « épars » (sparse)",
+            "Elle remplace entièrement la fonction de perte originale par une nouvelle fonction",
+          ],
+          answer: 2,
+          explain:
+            "Contrairement à la L2, qui réduit les grands poids sans les annuler complètement, la pénalité L1 a tendance à amener certains poids exactement à zéro, ce qui peut servir à une forme de sélection de features.",
+        },
+        {
+          id: 93,
+          cat: "optim",
+          type: "qcm",
+          q: "À quoi sert typiquement un « learning rate scheduler » pendant l'entraînement ?",
+          options: [
+            "À choisir aléatoirement une nouvelle architecture de réseau à chaque epoch",
+            "À remplacer entièrement la fonction de perte utilisée toutes les quelques epochs",
+            "À figer définitivement et sans aucune exception le learning rate à sa valeur initiale pour la totalité de l'entraînement",
+            "À faire varier le learning rate au fil de l'entraînement, souvent en le diminuant progressivement",
+          ],
+          answer: 3,
+          explain:
+            "Un scheduler ajuste le learning rate au cours de l'entraînement — le plus souvent en le réduisant progressivement — pour permettre de grands pas au début et des ajustements plus fins vers la fin.",
+        },
+        {
+          id: 94,
+          cat: "cnn",
+          type: "qcm",
+          q: "Qu'appelle-t-on une « feature map » en sortie d'une couche de convolution ?",
+          options: [
+            "Le résultat de l'application d'un filtre sur l'image, indiquant où le motif recherché a été détecté",
+            "La liste complète et exhaustive des labels possibles envisagés pour la tâche de classification actuellement en cours",
+            "Le schéma d'architecture décrivant l'enchaînement des couches du réseau",
+            "La valeur unique de la loss calculée après le passage dans la couche de convolution",
+          ],
+          answer: 0,
+          explain:
+            "Une feature map est la sortie 2D obtenue en faisant glisser un filtre sur l'image : ses valeurs indiquent l'intensité de détection du motif appris par ce filtre à chaque position.",
+        },
+        {
+          id: 95,
+          cat: "cnn",
+          type: "qcm",
+          q: "Que se passe-t-il si on empile plusieurs couches de convolution les unes après les autres dans un CNN ?",
+          options: [
+            "Rien de particulier : la deuxième couche de convolution refait exactement le même calcul que la première",
+            "Le champ réceptif effectif augmente, ce qui permet aux couches profondes de détecter des motifs plus larges et plus abstraits",
+            "Le réseau perd automatiquement toute capacité à détecter des contours dans l'image",
+            "La taille de l'image d'entrée doit obligatoirement doubler à chaque nouvelle couche ajoutée",
+          ],
+          answer: 1,
+          explain:
+            "En empilant les convolutions, chaque neurone d'une couche profonde « voit » indirectement une zone de plus en plus large de l'image d'origine (champ réceptif), ce qui permet de combiner des motifs simples en motifs plus complexes.",
+        },
+        {
+          id: 96,
+          cat: "cnn",
+          type: "qcm",
+          q: "Pourquoi ajoute-t-on souvent une fonction d'activation (comme ReLU) après une couche de convolution ?",
+          options: [
+            "Parce que la convolution seule modifie déjà, à elle seule, la taille spatiale de l'image produite, ce qu'il faudrait absolument corriger ensuite",
+            "Parce que sans cela, le calcul de la convolution serait numériquement impossible à effectuer",
+            "Parce que la convolution est une opération linéaire ; sans non-linéarité, empiler plusieurs couches n'apporterait aucune capacité supplémentaire",
+            "Parce que la loi impose l'usage de ReLU spécifiquement après chaque couche de convolution",
+          ],
+          answer: 2,
+          explain:
+            "Comme une couche dense, une convolution reste une opération linéaire. Ajouter une activation non-linéaire après chaque convolution est nécessaire pour que l'empilement de couches permette d'apprendre des relations complexes.",
+        },
+        {
+          id: 97,
+          cat: "cnn",
+          type: "qcm",
+          q: "Dans un CNN destiné à la classification d'images, à quoi sert généralement la ou les couches denses situées après les couches de convolution ?",
+          options: [
+            "À appliquer un filtre supplémentaire pour détecter encore plus de contours dans l'image",
+            "À réduire la résolution spatiale de l'image avant même la première convolution",
+            "À remplacer entièrement la fonction de perte par une version adaptée aux images",
+            "À combiner les features extraites par les convolutions pour produire la prédiction finale (les probabilités de classe)",
+          ],
+          answer: 3,
+          explain:
+            "Après extraction des features par les couches convolutives, on aplatit généralement le résultat pour le passer dans une ou plusieurs couches denses, qui combinent ces features pour produire la sortie finale du réseau.",
+        },
+        {
+          id: 98,
+          cat: "cnn",
+          type: "qcm",
+          q: "Que se passe-t-il si on utilise un stride de 2 au lieu de 1 dans une couche de convolution ?",
+          options: [
+            "Le filtre se déplace de 2 pixels à chaque étape au lieu d'un seul, ce qui produit une feature map de dimensions plus réduites",
+            "Le nombre de filtres utilisés par cette couche de convolution se trouve alors automatiquement doublé, indépendamment de la taille du kernel choisi",
+            "La couche de convolution devient équivalente à une couche de pooling classique",
+            "La taille du kernel utilisé passe automatiquement de 3×3 à 5×5",
+          ],
+          answer: 0,
+          explain:
+            "Le stride définit le pas de déplacement du filtre sur l'image. Un stride de 2 fait « sauter » un pixel sur deux, ce qui produit une feature map environ deux fois plus petite dans chaque dimension qu'avec un stride de 1.",
+        },
+        {
+          id: 99,
+          cat: "rnn",
+          type: "qcm",
+          q: "Quel est le principal inconvénient d'un RNN qui traite une séquence de façon strictement séquentielle, pas à pas ?",
+          options: [
+            "Il ne peut techniquement jamais produire plus d'une seule sortie pour toute la séquence",
+            "Il est difficile à paralléliser dans le temps, car chaque pas dépend du résultat du pas précédent",
+            "Il ne peut être utilisé que sur des séquences de longueur strictement inférieure à dix",
+            "Il ne peut, quoi qu'il arrive, jamais être combiné avec une fonction de perte de type cross-entropy pendant l'entraînement",
+          ],
+          answer: 1,
+          explain:
+            "Comme h(t) dépend de h(t-1), les pas de temps doivent être calculés dans l'ordre : contrairement à un CNN ou à une couche dense, on ne peut pas facilement paralléliser les calculs le long de la séquence.",
+        },
+        {
+          id: 100,
+          cat: "rnn",
+          type: "qcm",
+          q: "En quoi une porte (« gate ») d'un LSTM diffère-t-elle d'une simple connexion classique entre deux neurones ?",
+          options: [
+            "Une porte ne contient jamais de poids appris, contrairement à une connexion classique",
+            "Une porte ne peut être utilisée que pendant l'inférence, jamais pendant l'entraînement",
+            "Une porte produit une valeur entre 0 et 1 qui contrôle la quantité d'information laissée passer, plutôt que de simplement la transmettre",
+            "Une porte remplace entièrement la fonction de perte utilisée par le reste du réseau",
+          ],
+          answer: 2,
+          explain:
+            "Une gate (souvent basée sur une sigmoïde) produit une valeur entre 0 et 1 qui agit comme un robinet : elle module la quantité d'information (mémoire, entrée...) qui est effectivement conservée ou transmise, au lieu de la laisser simplement passer telle quelle.",
+        },
+        {
+          id: 101,
+          cat: "rnn",
+          type: "qcm",
+          q: "Pour une tâche de traduction automatique (séquence vers séquence), quelle architecture de RNN est la plus adaptée ?",
+          options: [
+            "Une architecture qui produit systématiquement une seule sortie, dès qu'elle a lu un unique mot de la phrase d'entrée fournie",
+            "Une architecture qui ignore complètement l'ordre des mots dans la phrase source",
+            "Une architecture qui n'utilise aucun état caché, uniquement les entrées brutes",
+            "Une architecture encodeur-décodeur, qui résume d'abord toute la séquence source avant de générer la séquence cible",
+          ],
+          answer: 3,
+          explain:
+            "Les architectures encodeur-décodeur lisent d'abord toute la phrase source pour en construire une représentation (l'état caché final de l'encodeur), puis le décodeur génère la phrase cible mot par mot à partir de cette représentation.",
+        },
+        {
+          id: 102,
+          cat: "rnn",
+          type: "qcm",
+          q: "Que signifie le fait que les poids d'un RNN sont « partagés dans le temps » ?",
+          options: [
+            "Les mêmes matrices de poids sont réutilisées identiquement à chaque pas de temps de la séquence",
+            "Chaque pas de temps de la séquence utilise un jeu de poids totalement différent et indépendant",
+            "Les poids changent aléatoirement d'une séquence à l'autre pendant l'entraînement",
+            "Les poids sont partagés uniquement entre le premier et le dernier pas de la séquence",
+          ],
+          answer: 0,
+          explain:
+            "Contrairement à un réseau classique où chaque couche a ses propres poids, un RNN applique la même transformation (les mêmes poids) à chaque pas de temps, ce qui lui permet de traiter des séquences de longueur variable.",
+        },
+        {
+          id: 103,
+          cat: "rnn",
+          type: "qcm",
+          q: "Pourquoi le « gradient clipping » est-il souvent utilisé lors de l'entraînement des RNN ?",
+          options: [
+            "Pour supprimer définitivement certains pas de temps jugés inutiles dans la séquence",
+            "Pour limiter la norme du gradient et éviter qu'il n'explose lors de la rétropropagation sur de longues séquences",
+            "Pour remplacer automatiquement le learning rate par une valeur fixe pendant tout l'entraînement",
+            "Pour forcer le réseau à ignorer complètement les premiers pas de temps de chaque séquence",
+          ],
+          answer: 1,
+          explain:
+            "Le gradient clipping consiste à plafonner (« clipper ») la norme du gradient avant la mise à jour des poids, ce qui évite les explosions de gradient parfois observées sur de longues séquences dans les RNN.",
+        },
+        {
+          id: 104,
+          cat: "bases",
+          type: "open",
+          q: "Comment appelle-t-on un réseau de neurones composé d'une seule couche de neurones, sans couche cachée, historiquement le premier modèle de ce type ?",
+          accept: ["perceptron"],
+          explain:
+            "Le perceptron, introduit par Frank Rosenblatt en 1958, est le modèle historique le plus simple : une seule couche de neurones, sans couche cachée, capable de séparer linéairement deux classes.",
+        },
+        {
+          id: 105,
+          cat: "bases",
+          type: "open",
+          q: "Comment appelle-t-on, de façon générale, un paramètre de configuration du réseau (comme le learning rate ou le nombre de couches) qui n'est pas appris automatiquement par l'entraînement mais choisi avant celui-ci ?",
+          accept: ["hyperparametre", "hyperparametres", "hyper parametre"],
+          explain:
+            "Un hyperparamètre (learning rate, nombre de couches, taille du batch...) est fixé avant l'entraînement, contrairement aux poids et biais qui sont appris automatiquement par le réseau.",
+        },
+        {
+          id: 106,
+          cat: "forward",
+          type: "open",
+          q: "Comment appelle-t-on le fait de faire passer plusieurs exemples simultanément à travers le réseau en une seule fois, sous forme de matrice, plutôt qu'un par un ?",
+          accept: ["batch", "traitement par batch"],
+          explain:
+            "Regrouper plusieurs exemples dans un batch permet de calculer le forward pass (et le gradient) sur tous ces exemples en une seule fois, via des opérations matricielles bien plus efficaces qu'un traitement exemple par exemple.",
+        },
+        {
+          id: 107,
+          cat: "forward",
+          type: "open",
+          q: "Quel terme désigne l'étape où l'on utilise un réseau déjà entraîné pour produire une prédiction sur une nouvelle donnée, sans mise à jour des poids ?",
+          accept: ["inference", "l inference"],
+          explain:
+            "L'inférence consiste à faire un simple forward pass avec des poids déjà appris, sans rétropropagation ni mise à jour, pour obtenir une prédiction sur une donnée jamais vue.",
+        },
+        {
+          id: 108,
+          cat: "forward",
+          type: "open",
+          q: "Comment appelle-t-on l'opération mathématique de base effectuée entre le vecteur des entrées et le vecteur des poids pour obtenir la pré-activation z (avant d'ajouter le biais) ?",
+          accept: ["produit scalaire", "somme ponderee", "produit matriciel"],
+          explain:
+            "z est obtenu en calculant le produit scalaire entre le vecteur des entrées et le vecteur des poids (Σ w·x), auquel on ajoute ensuite le biais b.",
+        },
+        {
+          id: 109,
+          cat: "forward",
+          type: "open",
+          q: "Dans un réseau à plusieurs couches, comment appelle-t-on la toute dernière couche, celle qui produit directement la prédiction finale ŷ ?",
+          accept: ["couche de sortie", "output layer"],
+          explain:
+            "La couche de sortie (output layer) est la dernière couche du réseau : ses neurones produisent directement la prédiction finale ŷ, après le dernier forward pass à travers le réseau.",
+        },
+        {
+          id: 110,
+          cat: "loss",
+          type: "open",
+          q: "Comment appelle-t-on la fonction de perte adaptée à la classification binaire, souvent utilisée avec une sortie sigmoïde, parfois appelée « log loss » ?",
+          accept: [
+            "binary cross entropy",
+            "cross entropy binaire",
+            "log loss",
+            "entropie croisee binaire",
+          ],
+          explain:
+            "La binary cross-entropy (ou log loss) mesure l'écart entre une probabilité prédite et un label binaire (0 ou 1) ; elle est la loss naturelle associée à une sortie sigmoïde pour une classification à deux classes.",
+        },
+        {
+          id: 111,
+          cat: "loss",
+          type: "open",
+          q: "Comment appelle-t-on la surface, formée par les valeurs de la loss en fonction des différents poids du réseau, sur laquelle se déplace la descente de gradient ?",
+          accept: [
+            "paysage de la loss",
+            "loss landscape",
+            "surface de la loss",
+            "paysage de loss",
+          ],
+          explain:
+            "Le « loss landscape » (ou paysage de la loss) désigne la surface formée par la valeur de la loss pour toutes les combinaisons possibles de poids ; l'entraînement consiste à s'y déplacer vers un minimum en suivant le gradient.",
+        },
+        {
+          id: 112,
+          cat: "optim",
+          type: "open",
+          q: "Comment appelle-t-on la technique consistant à s'arrêter d'entraîner un réseau dès que la loss de validation cesse de s'améliorer, afin d'éviter le surapprentissage ?",
+          accept: ["early stopping", "arret precoce"],
+          explain:
+            "L'early stopping surveille la loss de validation et interrompt l'entraînement dès qu'elle cesse de progresser, ce qui évite de continuer à surapprendre le train set.",
+        },
+        {
+          id: 113,
+          cat: "optim",
+          type: "open",
+          q: "Comment appelle-t-on la technique consistant à artificiellement augmenter la taille et la diversité du dataset d'entraînement, par exemple en appliquant des rotations ou des recadrages aléatoires à des images ?",
+          accept: ["augmentation de donnees", "data augmentation"],
+          explain:
+            "La data augmentation génère de nouvelles variantes des exemples d'entraînement (rotation, recadrage, bruit...) afin d'améliorer la capacité de généralisation du réseau sans avoir besoin de collecter plus de données.",
+        },
+        {
+          id: 114,
+          cat: "optim",
+          type: "open",
+          q: "Quel est le nom de l'optimiseur le plus basique, qui met simplement à jour chaque poids proportionnellement à l'opposé de son gradient, sans mémoire des itérations précédentes ni adaptation individuelle du learning rate ?",
+          accept: [
+            "sgd",
+            "descente de gradient stochastique",
+            "gradient descent",
+          ],
+          explain:
+            "Le SGD (Stochastic Gradient Descent) de base applique directement w ← w − lr·∂L/∂w à chaque itération, sans moyenne mobile du gradient ni ajustement du learning rate par paramètre, contrairement à des optimiseurs comme Adam.",
+        },
+        {
+          id: 115,
+          cat: "optim",
+          type: "open",
+          q: "Comment appelle-t-on le compromis fondamental entre la capacité d'un modèle à bien s'ajuster à ses données d'entraînement et sa capacité à généraliser sur de nouvelles données ?",
+          accept: [
+            "biais variance",
+            "compromis biais variance",
+            "bias variance",
+          ],
+          explain:
+            "Le compromis biais-variance oppose le sous-apprentissage (modèle trop simple, biais élevé) au surapprentissage (modèle trop complexe, variance élevée) : l'objectif est de trouver un juste milieu.",
+        },
+        {
+          id: 116,
+          cat: "cnn",
+          type: "open",
+          q: "Comment appelle-t-on l'opération qui consiste à transformer la sortie multidimensionnelle des dernières couches de convolution/pooling en un unique vecteur, avant de la transmettre à une couche dense ?",
+          accept: ["flatten", "aplatissement", "mise a plat"],
+          explain:
+            "Le flatten (aplatissement) transforme une feature map multidimensionnelle en un vecteur 1D, ce qui permet de la connecter à une ou plusieurs couches denses classiques en fin de réseau.",
+        },
+        {
+          id: 117,
+          cat: "cnn",
+          type: "open",
+          q: "Comment appelle-t-on la zone de l'image d'entrée dont dépend, directement ou indirectement, la valeur d'un neurone donné d'une couche profonde d'un CNN ?",
+          accept: ["champ receptif", "receptive field"],
+          explain:
+            "Le champ réceptif d'un neurone désigne la portion de l'image d'entrée qui influence sa valeur ; il grandit à mesure qu'on empile des couches de convolution.",
+        },
+        {
+          id: 118,
+          cat: "cnn",
+          type: "open",
+          q: "Comment appelle-t-on la pratique consistant à repartir d'un CNN déjà entraîné sur un grand dataset (comme ImageNet), puis à l'adapter à une nouvelle tâche avec peu de données ?",
+          accept: ["transfer learning", "apprentissage par transfert"],
+          explain:
+            "Le transfer learning consiste à repartir d'un réseau déjà entraîné sur une grande tâche générale, puis à l'adapter (fine-tuning) à une nouvelle tâche plus spécifique, souvent avec beaucoup moins de données.",
+        },
+        {
+          id: 119,
+          cat: "cnn",
+          type: "open",
+          q: "Comment appelle-t-on l'architecture de CNN historique (1998) conçue par Yann LeCun pour la reconnaissance de chiffres manuscrits, souvent citée comme l'une des toutes premières architectures modernes de ce type ?",
+          accept: ["lenet", "lenet 5"],
+          explain:
+            "LeNet-5, proposée par Yann LeCun en 1998, est l'une des toutes premières architectures de CNN modernes, initialement conçue pour reconnaître des chiffres manuscrits.",
+        },
+        {
+          id: 120,
+          cat: "cnn",
+          type: "open",
+          q: "Comment appelle-t-on la technique qui consiste à normaliser les activations d'une couche (moyenne et variance) au sein de chaque mini-batch, afin de stabiliser et accélérer l'entraînement des réseaux profonds ?",
+          accept: [
+            "batch normalization",
+            "normalisation par batch",
+            "batchnorm",
+          ],
+          explain:
+            "La batch normalization normalise les activations d'une couche à l'intérieur de chaque mini-batch, ce qui stabilise et accélère souvent l'entraînement des réseaux profonds, CNN inclus.",
+        },
+        {
+          id: 121,
+          cat: "rnn",
+          type: "open",
+          q: "Comment appelle-t-on le mécanisme, initialement conçu pour améliorer les RNN en traduction automatique, qui permet au décodeur de pondérer différemment chaque mot de la séquence source à chaque étape de génération ?",
+          accept: ["attention", "mecanisme d attention"],
+          explain:
+            "Le mécanisme d'attention permet au décodeur de porter un poids différent à chaque position de la séquence source à chaque pas de génération, plutôt que de s'appuyer sur un unique vecteur résumé fixe.",
+        },
+        {
+          id: 122,
+          cat: "rnn",
+          type: "open",
+          q: "Comment appelle-t-on l'architecture qui empile plusieurs couches de RNN les unes sur les autres, la sortie de chaque couche à chaque pas de temps servant d'entrée à la couche suivante ?",
+          accept: [
+            "rnn empile",
+            "rnn empiles",
+            "stacked rnn",
+            "rnn multicouche",
+            "rnn multicouches",
+          ],
+          explain:
+            "Un RNN empilé (« stacked RNN ») superpose plusieurs couches récurrentes : la sortie de chaque couche, à chaque pas de temps, sert d'entrée à la couche récurrente suivante, ce qui permet d'apprendre des représentations plus riches.",
+        },
+        {
+          id: 123,
+          cat: "rnn",
+          type: "open",
+          q: "Comment appelle-t-on la porte d'un LSTM qui décide quelle proportion de la mémoire précédente (cell state) doit être conservée ou effacée à chaque pas de temps ?",
+          accept: ["porte d oubli", "forget gate"],
+          explain:
+            "La forget gate (porte d'oubli) d'un LSTM produit, à chaque pas de temps, une valeur entre 0 et 1 qui détermine quelle proportion de la mémoire précédente (cell state) est conservée ou oubliée.",
+        },
+        {
+          id: 124,
+          cat: "rnn",
+          type: "open",
+          q: "Dans un LSTM, comment appelle-t-on la ligne de mémoire à long terme qui traverse toute la séquence et que les différentes portes modifient à chaque pas de temps, distincte de l'état caché h(t) ?",
+          accept: ["cell state", "etat de cellule", "etat cellulaire"],
+          explain:
+            "Le cell state (état de cellule) est la mémoire à long terme d'un LSTM : les portes d'oubli et d'entrée y ajoutent ou y suppriment de l'information à chaque pas de temps, indépendamment de l'état caché h(t) qui sert de sortie.",
+        },
+        {
+          id: 125,
+          cat: "rnn",
+          type: "open",
+          q: "Comment appelle-t-on la technique consistant à traiter une séquence à la fois dans le sens chronologique et dans le sens inverse, avant de combiner les deux représentations obtenues ?",
+          accept: ["rnn bidirectionnel", "bidirectionnel", "bilstm", "bi rnn"],
+          explain:
+            "Un RNN bidirectionnel combine deux RNN distincts : l'un lit la séquence de gauche à droite, l'autre de droite à gauche, ce qui permet à chaque pas de temps de disposer à la fois du contexte passé et futur.",
+        },
+        {
+          id: 126,
+          cat: "rnn",
+          type: "open",
+          q: "Comment appelle-t-on l'architecture de réseau, aujourd'hui dominante en traitement du langage, qui a largement remplacé les RNN pour de nombreuses tâches en s'appuyant uniquement sur des mécanismes d'attention, sans aucune récurrence ?",
+          accept: ["transformer", "transformers"],
+          explain:
+            "Les Transformers traitent toute la séquence en parallèle grâce à des mécanismes d'attention, sans aucune récurrence pas à pas, ce qui les rend beaucoup plus parallélisables que les RNN classiques et les a rendus dominants en NLP.",
+        },
+      ];
       let quizState = null;
 
       function quizNorm(s) {
@@ -13147,7 +13259,9 @@ fn loss_accum() {
         }
         if (rLabel) {
           const catTxt =
-            quizFilter.cat === "all" ? "tous chapitres" : QUIZ_CATS[quizFilter.cat].label;
+            quizFilter.cat === "all"
+              ? "tous chapitres"
+              : QUIZ_CATS[quizFilter.cat].label;
           const typeTxt =
             quizFilter.type === "all"
               ? "tous types"
@@ -13243,8 +13357,7 @@ fn loss_accum() {
         const raw = inp ? inp.value : "";
         const norm = quizNorm(raw);
         const correct =
-          norm.length > 0 &&
-          q.accept.some((a) => norm.includes(quizNorm(a)));
+          norm.length > 0 && q.accept.some((a) => norm.includes(quizNorm(a)));
         if (inp) inp.disabled = true;
         const btn = document.querySelector("#quizAnswerZone .btn");
         if (btn) btn.disabled = true;
@@ -14370,7 +14483,7 @@ fn loss_accum() {
           for (let i = 0; i < 160; i++) {
             const x1 = Math.random() * 2 - 1,
               x2 = Math.random() * 2 - 1;
-            const cls = (x1 > 0) !== (x2 > 0) ? 1 : 0;
+            const cls = x1 > 0 !== x2 > 0 ? 1 : 0;
             pts.push({ x1, x2, cls });
           }
         } else if (kind === "blobs") {
@@ -17540,11 +17653,11 @@ fn loss_accum() {
         </div>
         <div id="vds-body">
           <div class="vds-intro">
-            Ces éditeurs génèrent directement le dataset (onglet «
-            Dataset ») du réseau affiché sur le canevas central. Entraînez
-            ensuite avec les commandes habituelles (▶ Step, +Epoch, ⚡ Auto) —
-            la frontière de décision / la courbe apprise ci-dessous se met à
-            jour en direct, même pendant l'entraînement.
+            Ces éditeurs génèrent directement le dataset (onglet « Dataset ») du
+            réseau affiché sur le canevas central. Entraînez ensuite avec les
+            commandes habituelles (▶ Step, +Epoch, ⚡ Auto) — la frontière de
+            décision / la courbe apprise ci-dessous se met à jour en direct,
+            même pendant l'entraînement.
           </div>
           <div class="tabs">
             <div
@@ -17582,24 +17695,24 @@ fn loss_accum() {
                   <button
                     class="btn on"
                     id="clsModeAdd"
-                    onclick="vdsSetMode('cls','add')"
+                    onclick="vdsSetMode('cls', 'add')"
                   >
                     ✚ Ajouter
                   </button>
                   <button
                     class="btn"
                     id="clsModeErase"
-                    onclick="vdsSetMode('cls','erase')"
+                    onclick="vdsSetMode('cls', 'erase')"
                   >
                     ✕ Effacer un point
                   </button>
                 </div>
                 <div class="vds-hint">
-                  Clic gauche = ajoute un point de la classe sélectionnée ·
-                  clic droit = supprime le point le plus proche · le fond
-                  coloré montre la prédiction actuelle du réseau (frontière
-                  de décision), plus la couleur est intense plus le réseau
-                  est confiant.
+                  Clic gauche = ajoute un point de la classe sélectionnée · clic
+                  droit = supprime le point le plus proche · le fond coloré
+                  montre la prédiction actuelle du réseau (frontière de
+                  décision), plus la couleur est intense plus le réseau est
+                  confiant.
                 </div>
               </div>
               <div class="vds-side-col">
@@ -17627,9 +17740,7 @@ fn loss_accum() {
                     🗑 Vider les points
                   </button>
                 </div>
-                <lbl style="margin-top: 10px; display: block"
-                  >Jeux de démo</lbl
-                >
+                <lbl style="margin-top: 10px; display: block">Jeux de démo</lbl>
                 <div class="btn-row" style="flex-wrap: wrap">
                   <button class="btn" onclick="vdsClassGenerate('circles')">
                     ◎ Cercles
@@ -17667,14 +17778,14 @@ fn loss_accum() {
                   <button
                     class="btn on"
                     id="regModeAdd"
-                    onclick="vdsSetMode('reg','add')"
+                    onclick="vdsSetMode('reg', 'add')"
                   >
                     ✚ Ajouter
                   </button>
                   <button
                     class="btn"
                     id="regModeErase"
-                    onclick="vdsSetMode('reg','erase')"
+                    onclick="vdsSetMode('reg', 'erase')"
                   >
                     ✕ Effacer un point
                   </button>
@@ -17695,9 +17806,7 @@ fn loss_accum() {
                     🗑 Vider les points
                   </button>
                 </div>
-                <lbl style="margin-top: 10px; display: block"
-                  >Jeux de démo</lbl
-                >
+                <lbl style="margin-top: 10px; display: block">Jeux de démo</lbl>
                 <div class="btn-row" style="flex-wrap: wrap">
                   <button class="btn" onclick="vdsRegGenerate('linear')">
                     ／ Linéaire
@@ -17855,7 +17964,9 @@ fn loss_accum() {
             class="btn"
             onclick="
               stopCompare();
-              document.getElementById('compare-modal-bg').classList.remove('show');
+              document
+                .getElementById('compare-modal-bg')
+                .classList.remove('show');
             "
           >
             ✕
@@ -17995,8 +18106,14 @@ fn loss_accum() {
             </div>
           </div>
 
-          <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap">
-            <div class="racer" id="cmp-stat-a" style="flex: 1; min-width: 220px">
+          <div
+            style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap"
+          >
+            <div
+              class="racer"
+              id="cmp-stat-a"
+              style="flex: 1; min-width: 220px"
+            >
               <div class="racer-name" style="color: var(--a1)">● Réseau A</div>
               <div class="racer-bar-bg">
                 <div
@@ -18017,7 +18134,11 @@ fn loss_accum() {
                 → Utiliser ce réseau
               </button>
             </div>
-            <div class="racer" id="cmp-stat-b" style="flex: 1; min-width: 220px">
+            <div
+              class="racer"
+              id="cmp-stat-b"
+              style="flex: 1; min-width: 220px"
+            >
               <div class="racer-name" style="color: var(--a2)">● Réseau B</div>
               <div class="racer-bar-bg">
                 <div
@@ -18053,7 +18174,9 @@ fn loss_accum() {
             "
           ></canvas>
 
-          <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap">
+          <div
+            style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap"
+          >
             <div style="flex: 1; min-width: 150px; text-align: center">
               <div style="font-size: 8px; color: var(--a1); margin-bottom: 3px">
                 Frontière — Réseau A
@@ -18090,7 +18213,9 @@ fn loss_accum() {
             class="btn"
             onclick="
               stopCompare();
-              document.getElementById('compare-modal-bg').classList.remove('show');
+              document
+                .getElementById('compare-modal-bg')
+                .classList.remove('show');
             "
           >
             Fermer
@@ -18528,7 +18653,9 @@ fn loss_accum() {
                       <option value="24">24×24</option>
                       <option value="32">32×32</option>
                     </optgroup>
-                    <optgroup label="Grand — éditeur de dessin (pinceau, formes…)">
+                    <optgroup
+                      label="Grand — éditeur de dessin (pinceau, formes…)"
+                    >
                       <option value="48">48×48</option>
                       <option value="64">64×64</option>
                       <option value="96">96×96</option>
@@ -20238,7 +20365,9 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           act: document.getElementById("cmp-act-" + prefix).value,
           actOut: document.getElementById("cmp-actout-" + prefix).value,
           opt: document.getElementById("cmp-opt-" + prefix).value,
-          lr: parseFloat(document.getElementById("cmp-lr-" + prefix).value) || 0.1,
+          lr:
+            parseFloat(document.getElementById("cmp-lr-" + prefix).value) ||
+            0.1,
         };
       }
       function cmpEffOut(cfg) {
@@ -20325,7 +20454,9 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             let err = 0;
             for (let j = 0; j < state.net.W[l + 1].length; j++)
               err += deltas[l + 1][j] * state.net.W[l + 1][j][k];
-            deltas[l].push(err * actD(activations[l + 1][k], zs[l][k], cfg.act));
+            deltas[l].push(
+              err * actD(activations[l + 1][k], zs[l][k], cfg.act),
+            );
           }
         }
         return deltas;
@@ -20348,14 +20479,16 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
               if (opt === "sgd") {
                 nw = w - lr * g;
               } else if (opt === "momentum" || opt === "nag") {
-                state.vel.w[l][j][k] = mom * (state.vel.w[l][j][k] || 0) + lr * g;
+                state.vel.w[l][j][k] =
+                  mom * (state.vel.w[l][j][k] || 0) + lr * g;
                 nw = w - state.vel.w[l][j][k];
               } else if (opt === "rmsprop") {
                 state.vel.w[l][j][k] =
                   b2 * (state.vel.w[l][j][k] || 0) + (1 - b2) * g * g;
                 nw = w - (lr * g) / (Math.sqrt(state.vel.w[l][j][k]) + eps);
               } else if (opt === "adam" || opt === "adamw") {
-                state.ma.w[l][j][k] = b1 * (state.ma.w[l][j][k] || 0) + (1 - b1) * g;
+                state.ma.w[l][j][k] =
+                  b1 * (state.ma.w[l][j][k] || 0) + (1 - b1) * g;
                 state.mv.w[l][j][k] =
                   b2 * (state.mv.w[l][j][k] || 0) + (1 - b2) * g * g;
                 const mc = state.ma.w[l][j][k] / (1 - b1 ** state.adamT),
@@ -20491,7 +20624,8 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         CMP.lossA = [];
         CMP.lossB = [];
         document.getElementById("compare-winner").style.display = "none";
-        CMP.maxEpochs = parseInt(document.getElementById("cmp-epochs").value) || 300;
+        CMP.maxEpochs =
+          parseInt(document.getElementById("cmp-epochs").value) || 300;
         initCompareNets();
         cmpRenderBoundaries();
         function step() {
@@ -20506,9 +20640,18 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             let tot = 0;
             for (let i = 0; i < DS.inputs.length; i++) {
               const { activations, zs } = cmpForward(state, cfg, DS.inputs[i]);
-              const deltas = cmpBackward(state, cfg, activations, zs, DS.outputs[i]);
+              const deltas = cmpBackward(
+                state,
+                cfg,
+                activations,
+                zs,
+                DS.outputs[i],
+              );
               cmpUpdate(state, cfg, activations, deltas);
-              tot += computeLoss(activations[activations.length - 1], DS.outputs[i]);
+              tot += computeLoss(
+                activations[activations.length - 1],
+                DS.outputs[i],
+              );
             }
             const al = tot / DS.inputs.length;
             lossArr.push(al);
@@ -20516,8 +20659,10 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             const init = lossArr[0] || 1;
             document.getElementById("cmp-bar-" + key).style.width =
               Math.max(0, Math.min(100, (1 - al / init) * 100)) + "%";
-            document.getElementById("cmp-loss-" + key).textContent = al.toFixed(5);
-            document.getElementById("cmp-acc-" + key).textContent = accV.toFixed(0);
+            document.getElementById("cmp-loss-" + key).textContent =
+              al.toFixed(5);
+            document.getElementById("cmp-acc-" + key).textContent =
+              accV.toFixed(0);
           });
           const lastA = CMP.lossA.at(-1) ?? Infinity,
             lastB = CMP.lossB.at(-1) ?? Infinity;
@@ -21811,8 +21956,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         const grid = Array.from({ length: n }, () => Array(n).fill(0));
         const data = id.data;
         for (let y = 0; y < n; y++)
-          for (let x = 0; x < n; x++)
-            grid[y][x] = data[(y * n + x) * 4] / 255;
+          for (let x = 0; x < n; x++) grid[y][x] = data[(y * n + x) * 4] / 255;
         return grid;
       }
       function cnnGridThumbURL(grid, n) {
@@ -21836,9 +21980,13 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             delete CNN_EDITORS[key];
           }
           el.className = "cnn-grid";
-          const cell = n <= 8 ? 20 : n <= 12 ? 16 : n <= 16 ? 12 : n <= 24 ? 9 : 6;
+          const cell =
+            n <= 8 ? 20 : n <= 12 ? 16 : n <= 16 ? 12 : n <= 24 ? 9 : 6;
           el.style.gridTemplateColumns = `repeat(${n},${cell}px)`;
-          const toggleFn = key === "draft" ? "cnnModelToggleDraftCell" : "cnnModelToggleTestCell";
+          const toggleFn =
+            key === "draft"
+              ? "cnnModelToggleDraftCell"
+              : "cnnModelToggleTestCell";
           let html = "";
           for (let y = 0; y < n; y++)
             for (let x = 0; x < n; x++) {
@@ -22009,14 +22157,28 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             const w = Math.abs(x - ed.startX) + 1,
               h = Math.abs(y - ed.startY) + 1;
             if (ed.shapeFill) ctx.fillRect(x0, y0, w, h);
-            else ctx.strokeRect(x0 + 0.5, y0 + 0.5, Math.max(1, w - 1), Math.max(1, h - 1));
+            else
+              ctx.strokeRect(
+                x0 + 0.5,
+                y0 + 0.5,
+                Math.max(1, w - 1),
+                Math.max(1, h - 1),
+              );
           } else if (ed.tool === "ellipse") {
             const cx = (ed.startX + x) / 2,
               cy = (ed.startY + y) / 2;
             const rx = Math.abs(x - ed.startX) / 2,
               ry = Math.abs(y - ed.startY) / 2;
             ctx.beginPath();
-            ctx.ellipse(cx + 0.5, cy + 0.5, Math.max(0.5, rx), Math.max(0.5, ry), 0, 0, Math.PI * 2);
+            ctx.ellipse(
+              cx + 0.5,
+              cy + 0.5,
+              Math.max(0.5, rx),
+              Math.max(0.5, ry),
+              0,
+              0,
+              Math.PI * 2,
+            );
             if (ed.shapeFill) ctx.fill();
             else ctx.stroke();
           }
@@ -22035,7 +22197,11 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
             ed.drawing = false;
             return;
           }
-          if (ed.tool === "line" || ed.tool === "rect" || ed.tool === "ellipse") {
+          if (
+            ed.tool === "line" ||
+            ed.tool === "rect" ||
+            ed.tool === "ellipse"
+          ) {
             ed.strokeSnapshot = ctx.getImageData(0, 0, n, n);
             drawShapePreview(x, y);
             return;
@@ -22046,11 +22212,19 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           if (!ed.drawing) return;
           e.preventDefault();
           const { x, y } = getPos(e);
-          if (ed.tool === "brush" || ed.tool === "pencil" || ed.tool === "eraser") {
+          if (
+            ed.tool === "brush" ||
+            ed.tool === "pencil" ||
+            ed.tool === "eraser"
+          ) {
             paintSeg(ed.lastX, ed.lastY, x, y);
             ed.lastX = x;
             ed.lastY = y;
-          } else if (ed.tool === "line" || ed.tool === "rect" || ed.tool === "ellipse") {
+          } else if (
+            ed.tool === "line" ||
+            ed.tool === "rect" ||
+            ed.tool === "ellipse"
+          ) {
             drawShapePreview(x, y);
           }
         };
@@ -22088,7 +22262,9 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         if (wrap)
           wrap
             .querySelectorAll(".cnn-tool-btn")
-            .forEach((b) => b.classList.toggle("active", b.dataset.tool === tool));
+            .forEach((b) =>
+              b.classList.toggle("active", b.dataset.tool === tool),
+            );
       }
       function cnnEditorSetColor(key, c) {
         const ed = CNN_EDITORS[key];
@@ -22098,7 +22274,9 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
         if (wrap)
           wrap
             .querySelectorAll(".cnn-color-btn")
-            .forEach((b) => b.classList.toggle("active", parseInt(b.dataset.color) === c));
+            .forEach((b) =>
+              b.classList.toggle("active", parseInt(b.dataset.color) === c),
+            );
       }
       function cnnEditorBrushChange(key, v) {
         const ed = CNN_EDITORS[key];
@@ -22142,9 +22320,14 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
 
       // ── Grille de dessin (dataset) ──
       function cnnModelRenderDraftGrid() {
-        cnnModelRenderEditableGrid("draft", "cnnDsDraftGrid", CNN_MODEL.draft, (g) => {
-          CNN_MODEL.draft = g;
-        });
+        cnnModelRenderEditableGrid(
+          "draft",
+          "cnnDsDraftGrid",
+          CNN_MODEL.draft,
+          (g) => {
+            CNN_MODEL.draft = g;
+          },
+        );
       }
       function cnnModelToggleDraftCell(y, x) {
         CNN_MODEL.draft[y][x] = CNN_MODEL.draft[y][x] > 0 ? 0 : 1;
@@ -22169,9 +22352,14 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
 
       // ── Grille de test ──
       function cnnModelRenderTestGrid() {
-        cnnModelRenderEditableGrid("test", "cnnTestGrid", CNN_MODEL.testGrid, (g) => {
-          CNN_MODEL.testGrid = g;
-        });
+        cnnModelRenderEditableGrid(
+          "test",
+          "cnnTestGrid",
+          CNN_MODEL.testGrid,
+          (g) => {
+            CNN_MODEL.testGrid = g;
+          },
+        );
       }
       function cnnModelToggleTestCell(y, x) {
         CNN_MODEL.testGrid[y][x] = CNN_MODEL.testGrid[y][x] > 0 ? 0 : 1;
@@ -25097,7 +25285,10 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
 
         function boot() {
           scanAndInit();
-          domObserver.observe(document.body, { childList: true, subtree: true });
+          domObserver.observe(document.body, {
+            childList: true,
+            subtree: true,
+          });
           // Ouverture des modals Labo CNN / Labo RNN : leurs onglets sont
           // à display:none avant l'ouverture, donc les rects mesurés au
           // boot peuvent être nuls. On recalcule au clic sur les boutons
@@ -25207,9 +25398,7 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           (e) => {
             const el = e.target.closest(".btn.go, .btn.ok");
             if (!el) return;
-            const color = el.classList.contains("go")
-              ? "#00ff9d"
-              : "#00e5ff";
+            const color = el.classList.contains("go") ? "#00ff9d" : "#00e5ff";
             spawnSparks(e.clientX, e.clientY, color);
           },
           { passive: true },
@@ -25545,7 +25734,9 @@ bonjour le monde, comment allez vous aujourd'hui</textarea
           true,
         ); // capture : blur ne "bubble" pas
 
-        console.log("✓ Neural Lab v12 — pack satisfaction 2 (contrôles) chargé");
+        console.log(
+          "✓ Neural Lab v12 — pack satisfaction 2 (contrôles) chargé",
+        );
       })();
     </script>
   </body>
